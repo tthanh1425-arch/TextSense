@@ -1,0 +1,16 @@
+TEXTSENSE V3.14 - CAP NHAT GIAO DIEN WEB
+
+1. Sao luu thu muc 03_GIAO_DIEN cu.
+2. Giai nen goi ZIP tai thu muc goc TextSense, cho phep ghi de thu muc 03_GIAO_DIEN.
+3. Dung may chu cu bang Ctrl+C trong Terminal.
+4. Tai thu muc TextSense/03_GIAO_DIEN, chay: python serve_textsense.py
+5. Mo http://127.0.0.1:8502; nhan Ctrl+Shift+R va tai CSV lai neu can.
+
+CAP NHAT:
+- Giu nguyen khung Khong gian phan tich va linh vat.
+- Thay tieu de trang, rut gon huong dan, ket qua va thong bao.
+- An chi tiet khoa hoc vao cac muc co the mo rong.
+- Bo thong so va trang thai mo hinh tren banner; van hien loi neu thieu mo hinh.
+- Gop thong ke tu ngu thanh mot bang, moi tu chi mot hang voi so lieu theo nhom.
+- Giu nguyen nhan 0/1 va cac cot CSV dau ra, khong can huan luyen lai mo hinh.
+- Giup dien giai dung: nhan Phan cam la nhan proxy tu cam xuc tieu cuc.

@@ -1,0 +1,2 @@
+-r ../01_TRAIN_MODEL/requirements.txt
+streamlit>=1.49,<2

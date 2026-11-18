@@ -1,0 +1,1 @@
+Sau khi train và mở giao diện, chụp: (1) dự đoán đơn; (2) CSV nhập/xuất; (3) dashboard; (4) Confusion Matrix; (5) PR Curve. Không dùng ảnh minh họa giả làm chứng cứ.

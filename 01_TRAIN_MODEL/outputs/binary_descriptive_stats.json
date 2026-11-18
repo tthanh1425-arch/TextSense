@@ -1,0 +1,107 @@
+{
+  "total_clean_unique_rows": 196056,
+  "rows_by_source": {
+    "Twitter_Data.csv": 159588,
+    "Reddit_Data.csv": 36468
+  },
+  "original_label_counts": {
+    "-1": 43147,
+    "0": 66239,
+    "1": 86670
+  },
+  "binary_label_counts": {
+    "0": 152909,
+    "1": 43147
+  },
+  "text_length_words": {
+    "mean": 21.88878177663525,
+    "median": 18.0,
+    "q1": 10.0,
+    "q3": 29.0,
+    "min": 1,
+    "max": 1307
+  },
+  "top_20_terms": [
+    {
+      "term": "modi",
+      "frequency": 157280
+    },
+    {
+      "term": "india",
+      "frequency": 33564
+    },
+    {
+      "term": "bjp",
+      "frequency": 19494
+    },
+    {
+      "term": "people",
+      "frequency": 19224
+    },
+    {
+      "term": "congress",
+      "frequency": 14826
+    },
+    {
+      "term": "now",
+      "frequency": 14378
+    },
+    {
+      "term": "only",
+      "frequency": 14065
+    },
+    {
+      "term": "narendra",
+      "frequency": 11374
+    },
+    {
+      "term": "more",
+      "frequency": 10958
+    },
+    {
+      "term": "govt",
+      "frequency": 10470
+    },
+    {
+      "term": "vote",
+      "frequency": 10298
+    },
+    {
+      "term": "country",
+      "frequency": 9601
+    },
+    {
+      "term": "even",
+      "frequency": 9546
+    },
+    {
+      "term": "time",
+      "frequency": 9494
+    },
+    {
+      "term": "indian",
+      "frequency": 8776
+    },
+    {
+      "term": "also",
+      "frequency": 8637
+    },
+    {
+      "term": "did",
+      "frequency": 8617
+    },
+    {
+      "term": "which",
+      "frequency": 8596
+    },
+    {
+      "term": "good",
+      "frequency": 8502
+    },
+    {
+      "term": "years",
+      "frequency": 8481
+    }
+  ],
+  "note": "Thống kê mô tả từ dữ liệu đã làm sạch và loại trùng, trước khi chia tập."
+}
