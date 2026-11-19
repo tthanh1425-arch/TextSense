@@ -120,9 +120,6 @@ textarea:focus-visible{border-color:var(--lime);outline:none;box-shadow:inset 0 
 .tag-guide dl div{border-top:1px solid var(--rule);padding:7px 0}
 .tag-guide dt{font-weight:700;color:var(--cream)}
 .tag-guide dd{margin:2px 0 0}
-.result-tags{margin-top:20px}
-.result-tags ul{list-style:none;display:flex;flex-wrap:wrap;gap:7px;padding:0;margin:7px 0 0}
-.result-tags li{color:var(--blue);border:1px solid var(--rule);padding:4px 9px;border-radius:4px;font-size:13px}
 
 /* CSV upload section retains the original TextSense visual language. */
 .batch-panel{border-top:1px solid var(--rule);padding-block:40px 75px}
@@ -136,6 +133,7 @@ textarea:focus-visible{border-color:var(--lime);outline:none;box-shadow:inset 0 
 .batch-status{font-size:14px;margin-top:15px;color:var(--muted);white-space:pre-wrap}
 .batch-status[data-error=true]{color:var(--rose)}
 .batch-status[data-success=true]{color:var(--lime)}
+.batch-status[data-warning=true]{color:#f4d6a8}
 .batch-facts{margin-top:16px;color:var(--cream);font-size:14px}
 .note-small{color:var(--muted);font-size:13px;margin-top:11px;max-width:78ch}
 
@@ -251,6 +249,7 @@ textarea:focus-visible{border-color:var(--lime);outline:none;box-shadow:inset 0 
 .batch-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:19px;scroll-margin-top:16px}
 .batch-row-card{background:#132139;border:1px solid #4b5b78;border-radius:16px;min-width:0;padding:17px 18px;display:flex;flex-direction:column;gap:13px;transition:border-color .17s,transform .17s,box-shadow .17s}
 .batch-row-card:hover{border-color:#a6c792;transform:translateY(-2px);box-shadow:0 10px 22px #0b10233b}
+.batch-row-card.batch-row-highlight{border-color:#f7d468!important;box-shadow:0 0 0 3px #f7d46870,0 12px 28px #00000080!important;transform:scale(1.02);transition:all .3s ease}
 .batch-row-head,.batch-row-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .batch-row-number{font-weight:700;font-size:12px;color:var(--blue)}
 .batch-row-badge{font-size:11px;line-height:1.4;padding:5px 9px;border:1px solid #64738e;border-radius:999px;color:var(--cream);max-width:100%}
@@ -510,3 +509,34 @@ body{background:#11182c}
 .suspect-terms-table td:nth-child(4){color:#d0e7a3}
 .sample-link{display:inline-flex;margin-top:10px;font-size:12px}
 @media(max-width:760px){.dashboard-featured-suspect{min-width:0}.suspect-terms-table{min-width:780px}}
+
+/* V3.16: one upload area and two independent output formats. */
+.sheet-wrap{margin-bottom:15px}
+.batch-export-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.batch-export-actions .button{white-space:nowrap}
+.batch-export-actions button:disabled{cursor:not-allowed;opacity:.5}
+@media(max-width:760px){.batch-export-actions{width:100%}.batch-export-actions .button{flex:1;min-width:135px;text-align:center}}
+
+
+/* Optional sentence/clause-level supplementary explanation. */
+.sentence-breakdown{margin-top:24px;padding:19px 20px;border:1px solid var(--rule);border-radius:14px;background:rgba(68,98,140,.14)}
+.sentence-breakdown-heading{display:flex;align-items:flex-start;gap:11px}
+.sentence-breakdown-icon{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;background:rgba(168,213,139,.14);border-radius:9px;color:var(--lime)}
+.sentence-breakdown-heading h3{font-size:17px;color:var(--cream);line-height:1.35}
+.sentence-breakdown-heading p{font-size:13px;line-height:1.55;margin-top:5px;color:var(--muted)}
+.sentence-breakdown-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.sentence-item{background:rgba(16,26,46,.34);padding:13px 14px;border:1px solid var(--rule);border-radius:10px;min-width:0}
+.sentence-item-header{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}
+.sentence-number{font-size:12px;font-weight:700;color:var(--muted)}
+.sentence-label{font-size:12px;font-weight:750;padding:3px 8px;border-radius:7px;border:1px solid var(--rule);color:var(--cream)}
+.sentence-label.negative{color:var(--rose);border-color:rgba(224,129,129,.38)}
+.sentence-label.nonnegative{color:var(--lime);border-color:rgba(168,213,139,.38)}
+.sentence-label.unknown{color:var(--muted)}
+.sentence-item p{font-size:14px;line-height:1.55;margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap}
+@media(max-width:600px){.sentence-breakdown{padding:14px}.sentence-item{padding:10px}}
+
+/* The sentence-level view does not report an artificial percentage. */
+.sentence-breakdown-count{margin-top:15px;font-size:13px;color:var(--cream);font-weight:650}
+.sentence-item-negative{border-color:rgba(224,129,129,.42)}
+.history-warning{margin:12px 0;padding:10px 12px;border:1px solid rgba(238,182,101,.45);border-radius:9px;color:#f4d6a8;font-size:13px;line-height:1.5}
+

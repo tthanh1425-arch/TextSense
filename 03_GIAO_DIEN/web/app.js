@@ -3,13 +3,13 @@
 // Giữ lối thông báo và biểu cảm chim của TextSense gốc; mô hình thực tế chỉ phân loại cảm xúc.
 const outcomes = {
   nonnegative: {
-    title: 'Không phản cảm',
-    detail: 'Bình luận mang sắc thái trung tính hoặc tích cực.',
+    title: 'Không phát hiện nội dung tiêu cực',
+    detail: 'Bình luận mang sắc thái trung tính, tích cực hoặc không phát hiện phần nào mang cảm xúc tiêu cực.',
     alt: 'Chim xanh xòe cánh.'
   },
   negative: {
-    title: 'Phản cảm',
-    detail: 'Bình luận mang sắc thái tiêu cực.',
+    title: 'Có nội dung tiêu cực',
+    detail: 'Bình luận chứa ít nhất một phần tiêu cực hoặc thể hiện sắc thái thất vọng, bức xúc, khó chịu, phản đối hay chỉ trích.',
     alt: 'Chim xanh cau mày.'
   }
 };
@@ -52,6 +52,66 @@ function setState(state) {
   mascot.style.animation = '';
 }
 
+function renderSentenceBreakdown(analysis) {
+  const section = byId('sentence-breakdown');
+  const list = byId('sentence-breakdown-list');
+  section.hidden = true;
+  list.replaceChildren();
+  if (!analysis?.available || !Array.isArray(analysis.sentences)) return;
+
+  const negativeCount = Number(analysis.negative_parts);
+  const totalParts = Number(analysis.total_parts);
+  if (!Number.isSafeInteger(negativeCount) || !Number.isSafeInteger(totalParts) ||
+      totalParts < 2 || negativeCount < 1 || negativeCount > totalParts) return;
+
+  byId('sentence-breakdown-title').textContent = analysis.mixed
+    ? 'Các sắc thái trong bình luận' : 'Những phần mang sắc thái tiêu cực';
+  byId('sentence-breakdown-description').textContent =
+    'Phân tích chi tiết từng phần; nếu có ít nhất một phần tiêu cực thì bình luận được xác định là có nội dung tiêu cực.';
+  byId('sentence-breakdown-count').textContent =
+    'Phát hiện ' + negativeCount + ' phần tiêu cực trong ' + totalParts + ' phần được phân loại.';
+
+  for (const [index, item] of analysis.sentences.entries()) {
+    const row = document.createElement('li');
+    row.className = 'sentence-item' + (item.label === 'negative' ? ' sentence-item-negative' : '');
+    const header = document.createElement('div');
+    header.className = 'sentence-item-header';
+    const number = document.createElement('span');
+    number.className = 'sentence-number';
+    number.textContent = 'Phần ' + (index + 1);
+    const tag = document.createElement('strong');
+    tag.className = 'sentence-label ' + (item.label === 'negative' ? 'negative' : item.label === 'nonnegative' ? 'nonnegative' : 'unknown');
+    tag.textContent = item.label === 'negative' ? 'Tiêu cực' :
+      item.label === 'nonnegative' ? 'Không tiêu cực' : 'Chưa xác định';
+    const content = document.createElement('p');
+    content.textContent = item.text || '';
+    header.append(number, tag);
+    row.append(header, content);
+    list.append(row);
+  }
+  section.hidden = list.childElementCount < 2;
+}
+
+async function loadBatchSentenceBreakdown(text, shownAnimation, rowNumber = 0) {
+  if (!text || !/[,，;；:：.!?。！？…—–\n\r]/u.test(text)) return;
+  try {
+    const response = await fetch('/api/sentences', {
+      method: 'POST', headers: {'content-type':'application/json'},
+      body: JSON.stringify({input: text})
+    });
+    if (!response.ok) return;
+    const analysis = await response.json();
+    if (shownAnimation === resultAnimation && resultOrigin === 'batch') {
+      renderSentenceBreakdown(analysis);
+      if (analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
+        showClassification({label: 'negative', text, sentence_analysis: analysis}, 'batch', rowNumber);
+      }
+    }
+  } catch {
+    // The overall prediction already exists; keep it visible on failure.
+  }
+}
+
 function showClassification(payload, origin = 'single', rowNumber = 0) {
   const classification = outcomes[payload.label];
   if (!classification) throw new Error('Nhan du doan khong hop le');
@@ -67,9 +127,9 @@ function showClassification(payload, origin = 'single', rowNumber = 0) {
   byId('batch-detail-nav').hidden = origin !== 'batch';
   resultTitle.textContent = classification.title;
   byId('result-detail').textContent = classification.detail;
-  byId('result-tags').hidden = true;
-  byId('tag-list').replaceChildren();
-  highlight(payload.text, []);
+  renderSentenceBreakdown(payload.sentence_analysis);
+  byId('result-quote').textContent = payload.text;
+  byId('history-warning').hidden = origin !== 'single' || payload.history_saved !== false;
   byId('entry').hidden = true;
   result.hidden = false;
   const animation = ++resultAnimation;
@@ -111,6 +171,8 @@ function updateInput() {
   clear.hidden = !input.value;
   byId('entry').hidden = false;
   result.hidden = true;
+  renderSentenceBreakdown(null);
+  byId('history-warning').hidden = true;
   lastResult = undefined;
   setState(input.value.trim() ? 'ready' : 'idle');
 }
@@ -128,27 +190,6 @@ function showError(message, detail, retryable = false) {
   if (retryable) retry.focus();
 }
 
-function highlight(text, evidence) {
-  const block = byId('result-quote');
-  block.replaceChildren();
-  const phrases = Array.isArray(evidence) ? evidence.filter((p) => typeof p === 'string' && p.length && text.includes(p)) : [];
-  let cursor = 0;
-  while (cursor < text.length) {
-    const matches = phrases.map((phrase) => ({phrase, start: text.indexOf(phrase, cursor)}))
-      .filter((item) => item.start >= 0)
-      .sort((a,b) => a.start - b.start || b.phrase.length - a.phrase.length);
-    const first = matches[0];
-    if (!first) {
-      block.append(document.createTextNode(text.slice(cursor)));
-      break;
-    }
-    block.append(document.createTextNode(text.slice(cursor, first.start)));
-    const mark = document.createElement('mark');
-    mark.textContent = first.phrase;
-    block.append(mark);
-    cursor = first.start + first.phrase.length;
-  }
-}
 
 function returnToInput(erase) {
   resultOrigin = 'single';
@@ -211,24 +252,42 @@ byId('report').addEventListener('click', () => {
   reportDialog.showModal();
 });
 byId('cancel-report').addEventListener('click', () => reportDialog.close());
-reportForm.addEventListener('submit', (event) => {
+reportForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!lastResult) return;
-  const report = {
-    source: resultOrigin === 'batch' ? 'CSV' : 'Bình luận riêng lẻ',
-    time: new Date().toISOString(),
-    prediction: outcomes[lastResult.label].title,
-    suggestedLabel: outcomes[byId('report-label').value].title,
-    note: byId('report-reason').value.trim()
-  };
-  if (byId('report-include').checked) report.text = lastResult.text;
-  const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'}));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'TextSense-phan-hoi-cam-xuc.json';
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  reportDialog.close();
+  const suggestedLabel = outcomes[byId('report-label').value]?.title || byId('report-label').value;
+  const note = byId('report-reason').value.trim();
+  const text = byId('report-include').checked ? lastResult.text : null;
+  const source = resultOrigin === 'batch' ? 'Tệp dữ liệu' : 'Bình luận riêng lẻ';
+  const prediction = outcomes[lastResult.label]?.title || lastResult.label;
+
+  const submitBtn = reportForm.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        source,
+        prediction,
+        suggested_label: suggestedLabel,
+        note,
+        text
+      })
+    });
+    const data = await res.json();
+    if (data.feedback_saved) {
+      alert('Đã ghi nhận báo cáo vào SQL Server (dbo.UserFeedback) thành công!');
+    } else {
+      alert('Đã gửi phản hồi. Lưu ý: ' + (data.message || 'Chưa thể lưu vào SQL Server.'));
+    }
+  } catch (err) {
+    alert('Không thể kết nối đến máy chủ để lưu phản hồi: ' + err.message);
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+    reportDialog.close();
+  }
 });
 
 updateInput();
@@ -315,6 +374,8 @@ const batchProgress = byId('batch-progress');
 let maxCsvBytes = 100 * 1024 * 1024;
 let maxCsvRows = 300000;
 let selectedCsv = null;
+let resultCsvBlob = null;
+const sheetSelect = byId('xlsx-sheet');
 let csvRevision = 0;
 let csvController;
 let batchController;
@@ -399,7 +460,7 @@ function renderSourceDistribution(rows) {
     track.append(neg, nonneg);
     const legend = document.createElement('p');
     legend.className = 'source-stacked-legend';
-    legend.textContent = 'Phản cảm: ' + formatNumber(negative) + ' · Không phản cảm: ' + formatNumber(nonnegative);
+    legend.textContent = 'Có nội dung tiêu cực: ' + formatNumber(negative) + ' · Không phát hiện nội dung tiêu cực: ' + formatNumber(nonnegative);
     item.append(head, track, legend);
     container.append(item);
   }
@@ -433,7 +494,7 @@ function renderSuspectTermTable(containerId, terms) {
   table.className = 'suspect-terms-table';
   const thead = document.createElement('thead');
   const header = document.createElement('tr');
-  for (const title of ['Từ ngữ', 'Tổng số lần', 'Nhóm Phản cảm', 'Nhóm Không phản cảm', 'Tỷ lệ trong nhóm Phản cảm', 'Số bình luận chứa từ']) {
+  for (const title of ['Từ ngữ', 'Tổng số lần', 'Nhóm Tiêu cực', 'Nhóm Không tiêu cực', 'Tỷ lệ trong nhóm Tiêu cực', 'Số bình luận chứa từ']) {
     header.append(appendText('th', '', title));
   }
   thead.append(header);
@@ -496,11 +557,13 @@ function setBatchStatus(message, kind = '') {
   batchStatus.textContent = message;
   batchStatus.dataset.error = String(kind === 'error');
   batchStatus.dataset.success = String(kind === 'success');
+  batchStatus.dataset.warning = String(kind === 'warning');
 }
 function setBatchBusy(busy, message = '') {
   batchProgress.hidden = !busy;
   byId('batch-progress-label').textContent = message;
   csvFile.disabled = busy;
+  sheetSelect.disabled = busy || byId('sheet-wrap').hidden;
   csvColumn.disabled = busy || !selectedCsv || csvConfig.hidden;
   batchSubmit.disabled = busy || !selectedCsv || csvConfig.hidden || !csvColumn.value;
   batchSubmit.textContent = busy ? 'Đang phân loại…' : 'Phân tích toàn bộ tệp →';
@@ -524,7 +587,10 @@ function clearBatchResult() {
   if (byId('dash-proxy-agreement')) byId('dash-proxy-agreement').hidden = true;
   if (resultDownloadUrl) URL.revokeObjectURL(resultDownloadUrl);
   resultDownloadUrl = null;
+  resultCsvBlob = null;
   byId('batch-download').removeAttribute('href');
+  byId('batch-download-xlsx').disabled = true;
+  byId('batch-download-xlsx').textContent = 'Tải Excel ↓';
 }
 function displayPreview() {
   const col = csvColumn.value;
@@ -541,7 +607,7 @@ function displayPreview() {
 }
 csvColumn.addEventListener('change', () => { displayPreview(); clearBatchResult(); batchSubmit.disabled = !selectedCsv || csvConfig.hidden || !csvColumn.value; });
 
-async function selectCsv(file) {
+async function selectCsv(file, requestedSheet = '') {
   const revision = ++csvRevision;
   csvController?.abort();
   batchController?.abort();
@@ -549,19 +615,21 @@ async function selectCsv(file) {
   selectedCsv = null;
   csvPreviewRows = [];
   csvConfig.hidden = true;
-  csvColumn.replaceChildren(new Option('Chọn CSV trước', ''));
+  csvColumn.replaceChildren(new Option('Tự động nhận diện', ''));
   csvColumn.disabled = true;
   batchSubmit.disabled = true;
   byId('csv-preview').hidden = true;
+  byId('sheet-wrap').hidden = true;
+  sheetSelect.replaceChildren();
   byId('selected-file').hidden = true;
   setBatchBusy(false);
   clearBatchResult();
-  if (!file) { setBatchStatus('Chọn tệp CSV để bắt đầu.'); return; }
-  if (!file.name.toLowerCase().endsWith('.csv')) {
-    setBatchStatus('Định dạng không hợp lệ. Hãy chọn tệp có phần mở rộng .csv.', 'error'); return;
+  if (!file) { setBatchStatus('Chọn tệp để bắt đầu.'); return; }
+  if (!/\.(csv|xlsx)$/i.test(file.name)) {
+    setBatchStatus('Định dạng không hợp lệ. Hãy tải tệp CSV hoặc Excel (.xlsx).', 'error'); return;
   }
   if (file.size === 0) {
-    setBatchStatus('Tệp CSV đang trống.', 'error'); return;
+    setBatchStatus('Tệp đang trống.', 'error'); return;
   }
   if (file.size > maxCsvBytes) {
     setBatchStatus('Tệp ' + formatBytes(file.size) + ' vượt giới hạn ' + formatBytes(maxCsvBytes) + '.', 'error'); return;
@@ -570,20 +638,29 @@ async function selectCsv(file) {
   byId('selected-file').hidden = false;
   byId('file-name').textContent = file.name;
   byId('file-metadata').textContent = formatBytes(file.size) + ' · đang đọc tệp';
-  setBatchStatus('Bước 1/3 · Đang đọc CSV và kiểm tra số dòng…');
+  setBatchStatus('Đang đọc tệp và kiểm tra dữ liệu…');
   setBatchBusy(true, 'Đang kiểm tra cấu trúc và cột dữ liệu…');
   try {
-    const response = await fetch('/api/columns', {
-      method: 'POST', headers: {'content-type': 'text/csv'},
+    const response = await fetch('/api/columns?filename=' + encodeURIComponent(file.name) + (requestedSheet ? '&sheet=' + encodeURIComponent(requestedSheet) : ''), {
+      method: 'POST', headers: {'content-type': 'application/octet-stream'},
       body: file, signal: csvController.signal,
     });
     const data = await response.json().catch(() => null);
     if (revision !== csvRevision) return;
     if (!response.ok || !data || !Array.isArray(data.columns)) {
-      setBatchStatus([data?.message || 'Không đọc được CSV.', data?.detail].filter(Boolean).join(' '), 'error');
+      setBatchStatus([data?.message || 'Không đọc được tệp.', data?.detail].filter(Boolean).join(' '), 'error');
       return;
     }
+    const sheets = Array.isArray(data.sheets) ? data.sheets : [];
+    if (sheets.length > 1) {
+      for (const name of sheets) sheetSelect.append(new Option(name, name));
+      sheetSelect.value = data.selected_sheet || sheets[0];
+      byId('sheet-wrap').hidden = false;
+    }
     csvColumn.replaceChildren();
+    const initialOption = new Option('Chọn cột bình luận', '');
+    initialOption.disabled = true;
+    csvColumn.append(initialOption);
     const labelColumns = new Set(data.label_columns || []);
     const indexColumns = new Set([...(data.index_columns || []), ...(data.link_columns || [])]);
     for (const name of data.columns) {
@@ -595,13 +672,13 @@ async function selectCsv(file) {
       option.disabled = labelColumns.has(name) || indexColumns.has(name);
       csvColumn.append(option);
     }
-    if (data.suggested_column && data.columns.includes(data.suggested_column)) csvColumn.value = data.suggested_column;
+    csvColumn.value = data.suggested_column && data.columns.includes(data.suggested_column) ? data.suggested_column : '';
     csvPreviewRows = Array.isArray(data.preview_rows) ? data.preview_rows : [];
     csvConfig.hidden = false;
     byId('file-metadata').textContent = formatBytes(file.size) + ' · ' + formatNumber(data.rows) + ' dòng · ' + data.columns.length + ' cột';
     setBatchStatus(data.suggested_column
-      ? 'Đã tải ' + formatNumber(data.rows) + ' dòng. Kiểm tra cột nội dung rồi bắt đầu.'
-      : 'Không nhận diện được cột bình luận. Hãy kiểm tra tiêu đề và dữ liệu CSV.', data.suggested_column ? 'success' : 'error');
+      ? 'Đã đọc ' + formatNumber(data.rows) + ' bình luận. Kiểm tra cột nội dung và bắt đầu phân tích.'
+      : 'Không nhận diện được cột bình luận. Hãy chọn đúng cột nội dung.', data.suggested_column ? 'success' : 'error');
     displayPreview();
   } catch (error) {
     if (revision === csvRevision && error.name !== 'AbortError')
@@ -611,6 +688,9 @@ async function selectCsv(file) {
   }
 }
 
+sheetSelect.addEventListener('change', () => {
+  if (selectedCsv && sheetSelect.value) selectCsv(selectedCsv, sheetSelect.value);
+});
 csvFile.addEventListener('change', () => selectCsv(csvFile.files?.[0] || null));
 byId('file-remove').addEventListener('click', () => {
   csvFile.value = '';
@@ -642,17 +722,17 @@ batchSubmit.addEventListener('click', async () => {
   setBatchStatus('Đang phân tích bình luận trong tệp…');
   setBatchBusy(true, 'Đang phân tích… Vui lòng giữ trang này mở.');
   try {
-    const response = await fetch('/api/batch?column=' + encodeURIComponent(column) + '&filename=' + encodeURIComponent(file.name), {
-      method: 'POST', headers: {'content-type': 'text/csv'},
+    const response = await fetch('/api/batch?column=' + encodeURIComponent(column) + '&filename=' + encodeURIComponent(file.name) + (sheetSelect.value && !byId('sheet-wrap').hidden ? '&sheet=' + encodeURIComponent(sheetSelect.value) : ''), {
+      method: 'POST', headers: {'content-type': 'application/octet-stream'},
       body: file, signal: batchController.signal,
     });
     if (revision !== csvRevision) return;
     if (!response.ok) {
       const error = await response.json().catch(() => null);
-      setBatchStatus([error?.message || 'Không phân tích được CSV.', error?.detail].filter(Boolean).join(' '), 'error');
+      setBatchStatus([error?.message || 'Không phân tích được tệp.', error?.detail].filter(Boolean).join(' '), 'error');
       return;
     }
-    setBatchStatus('Bước 3/3 · Đang chuẩn bị tệp CSV kết quả…');
+    setBatchStatus('Đang chuẩn bị kết quả phân loại…');
     const total = Number(response.headers.get('X-Total-Rows'));
     const valid = Number(response.headers.get('X-Valid-Rows'));
     const nonnegative = Number(response.headers.get('X-Nonnegative-Rows'));
@@ -661,11 +741,14 @@ batchSubmit.addEventListener('click', async () => {
     const summary = decodeSummaryHeader(response.headers.get('X-TextSense-Summary'));
     const blob = await response.blob();
     if (revision !== csvRevision) return;
+    resultCsvBlob = blob;
     resultDownloadUrl = URL.createObjectURL(blob);
+    byId('batch-download-xlsx').disabled = false;
     const download = byId('batch-download');
     download.href = resultDownloadUrl;
-    const originalName = file.name.replace(/\.csv$/i, '').replace(/[^\p{L}\p{N}_-]/gu, '_').slice(0, 55) || 'binh_luan';
+    const originalName = file.name.replace(/\.(csv|xlsx)$/i, '').replace(/[^\p{L}\p{N}_-]/gu, '_').slice(0, 55) || 'binh_luan';
     download.download = 'TextSense_' + originalName + '_ket_qua.csv';
+    byId('batch-download-xlsx').dataset.filename = 'TextSense_' + originalName + '_ket_qua.xlsx';
     byId('batch-facts').textContent = formatNumber(valid) + '/' + formatNumber(total) + ' dòng đã phân tích';
     // Cập nhật dashboard từ số liệu tổng hợp do API trả về cho chính tệp này.
     const safeTotal = Number.isFinite(total) && total >= 0 ? total : 0;
@@ -690,10 +773,10 @@ batchSubmit.addEventListener('click', async () => {
     byId('dash-negative-pct').textContent = percentText(negativePct);
     byId('dash-nonnegative-pct').textContent = percentText(nonnegativePct);
     byId('batch-donut').style.setProperty('--negative-share', negativePct + '%');
-    byId('batch-donut').setAttribute('aria-label', 'Phản cảm ' + percentText(negativePct) + ', Không phản cảm ' + percentText(nonnegativePct));
+    byId('batch-donut').setAttribute('aria-label', 'Có nội dung tiêu cực ' + percentText(negativePct) + ', Không phát hiện nội dung tiêu cực ' + percentText(nonnegativePct));
     byId('dash-negative-bar').style.width = negativePct + '%';
     byId('dash-nonnegative-bar').style.width = nonnegativePct + '%';
-    const dominant = safeNegative > safeNonnegative ? 'Phản cảm' : safeNonnegative > safeNegative ? 'Không phản cảm' : 'hai nhóm có số lượng bằng nhau';
+    const dominant = safeNegative > safeNonnegative ? 'Có nội dung tiêu cực' : safeNonnegative > safeNegative ? 'Không phát hiện nội dung tiêu cực' : 'hai nhóm có số lượng bằng nhau';
     const dominantPct = Math.max(negativePct, nonnegativePct);
     byId('dash-insight').textContent = safeValid
       ? 'Nhóm chiếm tỷ trọng lớn hơn: ' + dominant + (dominantPct ? ' (' + percentText(dominantPct) + ' số dòng hợp lệ).' : '.')
@@ -702,14 +785,17 @@ batchSubmit.addEventListener('click', async () => {
     else console.warn('TextSense: thiếu dữ liệu thống kê. Cần cập nhật đồng bộ serve_textsense.py và web/app.js.');
     byId('batch-facts').textContent += safeInvalid ? ' · ' + formatNumber(safeInvalid) + ' dòng chưa thể phân loại' : '';
     batchResult.hidden = false;
+    const historySaved = response.headers.get('X-History-Saved') === 'true';
     setBatchStatus('Đã phân tích xong ' + formatNumber(valid) + ' bình luận.' +
-      (summary ? '' : ' Chưa tải được thống kê chi tiết, nhưng bạn vẫn có thể tải CSV.'), 'success');
+      (summary ? '' : ' Chưa tải được thống kê chi tiết, nhưng bạn vẫn có thể tải CSV.') +
+      (historySaved ? '' : ' Lưu ý: Lịch sử chưa được lưu vào SQL Server.'),
+      historySaved ? 'success' : 'warning');
     try {
       setBatchBusy(true, 'Đang mở danh sách bình luận…');
       const index = await TextSenseCsv.indexBlob(blob);
       if (revision !== csvRevision) return;
       const columns = await TextSenseCsv.readRow(blob, index, 0);
-      if (index.rowCount !== total) throw new Error('Số dòng CSV kết quả không khớp dữ liệu phân loại.');
+      if (index.rowCount !== total) throw new Error('Số dòng kết quả không khớp dữ liệu phân loại.');
       if (columns.at(-1) !== 'Nhãn dự đoán TextSense (0/1)') throw new Error('Tệp kết quả không đúng định dạng.');
       const textColumnIndex = columns.indexOf(column);
       if (textColumnIndex < 0 || columns.length < 2) throw new Error('Không tìm thấy cột bình luận hoặc cột kết quả.');
@@ -720,7 +806,7 @@ batchSubmit.addEventListener('click', async () => {
       await renderBatchPage(0);
     } catch (e) {
       byId('batch-browse').hidden = true;
-      setBatchStatus('Đã phân tích và xuất CSV nhưng không mở được phần xem từng dòng: ' + e.message, 'error');
+      setBatchStatus('Đã phân tích xong nhưng không mở được phần xem từng dòng: ' + e.message, 'error');
     } finally {
       if (revision === csvRevision) setBatchBusy(false);
     }
@@ -733,7 +819,48 @@ batchSubmit.addEventListener('click', async () => {
   }
 });
 
-// Xem từng dòng của CSV ket qua; chi index vi tri byte, khong render 300.000 dong len DOM.
+
+// The original result stays as CSV for fast browsing. Excel export is created on demand
+// on the local server, without calling the classifier again.
+byId('batch-download-xlsx').addEventListener('click', async () => {
+  const blob = resultCsvBlob;
+  const button = byId('batch-download-xlsx');
+  if (!blob || button.disabled) return;
+  button.disabled = true;
+  button.textContent = 'Đang tạo Excel…';
+  setBatchStatus('Đang tạo tệp Excel từ kết quả đã phân tích…');
+  try {
+    const response = await fetch('/api/export-xlsx', {
+      method: 'POST',
+      headers: {'content-type': 'application/octet-stream'},
+      body: blob
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      throw new Error([error?.message || 'Không tạo được Excel.', error?.detail].filter(Boolean).join(' '));
+    }
+    const excelBlob = await response.blob();
+    if (blob !== resultCsvBlob) return;
+    const url = URL.createObjectURL(excelBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = button.dataset.filename || 'TextSense_ket_qua.xlsx';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    setBatchStatus('Đã tạo tệp Excel. Bạn có thể tải CSV hoặc Excel.', 'success');
+  } catch (error) {
+    if (blob === resultCsvBlob) setBatchStatus(error.message || 'Không tạo được tệp Excel.', 'error');
+  } finally {
+    if (blob === resultCsvBlob) {
+      button.disabled = false;
+      button.textContent = 'Tải Excel ↓';
+    }
+  }
+});
+
+// Xem từng dòng kết quả; chi index vi tri byte, khong render 300.000 dong len DOM.
 function labelFromRecord(record) {
   const value = (record[batchCsv.resultIndex] || '').trim();
   if (value === '1') return 'negative';
@@ -744,7 +871,7 @@ function rowText(record) {
   return record[batchCsv.textColumnIndex] || '';
 }
 function rowStatus(record) {
-  return record[batchCsv.resultIndex] ? 'Nhãn không hợp lệ trong CSV' : 'Không có kết quả cho bình luận này';
+  return record[batchCsv.resultIndex] ? 'Nhãn không hợp lệ trong dữ liệu' : 'Không có kết quả cho bình luận này';
 }
 function appendText(tag, className, content) {
   const el = document.createElement(tag);
@@ -773,6 +900,7 @@ async function renderBatchPage(page) {
     const key = labelFromRecord(record);
     const item = document.createElement('article');
     item.className = 'batch-row-card';
+    item.id = 'batch-row-' + rowNumber;
     const header = document.createElement('div');
     header.className = 'batch-row-head';
     header.append(appendText('span','batch-row-number','Bình luận số ' + formatNumber(rowNumber)));
@@ -821,8 +949,9 @@ async function openBatchRow(rowNumber) {
       byId('batch-detail-next').disabled = rowNumber >= data.rowCount;
       resultTitle.textContent = 'Chưa có kết quả';
       byId('result-detail').textContent = rowStatus(record) + '. Hãy kiểm tra nội dung hoặc chọn dòng khác.';
-      byId('result-tags').hidden = true;
-      highlight(text, []);
+      renderSentenceBreakdown(null);
+      byId('history-warning').hidden = true;
+      byId('result-quote').textContent = text;
       byId('entry').hidden = true;
       result.hidden = false;
       setState('sad');
@@ -831,7 +960,8 @@ async function openBatchRow(rowNumber) {
       return;
     }
     byId('report').hidden = false;
-    showClassification({label: key, text, evidence: [], tags: []}, 'batch', rowNumber);
+    showClassification({label: key, text}, 'batch', rowNumber);
+    loadBatchSentenceBreakdown(text, resultAnimation, rowNumber);
   } catch (e) {
     setBatchStatus('Không mở được dòng đã chọn: ' + e.message, 'error');
   }
@@ -853,9 +983,19 @@ function jumpToBatchRow() {
     setBatchStatus('Số dòng phải nằm trong khoảng 1–' + formatNumber(batchCsv.rowCount) + '.', 'error');
     return;
   }
-  renderBatchPage(Math.floor((row - 1) / PAGE_SIZE)).then(() => {
-    const target = byId('batch-rows');
-    target.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'});
+  const targetPage = Math.floor((row - 1) / PAGE_SIZE);
+  renderBatchPage(targetPage).then(() => {
+    const targetCard = byId('batch-row-' + row);
+    if (targetCard) {
+      targetCard.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'center'});
+      targetCard.classList.add('batch-row-highlight');
+      window.setTimeout(() => {
+        targetCard.classList.remove('batch-row-highlight');
+      }, 2500);
+    } else {
+      const target = byId('batch-rows');
+      target.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'});
+    }
   });
 }
 byId('batch-jump-go').addEventListener('click', jumpToBatchRow);

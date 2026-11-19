@@ -10,29 +10,55 @@ import joblib
 import pandas as pd
 import sklearn
 
-BINARY_NAMES = {0: 'Không phản cảm', 1: 'Phản cảm'}
+BINARY_NAMES = {0: 'Không phát hiện nội dung tiêu cực', 1: 'Có nội dung tiêu cực'}
 OUTPUT = Path(__file__).resolve().parent.parent / '01_TRAIN_MODEL' / 'outputs'
 RETWEET_PREFIX_RE = re.compile(r'^\s*rt\s+@[\w_]+\s*:?[ \t]*', flags=re.I)
 URL_RE = re.compile(r'(?:https?://|www\.)\S+', flags=re.I)
 
 
-def normalize_text(value) -> str:
-    """Apply the same normalization to pre-cleaned training text and raw web input.
+# Chuẩn hóa phủ định trước khi xóa dấu câu; nguồn CSV có cả "wasnt" và "was not".
+# Không tự gán nhãn bằng từ khóa: các đặc trưng này được HỌC từ dữ liệu gắn nhãn.
+PREPROCESSING_VERSION = 'textsense_clean_v3_context'
+_CONTRACTIONS = {
+    'aint': 'is not', 'cant': 'can not', 'cannot': 'can not',
+    'wont': 'will not', 'shant': 'shall not',
+}
+for _stem, _base in (
+    ('aren', 'are'), ('couldn', 'could'), ('didn', 'did'),
+    ('doesn', 'does'), ('don', 'do'), ('hadn', 'had'),
+    ('hasn', 'has'), ('haven', 'have'), ('isn', 'is'),
+    ('mightn', 'might'), ('mustn', 'must'), ('needn', 'need'),
+    ('shouldn', 'should'), ('wasn', 'was'), ('weren', 'were'),
+    ('wouldn', 'would'),
+):
+    _CONTRACTIONS[_stem + 't'] = _base + ' not'
+# Chấp nhận cả kiểu có dấu nháy ("wasn't") và đã mất nháy ("wasnt").
+_CONTRACTIONS.update({
+    (word[:-1] + "'t"): expanded for word, expanded in list(_CONTRACTIONS.items())
+    if word.endswith('nt') and word not in {'cannot'}
+})
+_CONTRACTIONS_RE = re.compile(
+    r'\b(?:' + '|'.join(re.escape(t) for t in sorted(_CONTRACTIONS, key=len, reverse=True)) + r')\b',
+    flags=re.IGNORECASE,
+)
 
-    Kaggle files contain pre-cleaned text (lowercase with punctuation removed). Mirror
-    that representation at inference: NFKC, remove leading RT @handle, remove URLs,
-    casefold, remove punctuation and collapse whitespace. Accented letters are kept.
+
+def normalize_text(value) -> str:
+    """NFKC, RT/URL, contractions, lowercase, tách dấu câu và khoảng trắng.
+
+    Idempotent: normalize_text(normalize_text(x)) == normalize_text(x).
+    PHẢI đồng bộ chính xác giữa notebook và 03_GIAO_DIEN/predict.py.
     """
-    if pd.isna(value):
+    if value is None or pd.isna(value):
         return ''
-    value = unicodedata.normalize('NFKC', str(value))
+    value = unicodedata.normalize('NFKC', str(value)).replace('’', "'")
     value = RETWEET_PREFIX_RE.sub(' ', value)
     value = URL_RE.sub(' ', value)
     value = value.casefold()
-    value = re.sub(r'[^\w\s]', '', value, flags=re.UNICODE)
+    value = _CONTRACTIONS_RE.sub(lambda m: _CONTRACTIONS[m.group(0)], value)
+    value = re.sub(r'[^\w\s]', ' ', value, flags=re.UNICODE)
     value = value.replace('_', ' ')
     return ' '.join(value.split())
-
 
 
 VIETNAMESE_MARKS = set('àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ')
@@ -49,14 +75,14 @@ def vietnamese_warning(value):
 def _load_artifact_cached(path_text, mtime_ns, file_size):
     artifact = joblib.load(path_text)
     if not isinstance(artifact, dict) or 'pipeline' not in artifact or 'class_names' not in artifact:
-        raise ValueError('Artifact không đúng cấu trúc TextSense. Hãy train lại bằng do_an_textsense_v3.ipynb.')
+        raise ValueError('Artifact không đúng cấu trúc TextSense. Hãy train lại bằng TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb.')
     return artifact
 
 
 def load_artifact(model_path):
     path = Path(model_path).resolve()
     if not path.is_file():
-        raise FileNotFoundError(f'Không tìm thấy model: {path}. Hãy chạy do_an_textsense_v3.ipynb trước.')
+        raise FileNotFoundError(f'Không tìm thấy model: {path}. Hãy chạy TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb trước.')
     stat = path.stat()
     return _load_artifact_cached(str(path), stat.st_mtime_ns, stat.st_size)
 
@@ -67,11 +93,17 @@ def predict(model_path, texts, batch_size=512):
     if trained_version and trained_version != sklearn.__version__:
         warnings.warn(
             f'Model trained with scikit-learn {trained_version}; current version is {sklearn.__version__}. '
-            'If loading or inference fails, recreate the environment from requirements.txt and rerun do_an_textsense_v3.ipynb.',
+            'If loading or inference fails, recreate the environment from requirements.txt and rerun TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb.',
             RuntimeWarning
         )
     if batch_size < 1:
         raise ValueError('batch_size must be a positive integer.')
+    prep_ver = artifact.get('preprocessing_version')
+    if prep_ver and prep_ver != PREPROCESSING_VERSION:
+        warnings.warn(
+            f'Model preprocessing version ({prep_ver}) does not match current ({PREPROCESSING_VERSION}).',
+            RuntimeWarning
+        )
     model = artifact['pipeline']
     raw_texts = [str(text) if text is not None else '' for text in texts]
     cleaned = [normalize_text(text) for text in raw_texts]
@@ -142,7 +174,7 @@ def main():
         parser.error('Specify exactly one of --text or --csv')
     model_path = OUTPUT / f'{args.task}_linear_svm.joblib'
     if not model_path.exists():
-        parser.error(f'No model: {model_path}. Run do_an_textsense_v3.ipynb first.')
+        parser.error(f'No model: {model_path}. Run TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb first.')
     if args.csv:
         frame = pd.read_csv(args.csv)
         if args.column not in frame:

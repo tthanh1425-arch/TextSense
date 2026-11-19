@@ -1,0 +1,2 @@
+# Driver Python để ghi/đọc lịch sử huấn luyện từ Microsoft SQL Server.
+pyodbc>=5.2,<6

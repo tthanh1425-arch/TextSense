@@ -1,8 +1,0 @@
-[server]
-maxUploadSize = 100
-maxMessageSize = 120
-enableCORS = true
-headless = true
-
-[browser]
-gatherUsageStats = false

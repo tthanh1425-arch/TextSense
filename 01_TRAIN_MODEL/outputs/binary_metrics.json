@@ -7,13 +7,13 @@
   "accuracy": 0.9454758747322248,
   "f1_macro": 0.9218436689836147,
   "classification_report": {
-    "Không phản cảm": {
+    "Không tiêu cực": {
       "precision": 0.9710519342872284,
       "recall": 0.9586684978091687,
       "f1-score": 0.96482048244315,
       "support": 30582.0
     },
-    "Phản cảm": {
+    "Tiêu cực": {
       "precision": 0.8598669623059867,
       "recall": 0.8987253765932792,
       "f1-score": 0.8788668555240793,
@@ -48,8 +48,8 @@
     1
   ],
   "class_names": {
-    "0": "Không phản cảm",
-    "1": "Phản cảm"
+    "0": "Không tiêu cực",
+    "1": "Tiêu cực"
   },
   "source_stats": {
     "raw_rows": 200229,
@@ -111,8 +111,8 @@
       "1": 0
     },
     "binary_label_names": {
-      "0": "Không phản cảm",
-      "1": "Phản cảm"
+      "0": "Không tiêu cực",
+      "1": "Tiêu cực"
     },
     "binary_label_counts": {
       "0": 152909,
@@ -247,44 +247,124 @@
     }
   },
   "baseline_comparison": {
-    "baseline": "MultinomialNB + TF-IDF",
-    "threshold": 0.26428295546296915,
-    "validation": {
-      "samples": 23527,
-      "accuracy": 0.8521273430526629,
-      "precision_1": 0.6556145814251695,
-      "recall_1": 0.6911935110081112,
-      "f1_1": 0.6729340979599511,
-      "confusion_matrix_labels_0_1": [
-        [
-          16469,
-          1880
-        ],
-        [
-          1599,
-          3579
+    "baselines": [
+      "MultinomialNB + TF-IDF",
+      "LogisticRegression + TF-IDF"
+    ],
+    "naive_bayes": {
+      "alpha": 0.5,
+      "threshold": 0.27930780025509083,
+      "validation": {
+        "samples": 23527,
+        "accuracy": 0.8514047689888213,
+        "precision_1": 0.6501785714285714,
+        "recall_1": 0.7031672460409425,
+        "f1_1": 0.6756355539061051,
+        "confusion_matrix_labels_0_1": [
+          [
+            16390,
+            1959
+          ],
+          [
+            1537,
+            3641
+          ]
         ]
-      ]
+      },
+      "test": {
+        "samples": 39212,
+        "accuracy": 0.8508874834234418,
+        "precision_1": 0.6461813215673915,
+        "recall_1": 0.7127462340672074,
+        "f1_1": 0.6778334894484545,
+        "confusion_matrix_labels_0_1": [
+          [
+            27214,
+            3368
+          ],
+          [
+            2479,
+            6151
+          ]
+        ]
+      }
     },
-    "test": {
-      "samples": 39212,
-      "accuracy": 0.8508364786289911,
-      "precision_1": 0.649596557288865,
-      "recall_1": 0.6996523754345307,
-      "f1_1": 0.6736959553695956,
-      "confusion_matrix_labels_0_1": [
-        [
-          27325,
-          3257
-        ],
-        [
-          2592,
-          6038
+    "logistic_regression": {
+      "C": 1.0,
+      "threshold": 0.2692565751730289,
+      "validation": {
+        "samples": 23527,
+        "accuracy": 0.9233221405194032,
+        "precision_1": 0.786807208432506,
+        "recall_1": 0.8937813827732716,
+        "f1_1": 0.8368896925858951,
+        "confusion_matrix_labels_0_1": [
+          [
+            17095,
+            1254
+          ],
+          [
+            550,
+            4628
+          ]
         ]
-      ]
+      },
+      "test": {
+        "samples": 39212,
+        "accuracy": 0.921503621340406,
+        "precision_1": 0.7821711730026428,
+        "recall_1": 0.891657010428737,
+        "f1_1": 0.8333333333333334,
+        "confusion_matrix_labels_0_1": [
+          [
+            28439,
+            2143
+          ],
+          [
+            935,
+            7695
+          ]
+        ]
+      }
+    },
+    "class_weight_experiment": {
+      "default": {
+        "samples": 39212,
+        "accuracy": 0.9454758747322248,
+        "precision_1": 0.8598669623059867,
+        "recall_1": 0.8987253765932792,
+        "f1_1": 0.8788668555240793,
+        "confusion_matrix_labels_0_1": [
+          [
+            29318,
+            1264
+          ],
+          [
+            874,
+            7756
+          ]
+        ]
+      },
+      "balanced": {
+        "samples": 39212,
+        "accuracy": 0.9426196062429868,
+        "precision_1": 0.8538939427557133,
+        "recall_1": 0.8918887601390498,
+        "f1_1": 0.8724778961686692,
+        "confusion_matrix_labels_0_1": [
+          [
+            29265,
+            1317
+          ],
+          [
+            933,
+            7697
+          ]
+        ]
+      }
     },
     "comparison_file": "binary_model_comparison.csv",
-    "note": "Baseline được fit trên cùng tập train, cùng dữ liệu và cùng split; ngưỡng được chọn trên validation, không dùng test để điều chỉnh."
+    "note": "Các mô hình dùng cùng tập Train/Validation/Test; tham số và ngưỡng được chọn trên Validation hoặc CV của Train, không dùng Test để điều chỉnh."
   },
   "data_provenance": {
     "dataset": "Twitter and Reddit Sentimental Analysis Dataset",
@@ -310,7 +390,7 @@
     ]
   },
   "python_version": "3.14.8",
-  "created_utc": "2026-11-18T07:37:48.648042+00:00",
+  "created_utc": "2026-11-19T07:52:09.965072+00:00",
   "split_protocol": {
     "train_validation_test": [
       0.68,
@@ -351,7 +431,7 @@
     "selected_C": 1.0,
     "selection_metric": "average_precision (AP, class 1) trên decision_function của CV; không dùng test để chọn tham số"
   },
-  "note": "Quy ước nhãn proxy của đồ án: category -1 (Tiêu cực) → 1 (Phản cảm); category 0 (Trung tính) và category 1 (Tích cực) → 0 (Không phản cảm). Đây là quy ước ánh xạ từ nhãn cảm xúc, không phải nhãn phản cảm được xác minh độc lập.",
+  "note": "Quy ước nhãn proxy của đồ án: category -1 (Tiêu cực) → 1 (Tiêu cực); category 0 (Trung tính) và category 1 (Tích cực) → 0 (Không tiêu cực). Đây là quy ước ánh xạ từ nhãn cảm xúc, không phải nhãn phản cảm được xác minh độc lập.",
   "decision": {
     "default_threshold": 0.0,
     "validation_selected_threshold": -0.2203182425606736,

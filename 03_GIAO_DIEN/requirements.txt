@@ -1,2 +1,3 @@
 -r ../01_TRAIN_MODEL/requirements.txt
-streamlit>=1.49,<2
+openpyxl>=3.1,<4
+pyodbc>=5.2,<6

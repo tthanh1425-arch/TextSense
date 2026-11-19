@@ -2,24 +2,29 @@
 
 Start with: python serve_textsense.py
 Open: http://127.0.0.1:8502
-The server only binds to loopback; CSV uploads are capped at 100 MB / 300,000 rows.
+The server binds to loopback; CSV/XLSX uploads capped at 100 MB / 300,000 rows.
 """
 from __future__ import annotations
 
 import base64
+import csv
 import json
 import os
 import re
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from io import BytesIO
+from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 from collections import Counter
+from zipfile import ZipFile, BadZipFile
+from openpyxl import Workbook
+from openpyxl.cell import WriteOnlyCell
+from openpyxl.styles import Font, PatternFill, Alignment
 
 import pandas as pd
 
-from database import record_prediction_batch
+from database import record_prediction_batch, record_user_feedback, sql_server_status
 from predict import predict
 from predict import OUTPUT
 
@@ -30,10 +35,12 @@ MODEL_PATH = OUTPUT / f'{MODEL_TASK}_linear_svm.joblib'
 DEFAULT_PORT = int(os.environ.get('TEXTSENSE_PORT', '8502'))
 MAX_CSV_BYTES = 100 * 1024 * 1024
 MAX_CSV_ROWS = 300_000
+MAX_RESULT_BYTES = 220 * 1024 * 1024
+MAX_XLSX_UNCOMPRESSED = 900 * 1024 * 1024
 MAX_TEXT_CHARS = 2_000
 MAX_JSON_BYTES = 32 * 1024
 RESULT_COLUMN = 'Nhãn dự đoán TextSense (0/1)'
-RESULT_NAME_COLUMN = 'Tên nhãn proxy TextSense'
+RESULT_NAME_COLUMN = 'Kết quả TextSense'
 CODE_TO_RESULT = {0: 'nonnegative', 1: 'negative'}
 
 
@@ -209,21 +216,148 @@ class RequestFailure(Exception):
         self.status, self.message, self.detail, self.retryable = status, message, detail, retryable
 
 
+def decode_csv_upload(raw: bytes) -> tuple[str, str]:
+    """Decode ordinary CSVs from Excel/Windows without guessing away corrupt text."""
+    if raw.startswith(b'PK\x03\x04'):
+        raise ValueError('Tệp này là Excel. Hãy dùng đuôi .xlsx thay vì .csv.')
+    if raw.startswith((b'\xff\xfe', b'\xfe\xff')):
+        codecs = ['utf-16']
+    elif raw.startswith(b'\xef\xbb\xbf'):
+        codecs = ['utf-8-sig']
+    else:
+        probe = raw[:4096]
+        if probe.count(b'\x00') >= 2:
+            even = probe[::2].count(0)
+            odd = probe[1::2].count(0)
+            codecs = ['utf-16-le' if odd > even else 'utf-16-be']
+        else:
+            # Unicode CSV, then common Windows Vietnamese/Western code pages.
+            codecs = ['utf-8-sig', 'cp1258', 'cp1252', 'iso-8859-1']
+    for codec in codecs:
+        try:
+            decoded = raw.decode(codec, errors='strict')
+        except (UnicodeError, LookupError):
+            continue
+        sample = decoded[:10000]
+        if '\x00' in sample or any(ord(char) < 32 and char not in '\r\n\t' for char in sample):
+            continue
+        if not decoded.strip('\ufeff\r\n\t '):
+            raise ValueError('Tệp CSV trống hoặc không có nội dung.')
+        return decoded, codec
+    raise ValueError('Không nhận diện được cách lưu chữ của tệp CSV. Hãy thử lưu lại dưới dạng CSV UTF-8.')
+
+
+def detect_csv_delimiter(decoded: str) -> tuple[str, int]:
+    """Use well-formed sample records, not occurrence counts inside comments."""
+    first_line = decoded.partition('\n')[0].strip('\ufeff\r ')
+    directive = re.fullmatch(r'sep\s*=\s*([,;\t|])', first_line, flags=re.IGNORECASE)
+    if directive:
+        return directive.group(1), 1
+    options = [',', ';', '\t', '|']
+    known_names = {'comment', 'comments', 'text', 'clean_text', 'clean_comment',
+                   'tweet', 'content', 'message', 'review', 'category', 'label',
+                   'sentiment', 'bình luận', 'noi_dung', 'nội dung', 'nội_dung'}
+    choices = []
+    for rank, sep in enumerate(options):
+        try:
+            reader = csv.reader(StringIO(decoded), delimiter=sep, strict=True)
+            rows = []
+            for row in reader:
+                if not row or not any(cell.strip() for cell in row):
+                    continue
+                rows.append(row)
+                if len(rows) >= 12:
+                    break
+        except (csv.Error, ValueError):
+            continue
+        if not rows:
+            continue
+        width = len(rows[0])
+        matched = sum(len(row) == width for row in rows[1:])
+        mismatched = len(rows) - 1 - matched
+        name_hits = sum(col.strip().casefold().replace(' ', '_') in known_names for col in rows[0])
+        score = (40 if width > 1 else 0) + 7 * matched - 30 * mismatched + min(width, 20) + 9 * name_hits
+        choices.append((score, -rank, sep))
+    if not choices:
+        raise ValueError('Cấu trúc CSV bị lỗi. Hãy kiểm tra dấu ngoặc kép và dòng tiêu đề.')
+    return max(choices)[2], 0
+
+
 def read_csv_upload(raw: bytes) -> pd.DataFrame:
     if not raw:
         raise ValueError('Tệp CSV trống.')
     if len(raw) > MAX_CSV_BYTES:
         raise ValueError('CSV vượt giới hạn 100 MB.')
+    decoded, codec = decode_csv_upload(raw)
+    delimiter, skiprows = detect_csv_delimiter(decoded)
     try:
-        frame = pd.read_csv(BytesIO(raw), encoding='utf-8-sig', dtype=str,
-                            keep_default_na=False, nrows=MAX_CSV_ROWS + 1,
-                            on_bad_lines='error')
-    except (UnicodeError, pd.errors.ParserError, pd.errors.EmptyDataError) as exc:
-        raise ValueError('CSV phải là UTF-8/UTF-8 BOM và có cấu trúc hợp lệ.') from exc
+        frame = pd.read_csv(BytesIO(raw), encoding=codec, sep=delimiter,
+                            skiprows=skiprows, dtype=str, keep_default_na=False,
+                            nrows=MAX_CSV_ROWS + 1, on_bad_lines='error')
+    except (UnicodeError, pd.errors.ParserError, pd.errors.EmptyDataError,
+            csv.Error, ValueError) as exc:
+        raise ValueError('Cấu trúc CSV chưa đúng. Hãy kiểm tra dòng tiêu đề, dấu phân cách và dấu ngoặc kép.') from exc
     if frame.empty:
         raise ValueError('CSV không có dòng dữ liệu.')
     if len(frame) > MAX_CSV_ROWS:
         raise ValueError(f'CSV chỉ được có tối đa {MAX_CSV_ROWS:,} dòng.')
+    return clean_imported_frame(frame)
+
+
+
+def read_excel_upload(raw: bytes, requested_sheet: str = '') -> tuple[pd.DataFrame, list[str], str]:
+    """Read XLSX (not legacy XLS) and select a likely data sheet; allow manual override."""
+    if not raw or len(raw) > MAX_CSV_BYTES:
+        raise ValueError('Tệp Excel trống hoặc vượt giới hạn 100 MB.')
+    if not raw.startswith(b'PK'):
+        raise ValueError('Tệp .xlsx không hợp lệ. Hãy lưu lại dưới dạng Excel Workbook (.xlsx).')
+    try:
+        with ZipFile(BytesIO(raw)) as archive:
+            if sum(entry.file_size for entry in archive.infolist()) > MAX_XLSX_UNCOMPRESSED:
+                raise ValueError('Tệp Excel có dữ liệu giải nén quá lớn.')
+        with pd.ExcelFile(BytesIO(raw), engine='openpyxl') as workbook:
+            sheets = workbook.sheet_names
+            if not sheets or len(sheets) > 50:
+                raise ValueError('Tệp Excel cần có từ 1 đến 50 trang tính.')
+            if requested_sheet and requested_sheet not in sheets:
+                raise ValueError('Không tìm thấy trang tính đã chọn.')
+            if requested_sheet:
+                selected = requested_sheet
+            else:
+                candidates = []
+                for position, name in enumerate(sheets):
+                    preview = workbook.parse(sheet_name=name, dtype=str,
+                                             keep_default_na=False, nrows=20)
+                    if preview.empty or not len(preview.columns):
+                        continue
+                    roles = csv_column_roles(preview)
+                    suggested = roles['suggested_column']
+                    if suggested:
+                        label = str(suggested).strip().casefold().replace(' ', '_')
+                        known = {'tweet', 'bình_luận', 'clean_text', 'clean_comment',
+                                 'comment', 'text', 'full_text', 'content', 'review',
+                                 'sentence', 'message'}
+                        priority = 10 if label in known else 0
+                        lengths = preview[suggested].astype(str).str.len()
+                        priority += min(float(lengths.mean()), 1000) / 1000
+                        candidates.append((priority, len(preview), -position, name))
+                if not candidates:
+                    raise ValueError('Không tìm thấy trang tính có bình luận để phân tích.')
+                selected = max(candidates)[-1]
+            frame = workbook.parse(sheet_name=selected, dtype=str,
+                                   keep_default_na=False, nrows=MAX_CSV_ROWS + 1)
+    except ValueError:
+        raise
+    except (BadZipFile, OSError, KeyError, TypeError, ImportError) as exc:
+        raise ValueError('Không đọc được tệp Excel. Hãy kiểm tra định dạng .xlsx và thử lại.') from exc
+    if frame.empty:
+        raise ValueError('Trang tính đã chọn không có dòng dữ liệu.')
+    if len(frame) > MAX_CSV_ROWS:
+        raise ValueError(f'Mỗi lần phân tích tối đa {MAX_CSV_ROWS:,} dòng.')
+    return clean_imported_frame(frame), sheets, selected
+
+
+def clean_imported_frame(frame: pd.DataFrame) -> pd.DataFrame:
     for column in list(frame.columns):
         if str(column).strip().casefold() == 'unnamed: 0':
             values = frame[column].astype(str).str.strip().reset_index(drop=True)
@@ -233,8 +367,104 @@ def read_csv_upload(raw: bytes) -> pd.DataFrame:
                 frame = frame.drop(columns=[column])
             break
     if frame.shape[1] == 0:
-        raise ValueError('CSV chỉ chứa cột chỉ mục, không có dữ liệu để phân tích.')
+        raise ValueError('Tệp chỉ chứa cột chỉ mục, không có dữ liệu để phân tích.')
     return frame
+
+
+def read_tabular_upload(raw: bytes, filename: str, sheet: str = '') -> tuple[pd.DataFrame, list[str], str]:
+    suffix = Path(filename).suffix.lower()
+    if suffix == '.csv':
+        return read_csv_upload(raw), [], ''
+    if suffix == '.xlsx':
+        return read_excel_upload(raw, sheet)
+    raise ValueError('Chỉ hỗ trợ tệp CSV hoặc Excel (.xlsx).')
+
+
+def result_csv_to_xlsx(raw: bytes) -> bytes:
+    """Stream the analyzed CSV into a genuine XLSX without rerunning inference."""
+    if not raw or len(raw) > MAX_RESULT_BYTES:
+        raise ValueError('Tệp kết quả trống hoặc quá lớn để tạo Excel.')
+    reader = csv.reader(TextIOWrapper(BytesIO(raw), encoding='utf-8-sig', newline=''), strict=True)
+    try:
+        columns = next(reader)
+    except (StopIteration, csv.Error) as exc:
+        raise ValueError('Không có tiêu đề cột trong dữ liệu kết quả.') from exc
+    if RESULT_COLUMN not in columns or RESULT_NAME_COLUMN not in columns:
+        raise ValueError('Đây không phải tệp kết quả TextSense V3.16.')
+    label_index = columns.index(RESULT_COLUMN)
+    text_column = next((i for i, c in enumerate(columns)
+                        if str(c).strip().casefold() in ('tweet','clean_text','comment','text','bình luận',
+                                                        'clean_comment','content','review','message')), None)
+    book = Workbook(write_only=True)
+    output_sheet = book.create_sheet('Kết quả phân loại')
+    output_sheet.freeze_panes = 'A2'
+    output_sheet.sheet_view.showGridLines = False
+    navy = PatternFill('solid', fgColor='213452')
+    header = []
+    for name in columns:
+        cell = WriteOnlyCell(output_sheet, value=name)
+        cell.font = Font(bold=True, color='FFFFFF')
+        cell.fill = navy
+        header.append(cell)
+    output_sheet.append(header)
+    counts = Counter()
+    term_counts = Counter()
+    number_rows = 0
+    for record in reader:
+        number_rows += 1
+        if number_rows > MAX_CSV_ROWS:
+            raise ValueError(f'Tệp kết quả vượt {MAX_CSV_ROWS:,} dòng.')
+        if len(record) != len(columns):
+            raise ValueError(f'Dữ liệu không hợp lệ tại dòng {number_rows + 1}.')
+        code = record[label_index].strip()
+        counts[code] += 1
+        # Protect cells from formula execution, including if the source CSV was modified.
+        safe = []
+        for value in record:
+            check = value.lstrip()
+            if check.startswith(('=', '+', '@')) or (check.startswith('-') and not re.fullmatch(r'-?(?:\d+(?:\.\d*)?|\.\d+)', check)):
+                value = "'" + value
+            safe.append(value)
+        output_sheet.append(safe)
+        if text_column is not None and code in ('0', '1'):
+            words = re.findall(r"[^\W\d_]+(?:'[^\W\d_]+)?", record[text_column].casefold(), re.UNICODE)
+            term_counts.update(term for term in words if len(term) > 2 and term not in STOPWORDS_EN)
+    sheet = book.create_sheet('Thống kê tổng hợp')
+    sheet.sheet_view.showGridLines = False
+    total = number_rows
+    valid = counts['0'] + counts['1']
+    rows = [
+        ('TEXTSENSE · TỔNG HỢP PHÂN LOẠI', ''),
+        ('Chỉ số', 'Giá trị'),
+        ('Tổng số bình luận', total),
+        ('Đã phân loại', valid),
+        ('Chưa phân loại', total - valid),
+        ('Có nội dung tiêu cực', counts['1']),
+        ('Không phát hiện nội dung tiêu cực', counts['0']),
+        ('Tỷ lệ có nội dung tiêu cực', counts['1']/valid if valid else 0),
+        ('Tỷ lệ không phát hiện nội dung tiêu cực', counts['0']/valid if valid else 0),
+        ('', ''),
+        ('Từ ngữ xuất hiện nhiều', 'Số lần'),
+    ]
+    rows.extend(term_counts.most_common(15))
+    rows.append(('', ''))
+    rows.append(('Lưu ý', 'Hai nhóm phản ánh sắc thái cảm xúc, không xác minh lời lẽ xúc phạm.'))
+    for i, values in enumerate(rows, start=1):
+        excel_row = []
+        for j, value in enumerate(values):
+            cell = WriteOnlyCell(sheet, value=value)
+            if i in (1, 2, 11):
+                cell.font = Font(color='FFFFFF', bold=True)
+                cell.fill = navy
+            if i in (8, 9) and j == 1:
+                cell.number_format = '0.0%'
+            excel_row.append(cell)
+        sheet.append(excel_row)
+    sheet.column_dimensions['A'].width = 32
+    sheet.column_dimensions['B'].width = 67
+    data = BytesIO()
+    book.save(data)
+    return data.getvalue()
 
 
 LABEL_COLUMN_NAMES = {
@@ -297,6 +527,63 @@ def get_model_path() -> Path:
     return MODEL_PATH
 
 
+
+# Phân tích câu/vế chỉ bổ sung thông tin cho dự đoán toàn bình luận.
+# Dùng chính model đã huấn luyện: không có luật từ khóa tự ghi đè nhãn.
+SENTENCE_LIMIT = 24
+SENTENCE_BOUNDARY_RE = re.compile(
+    r"(?<!\d)[.!?。！？…]+|[.!?。！？…]+(?!\d)|[;；\r\n]+|"
+    r"[,，]\s*(?=(?:but|however|yet|though|although|nevertheless|whereas|while)\b)|"
+    r"\s+(?=(?:but|however|yet|nevertheless)\b)|\s+[—–]\s+",
+    flags=re.I,
+)
+
+
+def split_comment_sentences(text: str) -> list[str]:
+    """Split sentence endings and contrastive clauses, not ordinary list commas.
+
+    Keep the conjunction in the following clause for readable context.
+    Do not split decimal points such as 3.14.
+    """
+    parts = [part.strip(' \t,，;；:：—–') for part in SENTENCE_BOUNDARY_RE.split(str(text))]
+    return [part for part in parts if re.search(r'\w', part)]
+
+
+def analyze_sentence_breakdown(text: str) -> dict:
+    """Predict clause labels with the same model, not sentiment percentages.
+
+    Only show supplementary details when at least one part is predicted negative;
+    nonnegative parts remain visible as context. This is not an independently
+    validated sentence-level classifier.
+    """
+    parts = split_comment_sentences(text)
+    if len(parts) < 2:
+        return {'available': False, 'mixed': False, 'sentences': []}
+    if len(parts) > SENTENCE_LIMIT:
+        return {'available': False, 'mixed': False, 'sentences': [],
+                'detail': 'Bình luận có quá nhiều phần để hiển thị chi tiết.'}
+    rows = predict(get_model_path(), parts)
+    details = []
+    negative_count = nonnegative_count = 0
+    for part, row in zip(parts, rows):
+        code = row.get('predicted_label') if row.get('status') == 'ok' else None
+        if code == 1:
+            negative_count += 1
+        elif code == 0:
+            nonnegative_count += 1
+        details.append({'text': part, 'code': code,
+                        'label': CODE_TO_RESULT.get(code, 'unavailable')})
+    valid_count = negative_count + nonnegative_count
+    return {
+        'available': valid_count >= 2 and negative_count > 0,
+        'mixed': negative_count > 0 and nonnegative_count > 0,
+        'total_parts': valid_count,
+        'negative_parts': negative_count,
+        'nonnegative_parts': nonnegative_count,
+        'sentences': details,
+    }
+
+
 def infer_comment(input_value: str) -> dict:
     if MODEL_TASK != 'binary':
         raise RequestFailure(409, 'Giao diện web hiện dành cho mô hình nhị phân',
@@ -313,12 +600,28 @@ def infer_comment(input_value: str) -> dict:
     if result['status'] != 'ok':
         raise RequestFailure(422, 'Không thể phân loại văn bản', result['status'])
     code = int(result['predicted_label'])
-    return {'label': CODE_TO_RESULT[code], 'code': code, 'text': text,
-            'tags': [], 'evidence': [], 'status': 'ok'}
+    sentence_analysis = analyze_sentence_breakdown(text)
+    has_negative_part = bool(sentence_analysis.get('negative_parts', 0) > 0)
+    if code == 1 or has_negative_part:
+        final_code = 1
+        final_label = 'negative'
+        final_label_name = 'Có nội dung tiêu cực'
+    else:
+        final_code = 0
+        final_label = 'nonnegative'
+        final_label_name = 'Không phát hiện nội dung tiêu cực'
+    return {
+        'label': final_label,
+        'code': final_code,
+        'label_name': final_label_name,
+        'text': text,
+        'status': 'ok',
+        'sentence_analysis': sentence_analysis,
+    }
 
 
 class TextSenseHandler(BaseHTTPRequestHandler):
-    server_version = 'TextSenseLocal/2.0'
+    server_version = 'TextSenseLocal/3.24'
 
     def log_message(self, format_str, *args):
         # Avoid writing user-provided comment text or CSV values into HTTP logs.
@@ -352,7 +655,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             raise RequestFailure(411, 'Thiếu kích thước dữ liệu', 'Trình duyệt không gửi Content-Length.')
         size = int(raw_length)
         if size > maximum:
-            message = 'CSV tối đa 100 MB.' if maximum == MAX_CSV_BYTES else 'Nội dung yêu cầu vượt giới hạn.'
+            message = 'Tệp tải lên tối đa 100 MB.' if maximum == MAX_CSV_BYTES else 'Nội dung yêu cầu vượt giới hạn.'
             raise RequestFailure(413, 'Dữ liệu quá lớn', message)
         if size == 0:
             raise RequestFailure(422, 'Dữ liệu trống', 'Không có nội dung để xử lý.')
@@ -361,15 +664,21 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             raise RequestFailure(400, 'Không nhận đủ dữ liệu')
         return raw
 
-    def _csv_data(self):
+    def _tabular_data(self, params):
         content_type = self.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-        if content_type not in ('text/csv', 'application/csv', 'application/octet-stream'):
-            raise RequestFailure(415, 'Cần tệp CSV', 'Hãy chọn tệp .csv UTF-8.')
+        if content_type not in ('text/csv', 'application/csv', 'application/octet-stream',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'):
+            raise RequestFailure(415, 'Định dạng tệp không hợp lệ', 'Hãy tải tệp CSV hoặc Excel (.xlsx).')
+        filename = params.get('filename', [''])[0]
+        sheet = params.get('sheet', [''])[0]
+        if not isinstance(filename, str) or Path(filename).suffix.lower() not in ('.csv', '.xlsx'):
+            raise RequestFailure(415, 'Định dạng tệp không hợp lệ', 'Hãy tải tệp CSV hoặc Excel (.xlsx).')
         raw = self._read_bytes(MAX_CSV_BYTES)
         try:
-            return raw, read_csv_upload(raw)
+            frame, sheet_names, selected_sheet = read_tabular_upload(raw, filename, sheet)
+            return raw, frame, sheet_names, selected_sheet
         except ValueError as exc:
-            raise RequestFailure(422, 'CSV không hợp lệ', str(exc)) from exc
+            raise RequestFailure(422, 'Không đọc được tệp', str(exc)) from exc
 
     def do_POST(self):
         origin = self.headers.get('Origin')
@@ -391,30 +700,76 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 if not isinstance(payload, dict) or not isinstance(payload.get('input'), str):
                     raise RequestFailure(422, 'Thiếu văn bản', 'Trường input phải là chuỗi ký tự.')
                 result = infer_comment(payload['input'])
-                record_prediction_batch('binary', 'manual_input', [{
+                history_id = record_prediction_batch('binary', 'manual_input', [{
                     'text': result['text'], 'predicted_label': result['code'],
-                    'label_name': 'Phản cảm' if result['code'] == 1 else 'Không phản cảm', 'status': 'ok'
+                    'label_name': result['label_name'], 'status': 'ok'
                 }], len(raw), raw)
+                result['history_saved'] = history_id is not None
                 self._json(200, result)
+            elif parsed.path == '/api/sentences':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
+                    raise RequestFailure(415, 'Cần dữ liệu JSON')
+                raw = self._read_bytes(MAX_JSON_BYTES)
+                try:
+                    payload = json.loads(raw)
+                except (ValueError, UnicodeError) as exc:
+                    raise RequestFailure(400, 'JSON không hợp lệ') from exc
+                if not isinstance(payload, dict) or not isinstance(payload.get('input'), str):
+                    raise RequestFailure(422, 'Thiếu văn bản', 'Trường input phải là chuỗi ký tự.')
+                text = payload['input'].strip()
+                if not text or len(text) > MAX_TEXT_CHARS:
+                    raise RequestFailure(422, 'Nội dung không phù hợp', 'Bình luận cần có từ 1 đến 2.000 ký tự.')
+                self._json(200, analyze_sentence_breakdown(text))
+            elif parsed.path == '/api/feedback':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
+                    raise RequestFailure(415, 'Cần dữ liệu JSON')
+                raw = self._read_bytes(MAX_JSON_BYTES)
+                try:
+                    payload = json.loads(raw)
+                except (ValueError, UnicodeError) as exc:
+                    raise RequestFailure(400, 'JSON không hợp lệ') from exc
+                if not isinstance(payload, dict):
+                    raise RequestFailure(422, 'Dữ liệu không hợp lệ')
+                source = str(payload.get('source', 'Bình luận riêng lẻ'))
+                prediction = str(payload.get('prediction', ''))
+                suggested_label = str(payload.get('suggested_label', ''))
+                note = str(payload.get('note', ''))
+                text = payload.get('text')
+                feedback_id = record_user_feedback(
+                    source_name=source,
+                    model_prediction=prediction,
+                    suggested_label=suggested_label,
+                    user_note=note,
+                    input_text=text
+                )
+                self._json(200, {
+                    'status': 'ok',
+                    'feedback_saved': feedback_id is not None,
+                    'feedback_id': feedback_id,
+                    'message': 'Phản hồi đã được ghi nhận vào SQL Server.' if feedback_id is not None
+                               else 'Chưa lưu được vào SQL Server. Vui lòng kiểm tra kết nối.'
+                })
             elif parsed.path == '/api/columns':
-                raw_csv, frame = self._csv_data()
+                params = parse_qs(parsed.query, keep_blank_values=True)
+                raw_csv, frame, sheet_names, selected_sheet = self._tabular_data(params)
                 roles = csv_column_roles(frame)
                 preview = [{name: str(row[name])[:180] for name in frame.columns}
                            for _, row in frame.head(3).iterrows()]
                 self._json(200, {
                     'rows': len(frame), 'columns': list(frame.columns), 'size_bytes': len(raw_csv),
+                    'sheets': sheet_names, 'selected_sheet': selected_sheet,
                     'suggested_column': roles['suggested_column'],
                     'text_candidates': roles['text_candidates'], 'label_columns': roles['label_columns'],
                     'index_columns': roles['index_columns'], 'link_columns': roles['link_columns'],
                     'preview_rows': preview
                 })
             elif parsed.path == '/api/batch':
-                raw_csv, frame = self._csv_data()
                 params = parse_qs(parsed.query, keep_blank_values=True)
+                raw_csv, frame, sheet_names, selected_sheet = self._tabular_data(params)
                 column = params.get('column', [None])[0]
-                filename = params.get('filename', ['uploaded.csv'])[0]
+                filename = params.get('filename', [''])[0]
                 if not isinstance(column, str) or column not in frame.columns:
-                    raise RequestFailure(422, 'Không tìm thấy cột bình luận', 'Hãy chọn một cột văn bản trong CSV.')
+                    raise RequestFailure(422, 'Không tìm thấy cột bình luận', 'Hãy chọn cột chứa bình luận trong tệp.')
                 roles = csv_column_roles(frame)
                 if column not in roles['text_candidates']:
                     raise RequestFailure(422, 'Bạn đang chọn cột nhãn hoặc chỉ mục',
@@ -424,12 +779,12 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 results = predict(get_model_path(), frame[column].fillna('').astype(str).tolist())
                 codes = [row['predicted_label'] for row in results]
                 result_values = [str(int(code)) if code is not None else '' for code in codes]
-                if RESULT_COLUMN in frame.columns or RESULT_NAME_COLUMN in frame.columns:
+                if RESULT_COLUMN in frame.columns or RESULT_NAME_COLUMN in frame.columns or 'Tên nhãn proxy TextSense' in frame.columns:
                     raise RequestFailure(422, 'Tệp đã có cột kết quả TextSense',
                                          'Hãy dùng tệp gốc chưa có cột dự đoán để tránh ghi đè.')
                 output = frame.copy()
                 output[RESULT_NAME_COLUMN] = [
-                    ('Phản cảm' if code == 1 else 'Không phản cảm') if code is not None else ''
+                    ('Có nội dung tiêu cực' if code == 1 else 'Không phát hiện nội dung tiêu cực') if code is not None else ''
                     for code in codes
                 ]
                 output[RESULT_COLUMN] = result_values
@@ -437,16 +792,28 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 negative_count = sum(code == 1 for code in codes)
                 invalid_count = sum(code is None for code in codes)
                 if nonnegative_count + negative_count + invalid_count != len(frame):
-                    raise RuntimeError('Số lượng kết quả không khớp số dòng CSV.')
-                record_prediction_batch('binary', filename, results, len(raw_csv), raw_csv)
+                    raise RuntimeError('Số lượng kết quả không khớp số dòng dữ liệu.')
+                history_id = record_prediction_batch('binary', filename, results, len(raw_csv), raw_csv)
                 summary = build_batch_summary(frame, column, results, filename)
                 data = safe_csv_bytes(output)
                 self._send(200, data, 'text/csv; charset=utf-8', {
-                    'Content-Disposition': 'attachment; filename="TextSense-ket-qua-nhi-phan.csv"',
+                    'Content-Disposition': 'attachment; filename="TextSense-ket-qua.csv"',
                     'X-Total-Rows': len(output), 'X-Valid-Rows': len(output) - invalid_count,
                     'X-Nonnegative-Rows': nonnegative_count, 'X-Negative-Rows': negative_count,
                     'X-Invalid-Rows': invalid_count,
+                    'X-History-Saved': 'true' if history_id is not None else 'false',
                     'X-TextSense-Summary': encode_summary_header(summary)
+                })
+            elif parsed.path == '/api/export-xlsx':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].strip().lower() != 'application/octet-stream':
+                    raise RequestFailure(415, 'Định dạng dữ liệu không phù hợp')
+                raw = self._read_bytes(MAX_RESULT_BYTES)
+                try:
+                    excel = result_csv_to_xlsx(raw)
+                except (ValueError, csv.Error) as exc:
+                    raise RequestFailure(422, 'Không tạo được tệp Excel', str(exc)) from exc
+                self._send(200, excel, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', {
+                    'Content-Disposition': 'attachment; filename="TextSense-ket-qua.xlsx"'
                 })
             else:
                 self._json(404, {'message': 'API không tồn tại.'})
@@ -464,9 +831,12 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                              'max_text_chars': MAX_TEXT_CHARS})
             return
         if parsed.path == '/api/health':
+            sql_status = sql_server_status()
             self._json(200, {'status': 'ok', 'model_present': MODEL_PATH.is_file(),
                              'model_filename': MODEL_PATH.name, 'task': MODEL_TASK,
-                             'label_names': {'0': 'Không phản cảm', '1': 'Phản cảm'}})
+                             'sql_server': sql_status,
+                             'history_storage': 'SQL Server',
+                             'label_names': {'0': 'Không phát hiện nội dung tiêu cực', '1': 'Có nội dung tiêu cực'}})
             return
         relative = 'index.html' if parsed.path == '/' else unquote(parsed.path).lstrip('/')
         allowed = {'index.html', 'style.css', 'app.js', 'csv_viewer.js', 'binh_luan_mau.csv'}
@@ -512,7 +882,10 @@ def start_local_server(port: int = DEFAULT_PORT):
 if __name__ == '__main__':
     server = start_local_server(DEFAULT_PORT)
     print(f'TextSense web UI: http://127.0.0.1:{server.server_port}')
-    print(f'Model: {MODEL_PATH} | upload CSV <= 100 MB | rows <= {MAX_CSV_ROWS:,}')
+    print(f'Model: {MODEL_PATH} | CSV/XLSX <= 100 MB | rows <= {MAX_CSV_ROWS:,}')
+    sql_status = sql_server_status()
+    print(f"SQL Server history: {sql_status['message']}")
+    print('Lich su huan luyen, du doan va CSV/Excel deu dung SQL Server.')
     print('Nhan Ctrl+C de dung.')
     try:
         threading.Event().wait()

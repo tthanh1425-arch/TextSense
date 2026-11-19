@@ -1,16 +1,36 @@
-TEXTSENSE V3.14 - CAP NHAT GIAO DIEN WEB
+TEXTSENSE - HUONG DAN CAI DAT VA KHOI DONG (WINDOWS / POWERSHELL)
 
-1. Sao luu thu muc 03_GIAO_DIEN cu.
-2. Giai nen goi ZIP tai thu muc goc TextSense, cho phep ghi de thu muc 03_GIAO_DIEN.
-3. Dung may chu cu bang Ctrl+C trong Terminal.
-4. Tai thu muc TextSense/03_GIAO_DIEN, chay: python serve_textsense.py
-5. Mo http://127.0.0.1:8502; nhan Ctrl+Shift+R va tai CSV lai neu can.
+KIEN TRUC
+- Giao dien duy nhat: Web TextSense tai cong 8502.
+- Backend: serve_textsense.py.
+- Du doan: predict.py va model trong 01_TRAIN_MODEL/outputs.
+- Luu lich su: Microsoft SQL Server thong qua database.py.
+- Nhan dien thuong hieu (logo, mascot, hinh minh hoa, CSS/JS): thu muc web/.
 
-CAP NHAT:
-- Giu nguyen khung Khong gian phan tich va linh vat.
-- Thay tieu de trang, rut gon huong dan, ket qua va thong bao.
-- An chi tiet khoa hoc vao cac muc co the mo rong.
-- Bo thong so va trang thai mo hinh tren banner; van hien loi neu thieu mo hinh.
-- Gop thong ke tu ngu thanh mot bang, moi tu chi mot hang voi so lieu theo nhom.
-- Giu nguyen nhan 0/1 va cac cot CSV dau ra, khong can huan luyen lai mo hinh.
-- Giup dien giai dung: nhan Phan cam la nhan proxy tu cam xuc tieu cuc.
+1) KHOI DONG WEB
+Mo PowerShell tai thu muc goc TextSense va chay:
+
+$env:TEXTSENSE_SQLSERVER_CONNECTION_STRING = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=TextSenseDB;Trusted_Connection=yes;'
+.\.venv-1\Scripts\python.exe .\03_GIAO_DIEN\serve_textsense.py
+
+Mo trinh duyet: http://127.0.0.1:8502
+Dung server: Ctrl+C.
+
+2) KIEM TRA MODEL VA SQL SERVER
+Mo: http://127.0.0.1:8502/api/health
+Can thay model_present = true va sql_server.available = true.
+
+3) CAI THU VIEN NEU THIEU
+Tai thu muc goc TextSense:
+.\.venv-1\Scripts\python.exe -m pip install -r .\03_GIAO_DIEN\requirements.txt
+
+4) NOTEBOOK HUAN LUYEN
+01_TRAIN_MODEL\TextSense_Notebook_SQLServer_Hoan_Thien_v3.ipynb
+Mo trong VS Code, chon kernel .venv-1. Khong can Run All de su dung model da luu.
+CANH BAO: cell import SQL co the thay the du lieu dbo.Tweets va dbo.TweetTokens.
+Chi chay lai khi da sao luu SQL Server va chu dong muon import lai.
+
+5) QUY TAC PHAN LOAI
+Web phan loai: neu co it nhat 1 phan tieu cuc (hoac ca binh luan tieu cuc) -> "Co noi dung tieu cuc"; neu khong co phan nao tieu cuc va ca binh luan cung khong -> "Khong phat hien noi dung tieu cuc".
+Dashboard CSV/XLSX (neu duoc tich hop trong Web) thong ke ty le binh luan theo nhan.
+Lich su moi duoc luu trong SQL Server; khong su dung SQLite lam kho luu lich su hoat dong.

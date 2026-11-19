@@ -1,6 +1,6 @@
 {
   "task": "binary",
-  "created_utc": "2026-11-18T07:37:48.648042+00:00",
+  "created_utc": "2026-11-19T07:52:09.965072+00:00",
   "seed": 42,
   "data_hashes": {
     "canonical_dataset_sha256": "820c29d9f9f6ecd0f15ea1fb97d274e9c51eb2b19605f765c89be7831e07c7e8",
@@ -19,6 +19,6 @@
     "validation": 23527,
     "test": 39212
   },
-  "model_file_sha256": "29d6c4d36f932840c730fdcb6f94817900cd6eab6fb9a69200dbf87ab044c71e",
-  "metrics_file_sha256": "f0e3f0e379e42ec1d2e68513f8d412f35abd20859addf0a1ac0da21378572bee"
+  "model_file_sha256": "d770e899a904af727b6b91a98089521242756a202b8aa46a53aa839ec063c342",
+  "metrics_file_sha256": "a3817acf5c10323206eb19da76adc10faf6d5169f15ae8209cc725e7b82507d1"
 }
