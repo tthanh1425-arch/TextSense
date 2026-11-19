@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="TextSense giúp phân tích bình luận mạng xã hội và xem xu hướng từ CSV hoặc Excel.">
 <title>TextSense — Phân tích bình luận mạng xã hội</title>
-<link rel="icon" type="image/png" href="media/textsense-bird-logo.png" sizes="128x128">
-<link rel="stylesheet" href="style.css?v=20261119v324">
-<script src="csv_viewer.js?v=20261118v316" defer></script>
-<script src="app.js?v=20261119v324" defer></script>
+<link rel="icon" type="image/png" href="03_GIAO_DIEN/web/media/textsense-bird-logo.png" sizes="128x128">
+<link rel="stylesheet" href="03_GIAO_DIEN/web/style.css?v=20261119v324">
+<script src="03_GIAO_DIEN/web/csv_viewer.js?v=20261118v316" defer></script>
+<script src="03_GIAO_DIEN/web/app.js?v=20261119v324" defer></script>
 </head>
 <body>
 <a class="skip" href="#phan-tich">Đến phần phân tích</a>
 <header class="site-header">
   <div class="masthead shell">
-    <a class="brand" href="#trang-chu" aria-label="TextSense, trang chủ"><img class="mark" src="media/textsense-bird-logo.png" width="40" height="40" alt="">TextSense</a>
+    <a class="brand" href="#trang-chu" aria-label="TextSense, trang chủ"><img class="mark" src="03_GIAO_DIEN/web/media/textsense-bird-logo.png" width="40" height="40" alt="">TextSense</a>
     <nav aria-label="Điều hướng chính"><a href="#trang-chu" aria-current="location">Trang chủ</a><a href="#phan-tich">Phân tích</a><a href="#hang-loat" data-open-batch>Tệp dữ liệu</a></nav>
   </div>
 </header>
@@ -25,7 +25,7 @@
       <p>Phân loại từng bình luận và khám phá xu hướng chung từ dữ liệu mạng xã hội.</p>
       <div class="hero-actions"><a class="button primary" href="#phan-tich">Bắt đầu phân tích <span aria-hidden="true">→</span></a><a class="button secondary" href="#hang-loat" data-open-batch>Phân tích hàng loạt</a></div>
     </div>
-    <figure class="hero-art"><img src="media/hero-bird-feathers.webp" alt="Chim xanh ngồi cầm điện thoại bằng hai cánh." width="445" height="560" fetchpriority="high"></figure>
+    <figure class="hero-art"><img src="03_GIAO_DIEN/web/media/hero-bird-feathers.webp" alt="Chim xanh ngồi cầm điện thoại bằng hai cánh." width="445" height="560" fetchpriority="high"></figure>
   </div>
 </section>
 <main id="phan-tich" class="analysis shell" aria-label="Phân tích cảm xúc">
@@ -96,7 +96,7 @@
       </section>
     </div>
     <figure class="illustration">
-      <div class="orbit"><div class="disc"><img id="mascot" src="media/idle.webp?v=mascot" alt="Chim xanh ngồi thư thái." width="340" height="320"></div></div>
+      <div class="orbit"><div class="disc"><img id="mascot" src="03_GIAO_DIEN/web/media/idle.webp?v=mascot" alt="Chim xanh ngồi thư thái." width="340" height="320"></div></div>
     </figure>
   </div>
   <section class="batch-panel" id="hang-loat" role="tabpanel" aria-labelledby="tab-batch" hidden>
@@ -106,7 +106,7 @@
         <div class="step-label"><span>1</span> CHỌN DỮ LIỆU</div>
         <h3 id="csv-input-title">Tải tệp lên</h3>
         <label class="dropzone" id="csv-dropzone" for="csv-file"><span class="upload-icon" aria-hidden="true">↥</span><strong>Kéo thả tệp vào đây</strong><span>hoặc nhấn để chọn tệp từ máy</span><small>Hỗ trợ CSV và Excel (.xlsx) · tối đa <b id="csv-limit-label">100 MB</b> · <b id="csv-rows-label">300.000 dòng</b></small><input id="csv-file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></label>
-        <a href="binh_luan_mau.csv" class="sample-link" download="binh_luan_mau.csv">Tải CSV mẫu</a>
+        <a href="03_GIAO_DIEN/web/binh_luan_mau.csv" class="sample-link" download="binh_luan_mau.csv">Tải CSV mẫu</a>
         <div class="selected-file" id="selected-file" hidden><span aria-hidden="true">▤</span><div><strong id="file-name"></strong><small id="file-metadata"></small></div><button id="file-remove" class="text-button" type="button" aria-label="Bỏ tệp đã chọn">Bỏ tệp</button></div>
         <p id="batch-status" class="batch-status" role="status" aria-live="polite">Chọn tệp để bắt đầu.</p>
         <div class="batch-progress" id="batch-progress" hidden><div class="batch-progress-track"><span></span></div><p id="batch-progress-label">Đang xử lý…</p></div>

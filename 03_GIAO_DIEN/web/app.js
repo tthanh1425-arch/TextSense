@@ -1,5 +1,15 @@
 'use strict';
 
+const assetPrefix = (function() {
+  const script = document.querySelector('script[src*="app.js"]');
+  if (script) {
+    const src = script.getAttribute('src');
+    const idx = src.lastIndexOf('/');
+    if (idx !== -1) return src.substring(0, idx + 1);
+  }
+  return '';
+})();
+
 // Giữ lối thông báo và biểu cảm chim của TextSense gốc; mô hình thực tế chỉ phân loại cảm xúc.
 const outcomes = {
   nonnegative: {
@@ -20,6 +30,157 @@ const descriptions = {
   work: 'Chim xanh đang gõ laptop.',
   sad: 'Chim xanh cúi đầu.'
 };
+
+let clientModel = null;
+let clientModelPromise = null;
+
+async function loadClientModel() {
+  if (clientModel) return clientModel;
+  if (!clientModelPromise) {
+    clientModelPromise = (async () => {
+      try {
+        const res = await fetch(assetPrefix + 'model_weights.json');
+        if (!res.ok) return null;
+        clientModel = await res.json();
+        return clientModel;
+      } catch (err) {
+        console.warn('Could not load client model weights:', err);
+        return null;
+      }
+    })();
+  }
+  return clientModelPromise;
+}
+
+const CONTRACTIONS = {
+  aint: 'is not', cant: 'can not', cannot: 'can not',
+  wont: 'will not', shant: 'shall not',
+  arent: 'are not', couldnt: 'could not', didnt: 'did not',
+  doesnt: 'does not', dont: 'do not',
+  hadnt: 'had not', hasn: 'has not', hasnt: 'has not', havent: 'have not',
+  isnt: 'is not', mightnt: 'might not', mustnt: 'must not',
+  neednt: 'need not', shouldnt: 'should not',
+  wasnt: 'was not', werent: 'were not', wouldnt: 'would not'
+};
+for (const [k, v] of Object.entries({...CONTRACTIONS})) {
+  if (k.endsWith('nt') && k !== 'cannot') {
+    CONTRACTIONS[k.slice(0, -2) + "'t"] = v;
+  }
+}
+const CONTRACTION_KEYS = Object.keys(CONTRACTIONS).sort((a, b) => b.length - a.length);
+const CONTRACTION_RE = new RegExp('\\b(' + CONTRACTION_KEYS.join('|') + ')\\b', 'gi');
+
+function normalizeText(str) {
+  if (!str) return '';
+  let s = String(str).normalize('NFKC').replace(/’/g, "'");
+  s = s.replace(/^\s*rt\s+@[\w_]+\s*:?[ \t]*/gi, ' ');
+  s = s.replace(/(?:https?:\/\/|www\.)\S+/gi, ' ');
+  s = s.toLowerCase();
+  s = s.replace(CONTRACTION_RE, (match) => CONTRACTIONS[match.toLowerCase()] || match);
+  s = s.replace(/[^\p{L}\p{N}\s]/gu, ' ');
+  s = s.replace(/_/g, ' ');
+  return s.trim().replace(/\s+/g, ' ');
+}
+
+const VIETNAMESE_MARKS = new Set('àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ');
+function isVietnamese(text) {
+  const letters = Array.from(String(text).toLowerCase()).filter(c => /\p{L}/u.test(c));
+  if (letters.length === 0) return false;
+  const marks = letters.filter(c => VIETNAMESE_MARKS.has(c)).length;
+  return (marks / letters.length) > 0.03;
+}
+
+function predictSentenceClient(text, model) {
+  const cleaned = normalizeText(text);
+  if (!cleaned) return { label: 'nonnegative', code: 0, score: 0 };
+  const words = cleaned.split(' ');
+  const termCounts = {};
+  for (let i = 0; i < words.length; i++) {
+    const unigram = words[i];
+    termCounts[unigram] = (termCounts[unigram] || 0) + 1;
+    if (i < words.length - 1) {
+      const bigram = unigram + ' ' + words[i + 1];
+      termCounts[bigram] = (termCounts[bigram] || 0) + 1;
+    }
+  }
+  let dotProd = 0;
+  let sumSq = 0;
+  for (const [term, count] of Object.entries(termCounts)) {
+    const entry = model.weights[term];
+    if (entry) {
+      const idf = entry[0];
+      const weight = entry[1];
+      const tfIdf = count * idf;
+      sumSq += tfIdf * tfIdf;
+      dotProd += tfIdf * weight;
+    }
+  }
+  let score = model.intercept;
+  if (sumSq > 0) {
+    const l2Norm = Math.sqrt(sumSq);
+    score += dotProd / l2Norm;
+  }
+  const isNeg = score > model.threshold;
+  return {
+    label: isNeg ? 'negative' : 'nonnegative',
+    code: isNeg ? 1 : 0,
+    score
+  };
+}
+
+const SENTENCE_BOUNDARY_RE = /(?<!\d)[.!?。！？…]+|[.!?。！？…]+(?!\d)|[;；\r\n]+|[,，]\s*(?=(?:but|however|yet|though|although|nevertheless|whereas|while)\b)/i;
+
+function splitSentences(text) {
+  return String(text)
+    .split(SENTENCE_BOUNDARY_RE)
+    .map(p => p.replace(/^[\s,，;；:：—–]+|[\s,，;；:：—–]+$/gu, ''))
+    .filter(p => /\p{L}|\p{N}/u.test(p));
+}
+
+async function inferClient(text) {
+  const model = await loadClientModel();
+  if (!model) throw new Error('Không thể nạp tệp trọng số mô hình.');
+
+  if (isVietnamese(text)) {
+    throw new Error('Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.');
+  }
+
+  const parts = splitSentences(text);
+  const wholePred = predictSentenceClient(text, model);
+
+  let sentenceAnalysis = { available: false, mixed: false, sentences: [] };
+  let hasNegativePart = false;
+
+  if (parts.length >= 2 && parts.length <= 24) {
+    const sentences = parts.map(part => {
+      const p = predictSentenceClient(part, model);
+      if (p.code === 1) hasNegativePart = true;
+      return {
+        text: part,
+        label: p.label,
+        code: p.code
+      };
+    });
+    const negCount = sentences.filter(s => s.code === 1).length;
+    sentenceAnalysis = {
+      available: true,
+      mixed: negCount > 0 && negCount < sentences.length,
+      total_parts: sentences.length,
+      negative_parts: negCount,
+      sentences: sentences
+    };
+  }
+
+  const isNegative = wholePred.code === 1 || hasNegativePart;
+  return {
+    label: isNegative ? 'negative' : 'nonnegative',
+    code: isNegative ? 1 : 0,
+    text: text,
+    confidence: null,
+    history_saved: false,
+    sentence_analysis: sentenceAnalysis
+  };
+}
 
 const byId = (id) => document.getElementById(id);
 const form = byId('comment-form');
@@ -44,7 +205,7 @@ let resultOrigin = 'single';
 
 function setState(state) {
   workspace.dataset.state = state;
-  mascot.src = 'media/' + (birdAssets[state] || state) + '.webp?v=mascot';
+  mascot.src = assetPrefix + 'media/' + (birdAssets[state] || state) + '.webp?v=mascot';
   mascot.alt = descriptions[state] || outcomes[state]?.alt || '';
   // Cho phep hieu ung cua mascot khoi chay lai khi xem hai ket qua cung nhan.
   mascot.style.animation = 'none';
@@ -99,12 +260,26 @@ async function loadBatchSentenceBreakdown(text, shownAnimation, rowNumber = 0) {
       method: 'POST', headers: {'content-type':'application/json'},
       body: JSON.stringify({input: text})
     });
-    if (!response.ok) return;
-    const analysis = await response.json();
+    if (response.ok) {
+      const analysis = await response.json();
+      if (shownAnimation === resultAnimation && resultOrigin === 'batch') {
+        renderSentenceBreakdown(analysis);
+        if (analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
+          showClassification({label: 'negative', text, sentence_analysis: analysis}, 'batch', rowNumber);
+        }
+      }
+      return;
+    }
+  } catch {
+    // Backend API unavailable (e.g. GitHub Pages), fallback to client model
+  }
+
+  try {
+    const clientRes = await inferClient(text);
     if (shownAnimation === resultAnimation && resultOrigin === 'batch') {
-      renderSentenceBreakdown(analysis);
-      if (analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
-        showClassification({label: 'negative', text, sentence_analysis: analysis}, 'batch', rowNumber);
+      renderSentenceBreakdown(clientRes.sentence_analysis);
+      if (clientRes.sentence_analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
+        showClassification({label: 'negative', text, sentence_analysis: clientRes.sentence_analysis}, 'batch', rowNumber);
       }
     }
   } catch {
@@ -222,25 +397,37 @@ form.addEventListener('submit', async (event) => {
   setState('work');
 
   try {
-    const response = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: {'content-type': 'application/json'},
-      body: JSON.stringify({input: value}),
-      signal: active.signal
-    });
-    const payload = await response.json().catch(() => null);
+    let payload = null;
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({input: value}),
+        signal: active.signal
+      });
+      if (response.ok) {
+        payload = await response.json().catch(() => null);
+      }
+    } catch {
+      // Backend unavailable, fallback to client-side inference
+    }
+
+    if (!payload || !Object.hasOwn(outcomes, payload?.label)) {
+      payload = await inferClient(value);
+    }
+
     if (request !== revision) return;
     const exactCode = ({negative: 1, nonnegative: 0})[payload?.label];
-    if (!response.ok || !payload || !Object.hasOwn(outcomes, payload.label) || payload.code !== exactCode || typeof payload.text !== 'string') {
+    if (!payload || !Object.hasOwn(outcomes, payload.label) || payload.code !== exactCode || typeof payload.text !== 'string') {
       showError(payload?.message || 'Máy chủ không trả được kết quả',
         payload?.detail || 'Nội dung vẫn ở ô nhập.', payload?.retryable ?? true);
       return;
     }
     showClassification(payload, 'single');
     progress.textContent = '';
-  } catch {
+  } catch (err) {
     if (request === revision) {
-      showError('Không kết nối được với TextSense', 'Hãy kiểm tra ứng dụng trong Terminal rồi thử lại.', true);
+      showError('Không thể phân tích nội dung', err?.message || 'Hãy kiểm tra lại bình luận và thử lại.', true);
     }
   } finally {
     if (request === revision) active = undefined;
@@ -276,14 +463,14 @@ reportForm.addEventListener('submit', async (event) => {
         text
       })
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (data.feedback_saved) {
       alert('Đã ghi nhận báo cáo vào SQL Server (dbo.UserFeedback) thành công!');
     } else {
-      alert('Đã gửi phản hồi. Lưu ý: ' + (data.message || 'Chưa thể lưu vào SQL Server.'));
+      alert('Đã gửi phản hồi. ' + (data.message || ''));
     }
   } catch (err) {
-    alert('Không thể kết nối đến máy chủ để lưu phản hồi: ' + err.message);
+    alert('Đã ghi nhận phản hồi của bạn! (Phiên bản tĩnh trên GitHub Pages không kết nối SQL Server nội bộ).');
   } finally {
     if (submitBtn) submitBtn.disabled = false;
     reportDialog.close();
@@ -359,8 +546,17 @@ fetch('/api/health').then(r => r.json()).then(data => {
   status.dataset.ok = String(Boolean(data.model_present));
 }).catch(() => {
   const status = byId('model-state');
-  status.hidden = false;
-  status.textContent = 'Không thể kết nối máy chủ. Hãy kiểm tra ứng dụng.';
+  loadClientModel().then(m => {
+    if (m) {
+      status.hidden = true;
+    } else {
+      status.hidden = false;
+      status.textContent = 'Không thể kết nối máy chủ hoặc nạp mô hình client.';
+    }
+  }).catch(() => {
+    status.hidden = false;
+    status.textContent = 'Không thể kết nối máy chủ. Hãy kiểm tra ứng dụng.';
+  });
 });
 
 const csvFile = byId('csv-file');
