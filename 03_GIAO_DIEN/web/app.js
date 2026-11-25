@@ -792,7 +792,7 @@ async function selectCsv(file, requestedSheet = '') {
   byId('file-name').textContent = file.name;
   byId('file-metadata').textContent = formatBytes(file.size) + ' · đang kiểm tra…';
   setBatchBusy(true, 'Đang kiểm tra cấu trúc tệp và cột dữ liệu…');
-  setBatchMascot('work', 'Đang kiểm tra tệp…', 'Đang đọc tiêu đề cột và thống kê dòng hợp lệ.');
+  setBatchMascot('ready', 'Đang nhận và kiểm tra tệp…', 'Đang đọc tiêu đề cột và thống kê dòng hợp lệ.');
 
   try {
     const url = '/api/columns?filename=' + encodeURIComponent(file.name) + (requestedSheet ? '&sheet=' + encodeURIComponent(requestedSheet) : '');

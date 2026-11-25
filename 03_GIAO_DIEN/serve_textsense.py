@@ -1301,7 +1301,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             return
         relative = 'index.html' if parsed.path == '/' else unquote(parsed.path).lstrip('/')
         allowed = {'index.html', 'style.css', 'app.js', 'csv_viewer.js', 'binh_luan_mau.csv'}
-        if relative not in allowed and not re.fullmatch(r'media/[A-Za-z0-9_.-]+\.(?:webp|png)', relative):
+        if relative not in allowed and not re.fullmatch(r'media/[A-Za-z0-9_.-]+\.(?:webp|png|jpg|jpeg)', relative):
             self._send(404, b'Not found', 'text/plain; charset=utf-8')
             return
         path = (WEB_DIR / relative).resolve()
@@ -1309,10 +1309,13 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             self._send(404, b'Not found', 'text/plain; charset=utf-8')
             return
         mime = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
-                '.png': 'image/png', '.webp': 'image/webp', '.csv': 'text/csv'}.get(path.suffix)
+                '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg', '.csv': 'text/csv'}.get(path.suffix)
         content_type = mime + ('; charset=utf-8' if path.suffix in {'.html', '.css', '.js', '.csv'} else '')
         self._send(200, path.read_bytes(), content_type, {
-            'Content-Security-Policy': ("default-src 'self'; script-src 'self'; style-src 'self'; "
+            'Content-Security-Policy': ("default-src 'self'; script-src 'self'; "
+                                        "style-src 'self' https://fonts.googleapis.com; "
+                                        "font-src 'self' https://fonts.gstatic.com; "
                                         "img-src 'self' data:; connect-src 'self'; form-action 'self'; "
                                         "base-uri 'none'; frame-ancestors 'none'")
         })

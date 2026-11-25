@@ -4,11 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="TextSense — Hệ thống phân tích cảm xúc và nhận diện nội dung tiêu cực trên Twitter/Reddit.">
-<title>TextSense — Phân tích cảm xúc bình luận mạng xã hội</title>
+<title>TextSense — Hiểu sắc thái bình luận</title>
 <link rel="icon" type="image/png" href="media/textsense-bird-logo.png" sizes="128x128">
-<link rel="stylesheet" href="style.css?v=20261125v500">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261125v1100">
 <script src="csv_viewer.js?v=20261118v316" defer></script>
-<script src="app.js?v=20261125v500" defer></script>
+<script src="app.js?v=20261125v600" defer></script>
 </head>
 <body>
 <a class="skip" href="#phan-tich">Đến phần phân tích</a>
@@ -16,7 +19,7 @@
 <header class="site-header">
   <div class="masthead shell">
     <a class="brand" href="#trang-chu" aria-label="TextSense, trang chủ">
-      <img class="mark" src="media/textsense-bird-logo.png" width="32" height="32" alt="Logo TextSense">
+      <img class="mark" src="media/textsense-bird-logo.png" width="34" height="34" alt="Logo TextSense">
       <span>TextSense</span>
     </a>
     <nav class="main-nav" aria-label="Điều hướng chính">
@@ -40,58 +43,52 @@
   <section id="trang-chu" class="section-home" aria-labelledby="hero-title">
     <div class="shell hero-layout">
       <div class="hero-copy">
-        <span class="brand-tag">TextSense Sentiment Platform</span>
-        <h1 id="hero-title">Phân tích cảm xúc và nhận diện nội dung tiêu cực</h1>
+        <span class="brand-tag">Phân tích cảm xúc và phát hiện nội dung tiêu cực</span>
+        <h1 id="hero-title">Hiểu sắc thái bình luận</h1>
         <p class="hero-lead">
-          Phân loại bình luận tiếng Anh từ Twitter và Reddit theo hai nhóm nhãn rõ ràng,
-          hỗ trợ kiểm thử đơn lẻ, xử lý tệp hàng loạt và lưu trữ lịch sử trên SQL Server.
+          Phân loại từng bình luận và khám phá xu hướng chung từ dữ liệu mạng xã hội Twitter &amp; Reddit.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="#phan-tich" data-goto="phan-tich">Phân tích cảm xúc <span aria-hidden="true">→</span></a>
+          <a class="button primary" href="#phan-tich" data-goto="phan-tich">Bắt đầu phân tích <span aria-hidden="true">→</span></a>
           <a class="button secondary" href="#hang-loat" data-goto="hang-loat">Phân tích hàng loạt</a>
         </div>
       </div>
+
       <figure class="hero-art">
-        <img src="media/hero-bird-feathers.webp" alt="Mascot chim xanh TextSense" width="360" height="440" fetchpriority="high">
+        <img src="media/hero-bird-feathers.webp" alt="Mascot chim xanh TextSense" width="320" height="390" fetchpriority="high">
       </figure>
     </div>
 
+    <!-- Quy trình 3 bước & 2 nhãn -->
     <div class="shell home-grid-blocks">
-      <div class="home-section">
-        <h2 class="home-subhead">Quy trình sử dụng</h2>
-        <div class="steps-row">
-          <article class="step-item">
-            <span class="step-label-pill">Bước 1</span>
-            <h3>Nhập dữ liệu</h3>
-            <p>Nhập trực tiếp một bình luận tiếng Anh (tối đa 2.000 ký tự) hoặc tải tệp CSV / XLSX.</p>
-          </article>
-          <article class="step-item">
-            <span class="step-label-pill">Bước 2</span>
-            <h3>Phân tích</h3>
-            <p>Hệ thống tiền xử lý đồng nhất và phân loại bình luận bằng mô hình đã huấn luyện.</p>
-          </article>
-          <article class="step-item">
-            <span class="step-label-pill">Bước 3</span>
-            <h3>Xem kết quả</h3>
-            <p>Theo dõi nhãn phân loại, thống kê trực quan, xuất tệp và báo cáo sai khi cần.</p>
-          </article>
-        </div>
+      <div class="steps-row">
+        <article class="step-item">
+          <span class="step-label-pill">Bước 1</span>
+          <h3>Nhập dữ liệu</h3>
+          <p>Dán một bình luận tiếng Anh hoặc tải lên tệp CSV / Excel (.xlsx).</p>
+        </article>
+        <article class="step-item">
+          <span class="step-label-pill">Bước 2</span>
+          <h3>Phân tích</h3>
+          <p>Tiền xử lý đồng nhất và phân loại bằng mô hình TF-IDF + LinearSVC.</p>
+        </article>
+        <article class="step-item">
+          <span class="step-label-pill">Bước 3</span>
+          <h3>Xem kết quả</h3>
+          <p>Theo dõi nhãn phân loại, thống kê trực quan và lưu lịch sử SQL Server.</p>
+        </article>
       </div>
-
-      <div class="home-section">
-        <h2 class="home-subhead">Quy ước hai nhãn phân loại</h2>
-        <div class="labels-row">
-          <article class="label-box label-neg">
-            <span class="badge badge-neg">Nhãn 1</span>
-            <h3>Có nội dung tiêu cực</h3>
-            <p>Bình luận thể hiện sắc thái tiêu cực, thất vọng, bức xúc, chỉ trích hoặc phản đối.</p>
-          </article>
-          <article class="label-box label-nonneg">
-            <span class="badge badge-nonneg">Nhãn 0</span>
-            <h3>Không phát hiện nội dung tiêu cực</h3>
-            <p>Bao gồm cả nội dung tích cực và nội dung trung tính.</p>
-          </article>
-        </div>
+      <div class="labels-row">
+        <article class="label-box label-neg">
+          <span class="badge badge-neg">Nhãn 1</span>
+          <h3>Có nội dung tiêu cực</h3>
+          <p>Bình luận mang sắc thái tiêu cực, thất vọng, bức xúc, chỉ trích hoặc phản đối.</p>
+        </article>
+        <article class="label-box label-nonneg">
+          <span class="badge badge-nonneg">Nhãn 0</span>
+          <h3>Không phát hiện nội dung tiêu cực</h3>
+          <p>Bao gồm cả nội dung tích cực và nội dung trung tính.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -119,10 +116,10 @@
             <p class="intro">Hỗ trợ tiếng Anh, tối đa 2.000 ký tự.</p>
             <form id="comment-form">
               <div class="label-row">
-                <label for="comment">Bình luận</label>
+                <label for="comment">Bình luận cần phân tích</label>
                 <span id="count" aria-hidden="true">0 / 2.000 ký tự</span>
               </div>
-              <textarea id="comment" rows="5" placeholder="Nhập hoặc dán bình luận tiếng Anh cần phân tích…" aria-describedby="text-limit input-error" autocomplete="off"></textarea>
+              <textarea id="comment" rows="5" placeholder="Dán nội dung bình luận tiếng Anh vào đây…" aria-describedby="text-limit input-error" autocomplete="off"></textarea>
               <p id="text-limit" class="sr-only">Tối đa 2.000 ký tự cho mỗi bình luận.</p>
               <p id="input-error" class="error" role="alert" hidden></p>
               <div id="failure" class="failure" role="alert" hidden>
@@ -131,8 +128,8 @@
               </div>
               <p id="progress-message" class="sr-only" role="status"></p>
               <div class="actions">
-                <button id="submit" class="button primary" type="submit" disabled>Phân tích</button>
-                <button id="retry" class="button primary" type="button" hidden>Thử lại</button>
+                <button id="submit" class="button primary" type="submit" disabled>Phân tích <span aria-hidden="true">→</span></button>
+                <button id="retry" class="button primary" type="button" hidden>Thử lại <span aria-hidden="true">→</span></button>
                 <button id="clear" class="text-button" type="button" hidden>Xóa nội dung</button>
               </div>
             </form>
@@ -187,7 +184,7 @@
 
         <figure class="illustration">
           <div class="mascot-frame">
-            <img id="mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense" width="220" height="220">
+            <img id="mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense" width="180" height="180">
           </div>
           <figcaption id="mascot-caption" class="mascot-caption">Sẵn sàng phân tích</figcaption>
         </figure>
@@ -241,7 +238,7 @@
           <span>Chờ xem xét: <strong id="fb-count-pending">0</strong></span>
           <span>Đã xác minh: <strong id="fb-count-verified">0</strong></span>
           <span>Không chấp nhận: <strong id="fb-count-rejected">0</strong></span>
-          <span class="fb-note">Báo cáo sai không tự động thay đổi nhãn gốc hoặc huấn luyện lại mô hình.</span>
+          <span class="fb-note">Báo cáo sai không tự động thay đổi nhãn gốc.</span>
         </div>
         <div class="filter-bar">
           <input id="fb-search" type="search" placeholder="Tìm nội dung hoặc ghi chú…" aria-label="Tìm báo cáo sai">
@@ -295,11 +292,10 @@
     <div class="section-heading">
       <div>
         <h2 id="batch-section-title">Phân tích hàng loạt</h2>
-        <p class="section-subtitle">Xử lý tệp CSV và Excel (.xlsx), kiểm tra dữ liệu trước khi phân tích và báo cáo sai theo từng dòng.</p>
+        <p class="section-subtitle">Tải tệp CSV / Excel (.xlsx), kiểm tra dữ liệu trước khi phân tích và báo cáo sai theo từng dòng.</p>
       </div>
     </div>
 
-    <!-- Thanh tiến trình quy trình (không đánh số 01, 02, 03) -->
     <div class="batch-pipeline" aria-label="Quy trình phân tích hàng loạt">
       <span class="pipe-step active" id="pipe-upload">Tải tệp</span>
       <span class="pipe-arrow" aria-hidden="true">→</span>
@@ -317,9 +313,9 @@
     <div class="batch-top-layout">
       <div class="surface batch-upload-surface">
         <label class="dropzone" id="csv-dropzone" for="csv-file">
-          <strong>Kéo thả tệp CSV hoặc Excel (.xlsx) vào đây</strong>
-          <span>hoặc nhấn để chọn tệp từ máy tính</span>
-          <small>Tối đa <b id="csv-limit-label">100 MB</b> · <b id="csv-rows-label">300.000 dòng</b></small>
+          <strong>Kéo thả tệp vào đây</strong>
+          <span>hoặc nhấn để chọn tệp từ máy</span>
+          <small>Hỗ trợ CSV và Excel (.xlsx) · tối đa <b id="csv-limit-label">100 MB</b> · <b id="csv-rows-label">300.000 dòng</b></small>
           <input id="csv-file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
         </label>
 
@@ -336,44 +332,45 @@
           <div class="batch-progress-track"><span></span></div>
           <p id="batch-progress-label">Đang xử lý…</p>
         </div>
+      </div>
 
-        <div class="csv-config" id="csv-config" hidden>
-          <div class="config-grid">
-            <div id="sheet-wrap" hidden>
-              <label for="xlsx-sheet" class="field-label">Chọn trang tính (Sheet)</label>
-              <select id="xlsx-sheet"></select>
-            </div>
-            <div>
-              <label for="csv-column" class="field-label">Chọn cột bình luận</label>
-              <select id="csv-column" disabled><option value="">Tự động nhận diện</option></select>
-            </div>
+      <div class="surface csv-config" id="csv-config" hidden>
+        <div class="config-grid">
+          <div id="sheet-wrap" hidden>
+            <label for="xlsx-sheet" class="field-label">Chọn trang tính (Sheet)</label>
+            <select id="xlsx-sheet"></select>
           </div>
+          <div>
+            <label for="csv-column" class="field-label">Chọn cột bình luận</label>
+            <select id="csv-column" disabled><option value="">Tự động nhận diện</option></select>
+          </div>
+        </div>
 
-          <div id="csv-preview" class="csv-preview" hidden>
-            <p class="preview-heading">Xem trước dữ liệu mẫu</p>
-            <ol id="csv-preview-list"></ol>
-          </div>
+        <div id="csv-preview" class="csv-preview" hidden>
+          <p class="preview-heading">Xem trước dữ liệu mẫu</p>
+          <ol id="csv-preview-list"></ol>
+        </div>
 
-          <div id="batch-confirm-box" class="confirm-box" hidden>
-            <h4>Xác nhận thông tin dữ liệu</h4>
-            <dl class="confirm-summary">
-              <div><dt>Tệp dữ liệu</dt><dd id="confirm-filename">—</dd></div>
-              <div><dt>Trang tính</dt><dd id="confirm-sheet">Mặc định (CSV)</dd></div>
-              <div><dt>Cột phân tích</dt><dd id="confirm-column">—</dd></div>
-              <div><dt>Tổng số dòng đầu vào</dt><dd id="confirm-total">—</dd></div>
-              <div><dt>Số dòng hợp lệ</dt><dd id="confirm-valid">—</dd></div>
-              <div><dt>Số dòng trống / không hợp lệ</dt><dd id="confirm-empty">—</dd></div>
-            </dl>
-            <button id="batch-submit" class="button primary" type="button" disabled>Xác nhận và bắt đầu phân tích</button>
-          </div>
+        <div id="batch-confirm-box" class="confirm-box" hidden>
+          <h4>Xác nhận thông tin dữ liệu</h4>
+          <dl class="confirm-summary">
+            <div><dt>Tệp dữ liệu</dt><dd id="confirm-filename">—</dd></div>
+            <div><dt>Trang tính</dt><dd id="confirm-sheet">Mặc định (CSV)</dd></div>
+            <div><dt>Cột phân tích</dt><dd id="confirm-column">—</dd></div>
+            <div><dt>Tổng số dòng đầu vào</dt><dd id="confirm-total">—</dd></div>
+            <div><dt>Số dòng hợp lệ</dt><dd id="confirm-valid">—</dd></div>
+            <div><dt>Số dòng trống / không hợp lệ</dt><dd id="confirm-empty">—</dd></div>
+          </dl>
+          <button id="batch-submit" class="button primary full-btn" type="button" disabled>Phân tích toàn bộ tệp →</button>
         </div>
       </div>
 
-      <!-- Mascot nhận diện thương hiệu trên trang Phân tích hàng loạt -->
       <aside class="surface batch-mascot-card" aria-label="Trạng thái xử lý tệp">
-        <img id="batch-mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense trạng thái chờ" width="140" height="140">
-        <strong id="batch-mascot-title">Sẵn sàng nhận tệp</strong>
-        <p id="batch-mascot-note">Tải lên tệp CSV hoặc XLSX chứa bình luận tiếng Anh để bắt đầu.</p>
+        <img id="batch-mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense trạng thái chờ" width="110" height="110">
+        <div>
+          <strong id="batch-mascot-title">Sẵn sàng nhận tệp</strong>
+          <p id="batch-mascot-note">Tải lên tệp CSV hoặc XLSX chứa bình luận tiếng Anh để bắt đầu.</p>
+        </div>
       </aside>
     </div>
 
@@ -472,7 +469,6 @@
     <div id="batch-dashboard" hidden>
       <div id="stats-scope-banner" class="scope-banner"></div>
 
-      <!-- Tổng quan dữ liệu -->
       <div class="stats-group">
         <h3 class="stats-group-title">Tổng quan dữ liệu</h3>
         <div class="kpi-strip">
@@ -483,7 +479,6 @@
         </div>
       </div>
 
-      <!-- Phân bố kết quả -->
       <div class="stats-group">
         <h3 class="stats-group-title">Phân bố kết quả</h3>
         <div class="stats-two-col">
@@ -522,7 +517,6 @@
         </div>
       </div>
 
-      <!-- Đặc điểm dữ liệu -->
       <div class="stats-group">
         <h3 class="stats-group-title">Đặc điểm dữ liệu</h3>
         <div class="stats-two-col">
@@ -543,7 +537,6 @@
         </div>
       </div>
 
-      <!-- Phân tích từ khóa (1 bảng thống nhất, không trùng lặp) -->
       <div class="stats-group">
         <h3 class="stats-group-title">Phân tích từ khóa</h3>
         <div class="surface">
@@ -597,7 +590,6 @@
         </div>
       </div>
 
-      <!-- Phân tích theo nguồn & thời gian (chỉ hiện khi có dữ liệu) -->
       <div id="stats-source-time-block" class="stats-group" hidden>
         <h3 class="stats-group-title">Phân tích theo nguồn và thời gian</h3>
         <div class="stats-two-col">
@@ -612,11 +604,10 @@
         </div>
       </div>
 
-      <!-- Đánh giá mô hình (chỉ hiện khi có nhãn tham chiếu hợp lệ) -->
       <div id="dash-original-card" class="stats-group" hidden>
         <h3 class="stats-group-title">Đánh giá trên tập dữ liệu có nhãn tham chiếu</h3>
         <div class="surface">
-          <p class="card-note">Đối chiếu <strong>Nhãn dự đoán</strong> của TextSense với <strong>Nhãn tham chiếu</strong> có sẵn trong tệp tải lên (ánh xạ nhãn gốc -1 → 1; 0 và +1 → 0). Khác với chỉ số đánh giá trên tập Test của đồ án.</p>
+          <p class="card-note">Đối chiếu <strong>Nhãn dự đoán</strong> của TextSense với <strong>Nhãn tham chiếu</strong> có sẵn trong tệp tải lên (ánh xạ nhãn gốc -1 → 1; 0 và +1 → 0).</p>
           <div id="ref-eval-metrics" class="kpi-strip"></div>
           <div class="stats-two-col" style="margin-top:16px">
             <div>
@@ -695,7 +686,6 @@
   <div class="shell">TextSense · Phân tích cảm xúc bình luận mạng xã hội</div>
 </footer>
 
-<!-- Modal: Xem chi tiết bình luận -->
 <dialog id="detail-dialog" aria-labelledby="detail-dialog-title">
   <div class="dialog-head">
     <h3 id="detail-dialog-title">Chi tiết kết quả phân tích</h3>
@@ -708,7 +698,6 @@
   </div>
 </dialog>
 
-<!-- Modal: Báo cáo kết quả sai -->
 <dialog id="report-dialog" aria-labelledby="report-title">
   <form id="report-form">
     <h3 id="report-title">Báo cáo kết quả sai</h3>
