@@ -214,3 +214,6 @@ SELECT TOP (50) FeedbackID, CreatedUtc, SourceName, ModelPrediction, SuggestedLa
 FROM dbo.UserFeedback
 ORDER BY FeedbackID DESC;
 GO
+
+
+SELECT @@SERVERNAME;
