@@ -113,13 +113,47 @@ BEGIN
         FeedbackID BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
         CreatedUtc DATETIMEOFFSET NOT NULL CONSTRAINT DF_UserFeedback_CreatedUtc DEFAULT SYSDATETIMEOFFSET(),
         SourceName NVARCHAR(40) NOT NULL,
+        BatchID BIGINT NULL,
+        RowNumber INT NULL,
+        PredictionID BIGINT NULL,
         InputText NVARCHAR(MAX) NULL,
+        InputSha256 CHAR(64) NULL,
         ModelPrediction NVARCHAR(100) NOT NULL,
         SuggestedLabel NVARCHAR(100) NOT NULL,
-        UserNote NVARCHAR(MAX) NULL
+        ReasonCategory NVARCHAR(150) NOT NULL CONSTRAINT DF_UserFeedback_ReasonCategory DEFAULT N'Lý do khác',
+        UserNote NVARCHAR(MAX) NULL,
+        ReviewStatus NVARCHAR(40) NOT NULL CONSTRAINT DF_UserFeedback_ReviewStatus DEFAULT N'Chờ xem xét'
+            CHECK (ReviewStatus IN (N'Chờ xem xét', N'Đã xác minh', N'Không chấp nhận')),
+        ReviewedUtc DATETIMEOFFSET NULL,
+        CONSTRAINT FK_UserFeedback_PredictionBatches FOREIGN KEY (BatchID)
+            REFERENCES dbo.PredictionBatches(BatchID) ON DELETE SET NULL
     );
     CREATE INDEX IX_UserFeedback_CreatedUtc ON dbo.UserFeedback(CreatedUtc DESC);
+    CREATE INDEX IX_UserFeedback_Status ON dbo.UserFeedback(ReviewStatus, CreatedUtc DESC);
 END;
+GO
+
+-- Migration an toàn cho database đã tạo từ phiên bản trước (không xóa dữ liệu hiện có)
+IF COL_LENGTH(N'dbo.UserFeedback', N'BatchID') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD BatchID BIGINT NULL;
+IF COL_LENGTH(N'dbo.UserFeedback', N'RowNumber') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD RowNumber INT NULL;
+IF COL_LENGTH(N'dbo.UserFeedback', N'PredictionID') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD PredictionID BIGINT NULL;
+IF COL_LENGTH(N'dbo.UserFeedback', N'InputSha256') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD InputSha256 CHAR(64) NULL;
+IF COL_LENGTH(N'dbo.UserFeedback', N'ReasonCategory') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD ReasonCategory NVARCHAR(150) NOT NULL CONSTRAINT DF_UserFeedback_ReasonCategory DEFAULT N'Lý do khác';
+IF COL_LENGTH(N'dbo.UserFeedback', N'ReviewStatus') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD ReviewStatus NVARCHAR(40) NOT NULL
+        CONSTRAINT DF_UserFeedback_ReviewStatus DEFAULT N'Chờ xem xét'
+        CONSTRAINT CK_UserFeedback_ReviewStatus CHECK (ReviewStatus IN (N'Chờ xem xét', N'Đã xác minh', N'Không chấp nhận'));
+IF COL_LENGTH(N'dbo.UserFeedback', N'ReviewedUtc') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD ReviewedUtc DATETIMEOFFSET NULL;
+GO
+
+IF INDEXPROPERTY(OBJECT_ID(N'dbo.UserFeedback'), N'IX_UserFeedback_Status', 'IndexId') IS NULL
+    CREATE INDEX IX_UserFeedback_Status ON dbo.UserFeedback(ReviewStatus, CreatedUtc DESC);
 GO
 
 -- Xem lịch sử huấn luyện gần nhất

@@ -13,16 +13,29 @@ from datetime import datetime, timezone
 from typing import Any
 
 SQL_CONNECTION_ENV = 'TEXTSENSE_SQLSERVER_CONNECTION_STRING'
+FEEDBACK_STATUSES = ('Chờ xem xét', 'Đã xác minh', 'Không chấp nhận')
+_CACHED_AUTO_CONN_STR: str | None = None
 
 
 def _now():
     return datetime.now(timezone.utc)
 
 
+def _iso(value) -> str | None:
+    if value is None:
+        return None
+    if hasattr(value, 'isoformat'):
+        return value.isoformat()
+    return str(value)
+
+
 def sql_server_connection_string() -> str | None:
+    global _CACHED_AUTO_CONN_STR
     value = os.environ.get(SQL_CONNECTION_ENV, '').strip()
     if value:
         return value
+    if _CACHED_AUTO_CONN_STR:
+        return _CACHED_AUTO_CONN_STR
     try:
         pyodbc = _get_pyodbc()
         drivers = pyodbc.drivers()
@@ -33,6 +46,17 @@ def sql_server_connection_string() -> str | None:
                 break
         if not driver:
             return None
+        for server in ('localhost', '.\\SQLEXPRESS', '(localdb)\\MSSQLLocalDB'):
+            candidate_str = (
+                f'DRIVER={{{driver}}};SERVER={server};DATABASE=TextSenseDB;'
+                'Trusted_Connection=yes;TrustServerCertificate=yes;'
+            )
+            try:
+                with pyodbc.connect(candidate_str, timeout=2):
+                    _CACHED_AUTO_CONN_STR = candidate_str
+                    return candidate_str
+            except Exception:
+                continue
         return (
             f'DRIVER={{{driver}}};SERVER=localhost;DATABASE=TextSenseDB;'
             'Trusted_Connection=yes;TrustServerCertificate=yes;'
@@ -66,7 +90,8 @@ def sql_server_status() -> dict[str, Any]:
                 SELECT
                     CASE WHEN OBJECT_ID(N'dbo.TrainingRuns', N'U') IS NOT NULL THEN 1 ELSE 0 END,
                     CASE WHEN OBJECT_ID(N'dbo.PredictionBatches', N'U') IS NOT NULL THEN 1 ELSE 0 END,
-                    CASE WHEN OBJECT_ID(N'dbo.Predictions', N'U') IS NOT NULL THEN 1 ELSE 0 END
+                    CASE WHEN OBJECT_ID(N'dbo.Predictions', N'U') IS NOT NULL THEN 1 ELSE 0 END,
+                    CASE WHEN OBJECT_ID(N'dbo.UserFeedback', N'U') IS NOT NULL THEN 1 ELSE 0 END
             """).fetchone()
         if not all(bool(value) for value in row):
             return {
@@ -95,6 +120,16 @@ def _read_inserted_id(cursor) -> int:
     if not row:
         raise RuntimeError('Không nhận được ID sau khi lưu vào SQL Server.')
     return int(row[0])
+
+
+def _feedback_has_extended_columns(cursor) -> bool:
+    row = cursor.execute("""
+        SELECT
+            CASE WHEN COL_LENGTH(N'dbo.UserFeedback', N'BatchID') IS NOT NULL THEN 1 ELSE 0 END,
+            CASE WHEN COL_LENGTH(N'dbo.UserFeedback', N'ReasonCategory') IS NOT NULL THEN 1 ELSE 0 END,
+            CASE WHEN COL_LENGTH(N'dbo.UserFeedback', N'ReviewStatus') IS NOT NULL THEN 1 ELSE 0 END
+    """).fetchone()
+    return bool(row and len(row) == 3 and all(bool(v) for v in row))
 
 
 def record_training_run(task: str, status: str, model_path: str | None = None,
@@ -150,7 +185,9 @@ def list_training_runs(limit: int = 50) -> list[dict]:
     with pyodbc.connect(connection_string, timeout=5) as conn:
         cursor = conn.cursor()
         cursor.execute(f"""
-            SELECT TOP ({safe_limit}) TrainingRunID AS id, StartedUtc AS started_utc, Task AS task,
+            SELECT TOP ({safe_limit}) TrainingRunID AS id,
+                   CONVERT(VARCHAR(33), StartedUtc, 127) AS started_utc,
+                   Task AS task,
                    Status AS status, ModelPath AS model_path, Accuracy AS accuracy,
                    F1Positive AS f1_positive, TestRows AS test_rows, SelectedC AS selected_c,
                    DataSha256 AS data_sha256
@@ -162,35 +199,204 @@ def list_training_runs(limit: int = 50) -> list[dict]:
 
 def record_user_feedback(source_name: str, model_prediction: str,
                          suggested_label: str, user_note: str = '',
-                         input_text: str | None = None) -> int | None:
-    """Store user correction/feedback in SQL Server dbo.UserFeedback."""
+                         input_text: str | None = None,
+                         batch_id: int | None = None,
+                         row_number: int | None = None,
+                         prediction_id: int | None = None,
+                         reason_category: str = 'Lý do khác') -> int | None:
+    """Store user correction/feedback in SQL Server dbo.UserFeedback with duplicate guard."""
     connection_string = sql_server_connection_string()
     if not connection_string:
         _warn_persistence('phản hồi người dùng', f'chưa cấu hình {SQL_CONNECTION_ENV}')
         return None
+    text_str = '' if input_text is None else str(input_text)
+    input_hash = hashlib.sha256(text_str.encode('utf-8')).hexdigest() if input_text is not None else None
     try:
         pyodbc = _get_pyodbc()
         with pyodbc.connect(connection_string, timeout=10) as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                SET NOCOUNT ON;
-                INSERT INTO dbo.UserFeedback
-                    (SourceName, InputText, ModelPrediction, SuggestedLabel, UserNote)
-                OUTPUT INSERTED.FeedbackID
-                VALUES (?, ?, ?, ?, ?)
-            """, (
-                str(source_name)[:40],
-                None if input_text is None else str(input_text),
-                str(model_prediction)[:100],
-                str(suggested_label)[:100],
-                str(user_note)[:4000],
-            ))
+            extended = _feedback_has_extended_columns(cursor)
+            if extended:
+                resolved_prediction_id = None if prediction_id is None else int(prediction_id)
+                if resolved_prediction_id is None and batch_id is not None and row_number is not None:
+                    pred_row = cursor.execute(
+                        'SELECT TOP (1) PredictionID FROM dbo.Predictions WHERE BatchID = ? AND RowNumber = ?',
+                        (int(batch_id), int(row_number))
+                    ).fetchone()
+                    if pred_row:
+                        resolved_prediction_id = int(pred_row[0])
+                # Prevent accidental duplicate feedback for the same batch row or identical recent submission.
+                if batch_id is not None and row_number is not None:
+                    existing = cursor.execute("""
+                        SELECT TOP (1) FeedbackID FROM dbo.UserFeedback
+                        WHERE BatchID = ? AND RowNumber = ? AND SuggestedLabel = ?
+                        ORDER BY FeedbackID DESC
+                    """, (int(batch_id), int(row_number), str(suggested_label)[:100])).fetchone()
+                    if existing:
+                        return int(existing[0])
+                elif input_hash is not None:
+                    existing = cursor.execute("""
+                        SELECT TOP (1) FeedbackID FROM dbo.UserFeedback
+                        WHERE InputSha256 = ? AND ModelPrediction = ? AND SuggestedLabel = ?
+                          AND DATEDIFF(MINUTE, CreatedUtc, SYSDATETIMEOFFSET()) <= 10
+                        ORDER BY FeedbackID DESC
+                    """, (input_hash, str(model_prediction)[:100], str(suggested_label)[:100])).fetchone()
+                    if existing:
+                        return int(existing[0])
+                cursor.execute("""
+                    SET NOCOUNT ON;
+                    INSERT INTO dbo.UserFeedback
+                        (SourceName, BatchID, RowNumber, PredictionID, InputText, InputSha256,
+                         ModelPrediction, SuggestedLabel, ReasonCategory, UserNote, ReviewStatus)
+                    OUTPUT INSERTED.FeedbackID
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    str(source_name)[:40],
+                    None if batch_id is None else int(batch_id),
+                    None if row_number is None else int(row_number),
+                    resolved_prediction_id,
+                    None if input_text is None else text_str,
+                    input_hash,
+                    str(model_prediction)[:100],
+                    str(suggested_label)[:100],
+                    str(reason_category or 'Lý do khác')[:150],
+                    str(user_note)[:4000],
+                    'Chờ xem xét',
+                ))
+            else:
+                cursor.execute("""
+                    SET NOCOUNT ON;
+                    INSERT INTO dbo.UserFeedback
+                        (SourceName, InputText, ModelPrediction, SuggestedLabel, UserNote)
+                    OUTPUT INSERTED.FeedbackID
+                    VALUES (?, ?, ?, ?, ?)
+                """, (
+                    str(source_name)[:40],
+                    None if input_text is None else text_str,
+                    str(model_prediction)[:100],
+                    str(suggested_label)[:100],
+                    str(user_note)[:4000],
+                ))
             feedback_id = _read_inserted_id(cursor)
             conn.commit()
             return feedback_id
     except Exception as exc:
         _warn_persistence('phản hồi người dùng', exc)
         return None
+
+
+def list_user_feedback(status_filter: str = '', reason_filter: str = '',
+                       search: str = '', page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    """List user feedback records with pagination, filtering, and status summary."""
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        return {'available': False, 'items': [], 'total': 0, 'counts': {}}
+    pyodbc = _get_pyodbc()
+    safe_page = max(1, int(page))
+    safe_size = max(1, min(int(page_size), 100))
+    offset = (safe_page - 1) * safe_size
+    try:
+        with pyodbc.connect(connection_string, timeout=8) as conn:
+            cursor = conn.cursor()
+            extended = _feedback_has_extended_columns(cursor)
+            where_clauses = []
+            params: list[Any] = []
+            if extended and status_filter in FEEDBACK_STATUSES:
+                where_clauses.append('ReviewStatus = ?')
+                params.append(status_filter)
+            if extended and reason_filter:
+                where_clauses.append('ReasonCategory = ?')
+                params.append(reason_filter)
+            if search:
+                where_clauses.append('(InputText LIKE ? OR UserNote LIKE ?)')
+                like = f'%{search}%'
+                params.extend([like, like])
+            where_sql = ('WHERE ' + ' AND '.join(where_clauses)) if where_clauses else ''
+
+            total = int(cursor.execute(
+                f'SELECT COUNT_BIG(*) FROM dbo.UserFeedback {where_sql}', params
+            ).fetchone()[0])
+
+            counts = {'Chờ xem xét': 0, 'Đã xác minh': 0, 'Không chấp nhận': 0}
+            if extended:
+                for st, cnt in cursor.execute(
+                    'SELECT ReviewStatus, COUNT_BIG(*) FROM dbo.UserFeedback GROUP BY ReviewStatus'
+                ).fetchall():
+                    if st in counts:
+                        counts[st] = int(cnt)
+                select_sql = f"""
+                    SELECT FeedbackID, CONVERT(VARCHAR(33), CreatedUtc, 127) AS CreatedUtc,
+                           SourceName, BatchID, RowNumber, PredictionID,
+                           InputText, ModelPrediction, SuggestedLabel, ReasonCategory, UserNote,
+                           ReviewStatus, CONVERT(VARCHAR(33), ReviewedUtc, 127) AS ReviewedUtc
+                    FROM dbo.UserFeedback
+                    {where_sql}
+                    ORDER BY FeedbackID DESC
+                    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """
+            else:
+                counts['Chờ xem xét'] = total
+                select_sql = f"""
+                    SELECT FeedbackID, CONVERT(VARCHAR(33), CreatedUtc, 127) AS CreatedUtc,
+                           SourceName, NULL AS BatchID, NULL AS RowNumber,
+                           NULL AS PredictionID, InputText, ModelPrediction, SuggestedLabel,
+                           N'Lý do khác' AS ReasonCategory, UserNote,
+                           N'Chờ xem xét' AS ReviewStatus, NULL AS ReviewedUtc
+                    FROM dbo.UserFeedback
+                    {where_sql}
+                    ORDER BY FeedbackID DESC
+                    OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """
+            rows = cursor.execute(select_sql, [*params, offset, safe_size]).fetchall()
+            items = []
+            for r in rows:
+                items.append({
+                    'feedback_id': int(r[0]),
+                    'created_utc': _iso(r[1]),
+                    'source_name': r[2],
+                    'batch_id': int(r[3]) if r[3] is not None else None,
+                    'row_number': int(r[4]) if r[4] is not None else None,
+                    'prediction_id': int(r[5]) if r[5] is not None else None,
+                    'input_text': r[6],
+                    'model_prediction': r[7],
+                    'suggested_label': r[8],
+                    'reason_category': r[9],
+                    'user_note': r[10],
+                    'review_status': r[11],
+                    'reviewed_utc': _iso(r[12]),
+                })
+            return {
+                'available': True,
+                'items': items,
+                'total': total,
+                'page': safe_page,
+                'page_size': safe_size,
+                'counts': counts,
+            }
+    except Exception as exc:
+        return {'available': False, 'error': str(exc), 'items': [], 'total': 0, 'counts': {}}
+
+
+def update_feedback_status(feedback_id: int, new_status: str) -> bool:
+    """Update review status of a feedback record. Never alters model predictions."""
+    if new_status not in FEEDBACK_STATUSES:
+        raise ValueError('Trạng thái báo cáo không hợp lệ.')
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        return False
+    pyodbc = _get_pyodbc()
+    with pyodbc.connect(connection_string, timeout=8) as conn:
+        cursor = conn.cursor()
+        if not _feedback_has_extended_columns(cursor):
+            return False
+        cursor.execute("""
+            UPDATE dbo.UserFeedback
+            SET ReviewStatus = ?, ReviewedUtc = SYSDATETIMEOFFSET()
+            WHERE FeedbackID = ?
+        """, (new_status, int(feedback_id)))
+        updated = cursor.rowcount > 0
+        conn.commit()
+        return updated
 
 
 def record_prediction_batch(task: str, source_name: str, results: list[dict],
@@ -242,22 +448,115 @@ def record_prediction_batch(task: str, source_name: str, results: list[dict],
 
 
 def list_prediction_batches(limit: int = 50) -> list[dict]:
-    """Read prediction batch history from SQL Server only."""
+    """Read prediction batch history from SQL Server with label counts."""
     connection_string = sql_server_connection_string()
     if not connection_string:
         return []
     pyodbc = _get_pyodbc()
     safe_limit = max(1, min(int(limit), 500))
-    with pyodbc.connect(connection_string, timeout=5) as conn:
+    with pyodbc.connect(connection_string, timeout=8) as conn:
         cursor = conn.cursor()
         cursor.execute(f"""
-            SELECT TOP ({safe_limit}) BatchID AS id, CreatedUtc AS created_utc, Task AS task,
-                   SourceName AS source_name, RowCount AS row_count, UploadBytes AS upload_bytes,
-                   UploadSha256 AS upload_sha256
-            FROM dbo.PredictionBatches ORDER BY BatchID DESC
+            SELECT TOP ({safe_limit})
+                   b.BatchID AS id,
+                   CONVERT(VARCHAR(33), b.CreatedUtc, 127) AS created_utc,
+                   b.Task AS task,
+                   b.SourceName AS source_name,
+                   b.[RowCount] AS row_count,
+                   b.UploadBytes AS upload_bytes,
+                   b.UploadSha256 AS upload_sha256,
+                   SUM(CASE WHEN p.PredictedLabel = 1 THEN 1 ELSE 0 END) AS negative_count,
+                   SUM(CASE WHEN p.PredictedLabel = 0 THEN 1 ELSE 0 END) AS nonnegative_count,
+                   SUM(CASE WHEN p.PredictedLabel IS NULL THEN 1 ELSE 0 END) AS invalid_count
+            FROM dbo.PredictionBatches AS b
+            LEFT JOIN dbo.Predictions AS p ON p.BatchID = b.BatchID
+            GROUP BY b.BatchID, b.CreatedUtc, b.Task, b.SourceName, b.[RowCount], b.UploadBytes, b.UploadSha256
+            ORDER BY b.BatchID DESC
         """)
         columns = [item[0] for item in cursor.description]
-        return [dict(zip(columns, row)) for row in cursor.fetchall()]
+        items = []
+        for row in cursor.fetchall():
+            rec = dict(zip(columns, row))
+            rec['created_utc'] = _iso(rec.get('created_utc'))
+            rec['analysis_type'] = 'Đơn lẻ' if rec.get('source_name') == 'manual_input' else 'Hàng loạt'
+            items.append(rec)
+        return items
+
+
+def query_predictions_paginated(batch_id: int | None = None, label_filter: str = '',
+                                search: str = '', date_from: str = '', date_to: str = '',
+                                page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    """Paginated prediction history from SQL Server."""
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        return {'available': False, 'items': [], 'total': 0}
+    pyodbc = _get_pyodbc()
+    safe_page = max(1, int(page))
+    safe_size = max(1, min(int(page_size), 100))
+    offset = (safe_page - 1) * safe_size
+    where_clauses = []
+    params: list[Any] = []
+    if batch_id is not None:
+        where_clauses.append('p.BatchID = ?')
+        params.append(int(batch_id))
+    if label_filter in ('0', '1'):
+        where_clauses.append('p.PredictedLabel = ?')
+        params.append(int(label_filter))
+    elif label_filter == 'invalid':
+        where_clauses.append('p.PredictedLabel IS NULL')
+    if search:
+        where_clauses.append('p.InputText LIKE ?')
+        params.append(f'%{search}%')
+    if date_from:
+        where_clauses.append('b.CreatedUtc >= ?')
+        params.append(date_from)
+    if date_to:
+        where_clauses.append('b.CreatedUtc <= ?')
+        params.append(date_to)
+    where_sql = ('WHERE ' + ' AND '.join(where_clauses)) if where_clauses else ''
+
+    try:
+        with pyodbc.connect(connection_string, timeout=10) as conn:
+            cursor = conn.cursor()
+            total = int(cursor.execute(f"""
+                SELECT COUNT_BIG(*)
+                FROM dbo.Predictions AS p
+                JOIN dbo.PredictionBatches AS b ON b.BatchID = p.BatchID
+                {where_sql}
+            """, params).fetchone()[0])
+            cursor.execute(f"""
+                SELECT p.PredictionID, p.BatchID, p.RowNumber, p.InputText,
+                       p.PredictedLabel, p.LabelName, p.Status,
+                       CONVERT(VARCHAR(33), b.CreatedUtc, 127) AS CreatedUtc, b.SourceName
+                FROM dbo.Predictions AS p
+                JOIN dbo.PredictionBatches AS b ON b.BatchID = p.BatchID
+                {where_sql}
+                ORDER BY p.PredictionID DESC
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """, [*params, offset, safe_size])
+            items = []
+            for r in cursor.fetchall():
+                items.append({
+                    'prediction_id': int(r[0]),
+                    'batch_id': int(r[1]),
+                    'row_number': int(r[2]),
+                    'input_text': r[3],
+                    'predicted_label': int(r[4]) if r[4] is not None else None,
+                    'label_name': r[5],
+                    'status': r[6],
+                    'created_utc': _iso(r[7]),
+                    'source_name': r[8],
+                    'analysis_type': 'Đơn lẻ' if r[8] == 'manual_input' else 'Hàng loạt',
+                })
+            return {
+                'available': True,
+                'items': items,
+                'total': total,
+                'page': safe_page,
+                'page_size': safe_size,
+            }
+    except Exception as exc:
+        return {'available': False, 'error': str(exc), 'items': [], 'total': 0}
 
 
 def get_predictions(batch_id: int) -> list[dict]:
@@ -269,42 +568,9 @@ def get_predictions(batch_id: int) -> list[dict]:
     with pyodbc.connect(connection_string, timeout=10) as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT RowNumber AS row_number, InputText AS input_text,
+            SELECT PredictionID AS prediction_id, RowNumber AS row_number, InputText AS input_text,
                    PredictedLabel AS predicted_label, LabelName AS label_name, Status AS status
             FROM dbo.Predictions WHERE BatchID = ? ORDER BY RowNumber
         """, (int(batch_id),))
         columns = [item[0] for item in cursor.description]
         return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-
-def record_user_feedback(source_name: str, model_prediction: str,
-                         suggested_label: str, user_note: str = '',
-                         input_text: str | None = None) -> int | None:
-    """Store user correction/feedback in SQL Server dbo.UserFeedback."""
-    connection_string = sql_server_connection_string()
-    if not connection_string:
-        _warn_persistence('phản hồi người dùng', f'chưa cấu hình {SQL_CONNECTION_ENV}')
-        return None
-    try:
-        pyodbc = _get_pyodbc()
-        with pyodbc.connect(connection_string, timeout=10) as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SET NOCOUNT ON;
-                INSERT INTO dbo.UserFeedback
-                    (SourceName, InputText, ModelPrediction, SuggestedLabel, UserNote)
-                OUTPUT INSERTED.FeedbackID
-                VALUES (?, ?, ?, ?, ?)
-            """, (
-                str(source_name)[:40],
-                None if input_text is None else str(input_text),
-                str(model_prediction)[:100],
-                str(suggested_label)[:100],
-                str(user_note)[:4000],
-            ))
-            feedback_id = _read_inserted_id(cursor)
-            conn.commit()
-            return feedback_id
-    except Exception as exc:
-        _warn_persistence('phản hồi người dùng', exc)
-        return None

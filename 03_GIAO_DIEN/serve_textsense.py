@@ -24,14 +24,25 @@ from openpyxl.styles import Font, PatternFill, Alignment
 
 import pandas as pd
 
-from database import record_prediction_batch, record_user_feedback, sql_server_status
-from predict import predict
+from datetime import datetime, timezone
+from database import (
+    get_predictions,
+    list_prediction_batches,
+    list_user_feedback,
+    query_predictions_paginated,
+    record_prediction_batch,
+    record_user_feedback,
+    sql_server_status,
+    update_feedback_status,
+)
+from predict import MAX_TEXT_CHARS as PREDICT_MAX_CHARS, URL_PATTERN, normalize_text, predict, vietnamese_warning
 from predict import OUTPUT
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = (BASE_DIR / 'web').resolve()
 MODEL_TASK = 'binary'
 MODEL_PATH = OUTPUT / f'{MODEL_TASK}_linear_svm.joblib'
+METRICS_PATH = OUTPUT / f'{MODEL_TASK}_metrics.json'
 DEFAULT_PORT = int(os.environ.get('TEXTSENSE_PORT', '8502'))
 MAX_CSV_BYTES = 100 * 1024 * 1024
 MAX_CSV_ROWS = 300_000
@@ -44,14 +55,14 @@ RESULT_NAME_COLUMN = 'Kết quả TextSense'
 CODE_TO_RESULT = {0: 'nonnegative', 1: 'negative'}
 
 
+# Không đưa từ phủ định (not, no, never, neither, nor) vào stopwords để giữ nguyên ngữ nghĩa phủ định.
 STOPWORDS_EN = {
-    'the','and','for','that','this','with','you','your','are','was','were','have','has','had',
-    'but','not','all','they','them','their','there','then','than','from','about','would','could',
-    'should','will','just','what','when','where','which','who','why','how','into','out','our',
-    'his','her','she','him','its',"it's",'too','very','can','cant','cannot','don','does','did',
-    'been','being','get','got','one','two','more','most','some','any','only','also','because',
-    'people','someone','something','like','know','think','make','made','much','many','really',
-    'https','http','www','com','amp','rt'
+    'the', 'and', 'for', 'that', 'this', 'with', 'you', 'your', 'are', 'was', 'were', 'have', 'has', 'had',
+    'but', 'all', 'they', 'them', 'their', 'there', 'then', 'than', 'from', 'about', 'would', 'could',
+    'should', 'will', 'just', 'what', 'when', 'where', 'which', 'who', 'why', 'how', 'into', 'out', 'our',
+    'his', 'her', 'she', 'him', 'its', "it's", 'too', 'very', 'can', 'been', 'being', 'get', 'got',
+    'one', 'two', 'more', 'most', 'some', 'any', 'only', 'also', 'because', 'people', 'someone', 'something',
+    'like', 'know', 'think', 'make', 'made', 'much', 'many', 'really', 'https', 'http', 'www', 'com', 'amp', 'rt'
 }
 
 
@@ -80,8 +91,43 @@ def count_suspect_terms(texts, mask, limit=15):
             for term, count in sorted(occurrences.items(), key=lambda item: (-item[1], item[0]))[:limit]]
 
 
+def _compute_term_stats(text_list: list[str], limit: int = 30) -> dict:
+    """Compute unigram and bigram stats: total frequency vs distinct document count."""
+    uni_freq, uni_docs = Counter(), Counter()
+    bi_freq, bi_docs = Counter(), Counter()
+    total_docs = len(text_list)
+    for text in text_list:
+        tokens = [t for t in re.findall(r"[a-z][a-z']{1,}", str(text).casefold())
+                  if len(t) >= 2 and t not in STOPWORDS_EN]
+        if not tokens:
+            continue
+        uni_freq.update(tokens)
+        uni_docs.update(set(tokens))
+        if len(tokens) >= 2:
+            bigrams = [f'{tokens[i]} {tokens[i + 1]}' for i in range(len(tokens) - 1)]
+            bi_freq.update(bigrams)
+            bi_docs.update(set(bigrams))
+
+    def _format(freq_counter, doc_counter):
+        items = []
+        for term, count in freq_counter.most_common(limit):
+            docs = int(doc_counter[term])
+            items.append({
+                'term': term,
+                'count': int(count),
+                'documents': docs,
+                'doc_rate': round(docs / total_docs, 6) if total_docs else 0.0,
+            })
+        return items
+
+    return {
+        'unigrams': _format(uni_freq, uni_docs),
+        'bigrams': _format(bi_freq, bi_docs),
+    }
+
+
 def build_batch_summary(frame: pd.DataFrame, text_column: str, results: list, filename: str = '') -> dict:
-    """Tạo thống kê mô tả cho chính tệp CSV vừa phân tích; không gọi đây là độ chính xác."""
+    """Tạo thống kê mô tả cho chính tệp dữ liệu vừa phân tích; không gọi đây là độ chính xác."""
     texts = frame[text_column].fillna('').astype(str)
     codes = [row.get('predicted_label') if row.get('status') == 'ok' else None for row in results]
     valid_mask = pd.Series([code in (0, 1) for code in codes], index=frame.index)
@@ -129,39 +175,67 @@ def build_batch_summary(frame: pd.DataFrame, text_column: str, results: list, fi
                                     'negative': int(negative_count), 'nonnegative': int(nonnegative_count)}]
 
     original_label_col = next((c for c in frame.columns if str(c).strip().casefold() in
-                               {'category', 'sentiment', 'label', 'class', 'target'}), None)
+                               {'category', 'sentiment', 'label', 'class', 'target', 'ground_truth', 'true_label', 'actual_label'}), None)
     original_labels = []
     proxy_agreement = None
+    reference_evaluation = None
     if original_label_col is not None:
         raw_labels = pd.to_numeric(frame[original_label_col], errors='coerce')
-        counts = raw_labels.value_counts().to_dict()
-        original_labels = [
-            {'label': '-1 · Tiêu cực', 'count': int(counts.get(-1, 0))},
-            {'label': '0 · Trung tính', 'count': int(counts.get(0, 0))},
-            {'label': '1 · Tích cực', 'count': int(counts.get(1, 0))},
-        ]
-        comparable = valid_mask & raw_labels.isin([-1, 0, 1])
-        if int(comparable.sum()):
+        unique_vals = set(raw_labels.dropna().unique().tolist())
+        if unique_vals <= {-1, 0, 1}:
+            counts = raw_labels.value_counts().to_dict()
+            original_labels = [
+                {'label': '-1 · Tiêu cực', 'count': int(counts.get(-1, 0))},
+                {'label': '0 · Trung tính', 'count': int(counts.get(0, 0))},
+                {'label': '1 · Tích cực', 'count': int(counts.get(1, 0))},
+            ]
+            comparable = valid_mask & raw_labels.isin([-1, 0, 1])
             expected = raw_labels[comparable].map({-1: 1, 0: 0, 1: 0}).astype(int)
+        elif unique_vals <= {0, 1} and len(unique_vals) > 0:
+            counts = raw_labels.value_counts().to_dict()
+            original_labels = [
+                {'label': '0 · Không phát hiện tiêu cực', 'count': int(counts.get(0, 0))},
+                {'label': '1 · Có nội dung tiêu cực', 'count': int(counts.get(1, 0))},
+            ]
+            comparable = valid_mask & raw_labels.isin([0, 1])
+            expected = raw_labels[comparable].astype(int)
+        else:
+            comparable = pd.Series(False, index=frame.index)
+            expected = pd.Series(dtype=int)
+
+        if int(comparable.sum()):
             predicted = pd.Series(codes, index=frame.index)[comparable].astype(int)
+            tp = int(((expected == 1) & (predicted == 1)).sum())
+            fp = int(((expected == 0) & (predicted == 1)).sum())
+            fn = int(((expected == 1) & (predicted == 0)).sum())
+            tn = int(((expected == 0) & (predicted == 0)).sum())
+            n_cmp = tp + fp + fn + tn
+            acc = (tp + tn) / n_cmp if n_cmp else 0.0
+            prec = tp / (tp + fp) if (tp + fp) else 0.0
+            rec = tp / (tp + fn) if (tp + fn) else 0.0
+            f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) else 0.0
             proxy_agreement = {
-                'count': int(comparable.sum()),
-                'rate': round(float((expected == predicted).mean()), 6),
-                'note': 'Mức độ trùng khớp với nhãn proxy gốc, không phải độ chính xác trên nhãn người gán.'
+                'count': n_cmp,
+                'rate': round(acc, 6),
+                'note': 'Mức độ trùng khớp với nhãn tham chiếu trong tệp dữ liệu.'
+            }
+            reference_evaluation = {
+                'column': str(original_label_col),
+                'samples': n_cmp,
+                'accuracy': round(acc, 6),
+                'precision': round(prec, 6),
+                'recall': round(rec, 6),
+                'f1': round(f1, 6),
+                'confusion_matrix': [[tn, fp], [fn, tp]],
             }
 
-    def top_terms(mask, limit=10):
-        counter = Counter()
-        for text in texts[mask].tolist():
-            terms = re.findall(r"[a-z][a-z']{2,}", text.casefold())
-            counter.update(term for term in terms if term not in STOPWORDS_EN)
-        return [{'term': term, 'count': int(count)} for term, count in counter.most_common(limit)]
-
-    top_all = top_terms(valid_mask)
     negative_mask = pd.Series([code == 1 for code in codes], index=frame.index) & valid_mask
-    top_negative = top_terms(negative_mask)
-    # Count all terms before taking the top 15 to avoid missing a group's count
-    # when a term is outside that group's own top list.
+    nonnegative_mask = pd.Series([code == 0 for code in codes], index=frame.index) & valid_mask
+
+    stats_all = _compute_term_stats(texts[valid_mask].tolist(), limit=30)
+    stats_neg = _compute_term_stats(texts[negative_mask].tolist(), limit=30)
+    stats_nonneg = _compute_term_stats(texts[nonnegative_mask].tolist(), limit=30)
+
     suspect_all_full = count_suspect_terms(texts, valid_mask, limit=None)
     suspect_negative_full = count_suspect_terms(texts, negative_mask, limit=None)
     suspect_all = suspect_all_full[:15]
@@ -197,10 +271,19 @@ def build_batch_summary(frame: pd.DataFrame, text_column: str, results: list, fi
         'source_distribution': source_distribution,
         'original_labels': original_labels,
         'proxy_agreement': proxy_agreement,
-        'top_terms': top_all, 'top_negative_terms': top_negative,
+        'reference_evaluation': reference_evaluation,
+        'top_terms': stats_all['unigrams'][:15],
+        'top_negative_terms': stats_neg['unigrams'][:15],
+        'top_nonnegative_terms': stats_nonneg['unigrams'][:15],
+        'top_bigrams_all': stats_all['bigrams'][:20],
+        'top_bigrams_negative': stats_neg['bigrams'][:20],
+        'top_bigrams_nonnegative': stats_nonneg['bigrams'][:20],
+        'top_unigrams_all': stats_all['unigrams'][:20],
+        'top_unigrams_negative': stats_neg['unigrams'][:20],
+        'top_unigrams_nonnegative': stats_nonneg['unigrams'][:20],
         'suspect_terms_all': suspect_all, 'suspect_terms_negative': suspect_negative,
         'suspect_terms_combined': suspect_combined,
-        'suspect_terms_note': 'Tu/cum tu khop danh sach doi chieu tieng Anh, khong phai noi dung xuc pham da duoc xac minh.',
+        'suspect_terms_note': 'Thống kê các từ ngữ trùng khớp với danh sách tham chiếu. Kết quả chỉ hỗ trợ khám phá dữ liệu, không xác định một bình luận có hành vi xúc phạm hay không.',
         'monthly_distribution': monthly,
     }
 
@@ -381,7 +464,7 @@ def read_tabular_upload(raw: bytes, filename: str, sheet: str = '') -> tuple[pd.
 
 
 def result_csv_to_xlsx(raw: bytes) -> bytes:
-    """Stream the analyzed CSV into a genuine XLSX without rerunning inference."""
+    """Stream the analyzed CSV into a multi-sheet XLSX matching all web dashboard statistics."""
     if not raw or len(raw) > MAX_RESULT_BYTES:
         raise ValueError('Tệp kết quả trống hoặc quá lớn để tạo Excel.')
     reader = csv.reader(TextIOWrapper(BytesIO(raw), encoding='utf-8-sig', newline=''), strict=True)
@@ -390,25 +473,32 @@ def result_csv_to_xlsx(raw: bytes) -> bytes:
     except (StopIteration, csv.Error) as exc:
         raise ValueError('Không có tiêu đề cột trong dữ liệu kết quả.') from exc
     if RESULT_COLUMN not in columns or RESULT_NAME_COLUMN not in columns:
-        raise ValueError('Đây không phải tệp kết quả TextSense V3.16.')
+        raise ValueError('Đây không phải tệp kết quả TextSense.')
     label_index = columns.index(RESULT_COLUMN)
-    text_column = next((i for i, c in enumerate(columns)
-                        if str(c).strip().casefold() in ('tweet','clean_text','comment','text','bình luận',
-                                                        'clean_comment','content','review','message')), None)
+    text_column_idx = next((i for i, c in enumerate(columns)
+                            if str(c).strip().casefold() in ('tweet', 'clean_text', 'comment', 'text', 'bình luận',
+                                                            'clean_comment', 'content', 'review', 'message')), None)
+    if text_column_idx is None:
+        text_column_idx = next((i for i, c in enumerate(columns) if c not in (RESULT_COLUMN, RESULT_NAME_COLUMN)), None)
+
     book = Workbook(write_only=True)
     output_sheet = book.create_sheet('Kết quả phân loại')
     output_sheet.freeze_panes = 'A2'
     output_sheet.sheet_view.showGridLines = False
-    navy = PatternFill('solid', fgColor='213452')
-    header = []
-    for name in columns:
-        cell = WriteOnlyCell(output_sheet, value=name)
-        cell.font = Font(bold=True, color='FFFFFF')
-        cell.fill = navy
-        header.append(cell)
-    output_sheet.append(header)
-    counts = Counter()
-    term_counts = Counter()
+    navy = PatternFill('solid', fgColor='172B4D')
+    sub_fill = PatternFill('solid', fgColor='EAF2FF')
+
+    def _style_header(ws, titles):
+        row_cells = []
+        for title in titles:
+            c = WriteOnlyCell(ws, value=title)
+            c.font = Font(bold=True, color='FFFFFF')
+            c.fill = navy
+            row_cells.append(c)
+        ws.append(row_cells)
+
+    _style_header(output_sheet, columns)
+    all_records = []
     number_rows = 0
     for record in reader:
         number_rows += 1
@@ -416,9 +506,6 @@ def result_csv_to_xlsx(raw: bytes) -> bytes:
             raise ValueError(f'Tệp kết quả vượt {MAX_CSV_ROWS:,} dòng.')
         if len(record) != len(columns):
             raise ValueError(f'Dữ liệu không hợp lệ tại dòng {number_rows + 1}.')
-        code = record[label_index].strip()
-        counts[code] += 1
-        # Protect cells from formula execution, including if the source CSV was modified.
         safe = []
         for value in record:
             check = value.lstrip()
@@ -426,42 +513,136 @@ def result_csv_to_xlsx(raw: bytes) -> bytes:
                 value = "'" + value
             safe.append(value)
         output_sheet.append(safe)
-        if text_column is not None and code in ('0', '1'):
-            words = re.findall(r"[^\W\d_]+(?:'[^\W\d_]+)?", record[text_column].casefold(), re.UNICODE)
-            term_counts.update(term for term in words if len(term) > 2 and term not in STOPWORDS_EN)
+        all_records.append(record)
+
+    # Build full summary matching the web dashboard
+    summary = None
+    with _LAST_BATCH_LOCK:
+        if _LAST_BATCH_CACHE is not None and len(_LAST_BATCH_CACHE.get('texts', [])) == number_rows:
+            summary = _LAST_BATCH_CACHE.get('summary')
+
+    if summary is None and text_column_idx is not None:
+        frame = pd.DataFrame(all_records, columns=columns)
+        text_col_name = columns[text_column_idx]
+        results = []
+        for rec in all_records:
+            code_str = rec[label_index].strip()
+            code = int(code_str) if code_str in ('0', '1') else None
+            results.append({
+                'text': rec[text_column_idx],
+                'predicted_label': code,
+                'label_name': ('Có nội dung tiêu cực' if code == 1 else 'Không phát hiện nội dung tiêu cực') if code is not None else None,
+                'status': 'ok' if code is not None else 'invalid',
+            })
+        summary = build_batch_summary(frame, text_col_name, results, '')
+
+    # Sheet 2: Thống kê tổng hợp
     sheet = book.create_sheet('Thống kê tổng hợp')
     sheet.sheet_view.showGridLines = False
-    total = number_rows
-    valid = counts['0'] + counts['1']
-    rows = [
-        ('TEXTSENSE · TỔNG HỢP PHÂN LOẠI', ''),
-        ('Chỉ số', 'Giá trị'),
-        ('Tổng số bình luận', total),
-        ('Đã phân loại', valid),
-        ('Chưa phân loại', total - valid),
-        ('Có nội dung tiêu cực', counts['1']),
-        ('Không phát hiện nội dung tiêu cực', counts['0']),
-        ('Tỷ lệ có nội dung tiêu cực', counts['1']/valid if valid else 0),
-        ('Tỷ lệ không phát hiện nội dung tiêu cực', counts['0']/valid if valid else 0),
-        ('', ''),
-        ('Từ ngữ xuất hiện nhiều', 'Số lần'),
+    sheet.column_dimensions['A'].width = 42
+    sheet.column_dimensions['B'].width = 24
+    sheet.column_dimensions['C'].width = 24
+
+    total = summary['total'] if summary else number_rows
+    valid = summary['valid'] if summary else 0
+    invalid = summary['invalid'] if summary else (total - valid)
+    neg = summary['negative'] if summary else 0
+    nonneg = summary['nonnegative'] if summary else 0
+
+    _style_header(sheet, ['TEXTSENSE · THỐNG KÊ TỔNG HỢP', 'Giá trị', 'Tỷ lệ'])
+    overview_rows = [
+        ('Tổng số dòng đầu vào', total, 1.0 if total else 0.0),
+        ('Số dòng hợp lệ (đã phân tích)', valid, valid / total if total else 0.0),
+        ('Số dòng không hợp lệ / bỏ qua', invalid, invalid / total if total else 0.0),
+        ('Có nội dung tiêu cực (Nhãn 1)', neg, neg / valid if valid else 0.0),
+        ('Không phát hiện nội dung tiêu cực (Nhãn 0)', nonneg, nonneg / valid if valid else 0.0),
     ]
-    rows.extend(term_counts.most_common(15))
-    rows.append(('', ''))
-    rows.append(('Lưu ý', 'Hai nhóm phản ánh sắc thái cảm xúc, không xác minh lời lẽ xúc phạm.'))
-    for i, values in enumerate(rows, start=1):
-        excel_row = []
-        for j, value in enumerate(values):
-            cell = WriteOnlyCell(sheet, value=value)
-            if i in (1, 2, 11):
-                cell.font = Font(color='FFFFFF', bold=True)
-                cell.fill = navy
-            if i in (8, 9) and j == 1:
-                cell.number_format = '0.0%'
-            excel_row.append(cell)
-        sheet.append(excel_row)
-    sheet.column_dimensions['A'].width = 32
-    sheet.column_dimensions['B'].width = 67
+    for label, val, pct in overview_rows:
+        c1 = WriteOnlyCell(sheet, value=label)
+        c2 = WriteOnlyCell(sheet, value=val)
+        c3 = WriteOnlyCell(sheet, value=pct)
+        c3.number_format = '0.0%'
+        sheet.append([c1, c2, c3])
+
+    if summary:
+        sheet.append(['', '', ''])
+        _style_header(sheet, ['ĐẶC ĐIỂM DỮ LIỆU', 'Giá trị', 'Ghi chú'])
+        sheet.append(['Độ dài trung bình (từ / bình luận)', summary.get('avg_words', 0), ''])
+        sheet.append(['Trung vị độ dài (từ / bình luận)', summary.get('median_words', 0), ''])
+        sheet.append(['Số bình luận trùng lặp sau chuẩn hóa', summary.get('duplicate_excess', 0), ''])
+        for b in summary.get('length_buckets', []):
+            sheet.append([f"Phân bố độ dài: {b['label']}", b['count'], ''])
+
+        if summary.get('source_distribution'):
+            sheet.append(['', '', ''])
+            _style_header(sheet, ['PHÂN BỐ THEO NGUỒN', 'Có tiêu cực (1)', 'Không tiêu cực (0)'])
+            for s in summary['source_distribution']:
+                sheet.append([s['label'], s.get('negative', 0), s.get('nonnegative', 0)])
+
+        if summary.get('monthly_distribution'):
+            sheet.append(['', '', ''])
+            _style_header(sheet, ['PHÂN BỐ THEO THỜI GIAN', 'Số lượng', ''])
+            for m in summary['monthly_distribution']:
+                sheet.append([m['label'], m['count'], ''])
+
+        if summary.get('reference_evaluation'):
+            ev = summary['reference_evaluation']
+            sheet.append(['', '', ''])
+            _style_header(sheet, ['ĐÁNH GIÁ TRÊN NHÃN THAM CHIẾU TRONG TỆP', 'Giá trị', 'Ghi chú'])
+            for lbl, v in [('Accuracy', ev['accuracy']), ('Precision (lớp 1)', ev['precision']),
+                           ('Recall (lớp 1)', ev['recall']), ('F1-score (lớp 1)', ev['f1'])]:
+                c_pct = WriteOnlyCell(sheet, value=v)
+                c_pct.number_format = '0.00%'
+                sheet.append([lbl, c_pct, f"Trên {ev['samples']} mẫu có nhãn tham chiếu"])
+
+        # Sheet 3: Phân tích từ khóa (Unigram & Bigram)
+        kw_sheet = book.create_sheet('Phân tích từ khóa')
+        kw_sheet.sheet_view.showGridLines = False
+        kw_sheet.column_dimensions['A'].width = 28
+        kw_sheet.column_dimensions['B'].width = 16
+        kw_sheet.column_dimensions['C'].width = 24
+        kw_sheet.column_dimensions['D'].width = 22
+        kw_sheet.column_dimensions['E'].width = 18
+
+        _style_header(kw_sheet, ['Nhóm / Loại', 'Từ khóa / cụm từ', 'Số lần xuất hiện', 'Số bình luận chứa từ', 'Tỷ lệ trong nhóm'])
+        for group_name, key in [
+            ('Tiêu cực (1) · Unigram', 'top_unigrams_negative'),
+            ('Tiêu cực (1) · Bigram', 'top_bigrams_negative'),
+            ('Toàn bộ · Unigram', 'top_unigrams_all'),
+            ('Toàn bộ · Bigram', 'top_bigrams_all'),
+        ]:
+            for item in summary.get(key, [])[:20]:
+                c_rate = WriteOnlyCell(kw_sheet, value=item.get('doc_rate', 0.0))
+                c_rate.number_format = '0.0%'
+                kw_sheet.append([
+                    group_name,
+                    item['term'],
+                    item['count'],
+                    item.get('documents', item['count']),
+                    c_rate,
+                ])
+
+        # Sheet 4: Từ ngữ cần xem xét thêm
+        sus_sheet = book.create_sheet('Từ ngữ cần xem xét thêm')
+        sus_sheet.sheet_view.showGridLines = False
+        sus_sheet.column_dimensions['A'].width = 24
+        sus_sheet.column_dimensions['B'].width = 18
+        sus_sheet.column_dimensions['C'].width = 18
+        sus_sheet.column_dimensions['D'].width = 22
+        sus_sheet.column_dimensions['E'].width = 22
+        _style_header(sus_sheet, ['Từ ngữ', 'Tổng số lần', 'Nhóm Tiêu cực', 'Nhóm Không tiêu cực', 'Số bình luận'])
+        for item in summary.get('suspect_terms_combined', []):
+            nonneg_cnt = max(0, item.get('total_count', 0) - item.get('negative_count', 0))
+            sus_sheet.append([
+                item['term'],
+                item.get('total_count', 0),
+                item.get('negative_count', 0),
+                nonneg_cnt,
+                item.get('total_documents', 0),
+            ])
+        sus_sheet.append(['', '', '', '', ''])
+        sus_sheet.append(['Lưu ý', summary.get('suspect_terms_note', ''), '', '', ''])
+
     data = BytesIO()
     book.save(data)
     return data.getvalue()
@@ -616,8 +797,52 @@ def infer_comment(input_value: str) -> dict:
         'label_name': final_label_name,
         'text': text,
         'status': 'ok',
+        'confidence': None,
+        'analyzed_at': datetime.now(timezone.utc).isoformat(),
         'sentence_analysis': sentence_analysis,
     }
+
+
+_LAST_BATCH_LOCK = threading.Lock()
+_LAST_BATCH_CACHE: dict | None = None
+
+
+def _store_last_batch_cache(batch_id: int | None, filename: str, frame: pd.DataFrame,
+                            text_column: str, results: list, summary: dict) -> None:
+    global _LAST_BATCH_CACHE
+    with _LAST_BATCH_LOCK:
+        _LAST_BATCH_CACHE = {
+            'batch_id': batch_id,
+            'filename': filename,
+            'texts': frame[text_column].fillna('').astype(str).tolist(),
+            'results': results,
+            'summary': summary,
+        }
+
+
+def _find_comments_for_term(rows: list[dict], term: str, label_filter: str = '', limit: int = 30) -> list[dict]:
+    term_norm = term.strip().casefold()
+    if not term_norm:
+        return []
+    pattern = re.compile(r'(?<![a-z\'])' + re.escape(term_norm) + r'(?![a-z\'])', flags=re.I)
+    matched = []
+    for item in rows:
+        code = item.get('predicted_label')
+        if code not in (0, 1):
+            continue
+        if label_filter in ('0', '1') and str(code) != label_filter:
+            continue
+        text = str(item.get('input_text') if 'input_text' in item else item.get('text') or '')
+        if pattern.search(text.casefold()):
+            matched.append({
+                'row_number': item.get('row_number'),
+                'text': text,
+                'predicted_label': code,
+                'label_name': item.get('label_name') or ('Có nội dung tiêu cực' if code == 1 else 'Không phát hiện nội dung tiêu cực'),
+            })
+            if len(matched) >= limit:
+                break
+    return matched
 
 
 class TextSenseHandler(BaseHTTPRequestHandler):
@@ -705,6 +930,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                     'label_name': result['label_name'], 'status': 'ok'
                 }], len(raw), raw)
                 result['history_saved'] = history_id is not None
+                result['batch_id'] = history_id
                 self._json(200, result)
             elif parsed.path == '/api/sentences':
                 if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
@@ -730,37 +956,98 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                     raise RequestFailure(400, 'JSON không hợp lệ') from exc
                 if not isinstance(payload, dict):
                     raise RequestFailure(422, 'Dữ liệu không hợp lệ')
-                source = str(payload.get('source', 'Bình luận riêng lẻ'))
-                prediction = str(payload.get('prediction', ''))
-                suggested_label = str(payload.get('suggested_label', ''))
-                note = str(payload.get('note', ''))
+                source = str(payload.get('source', 'Bình luận riêng lẻ')).strip() or 'Bình luận riêng lẻ'
+                prediction = str(payload.get('prediction', '')).strip()
+                suggested_label = str(payload.get('suggested_label', '')).strip()
+                reason_category = str(payload.get('reason_category', 'Lý do khác')).strip() or 'Lý do khác'
+                note = str(payload.get('note', '')).strip()
                 text = payload.get('text')
+                batch_id = payload.get('batch_id')
+                row_number = payload.get('row_number')
+                prediction_id = payload.get('prediction_id')
+                if not suggested_label or not prediction:
+                    raise RequestFailure(422, 'Thiếu thông tin nhãn', 'Vui lòng chọn nhãn đề xuất trước khi gửi.')
                 feedback_id = record_user_feedback(
                     source_name=source,
                     model_prediction=prediction,
                     suggested_label=suggested_label,
                     user_note=note,
-                    input_text=text
+                    input_text=text,
+                    batch_id=int(batch_id) if batch_id is not None and str(batch_id).isdigit() else None,
+                    row_number=int(row_number) if row_number is not None and str(row_number).isdigit() else None,
+                    prediction_id=int(prediction_id) if prediction_id is not None and str(prediction_id).isdigit() else None,
+                    reason_category=reason_category,
                 )
+                if feedback_id is None:
+                    self._json(503, {
+                        'status': 'error',
+                        'feedback_saved': False,
+                        'feedback_id': None,
+                        'message': 'Không lưu được báo cáo vào SQL Server. Vui lòng kiểm tra kết nối cơ sở dữ liệu.'
+                    })
+                    return
                 self._json(200, {
                     'status': 'ok',
-                    'feedback_saved': feedback_id is not None,
+                    'feedback_saved': True,
                     'feedback_id': feedback_id,
-                    'message': 'Phản hồi đã được ghi nhận vào SQL Server.' if feedback_id is not None
-                               else 'Chưa lưu được vào SQL Server. Vui lòng kiểm tra kết nối.'
+                    'review_status': 'Chờ xem xét',
+                    'message': 'Đã lưu báo cáo kết quả sai vào SQL Server.'
                 })
+            elif parsed.path == '/api/feedback/status':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
+                    raise RequestFailure(415, 'Cần dữ liệu JSON')
+                raw = self._read_bytes(MAX_JSON_BYTES)
+                try:
+                    payload = json.loads(raw)
+                except (ValueError, UnicodeError) as exc:
+                    raise RequestFailure(400, 'JSON không hợp lệ') from exc
+                fb_id = payload.get('feedback_id') if isinstance(payload, dict) else None
+                new_status = str(payload.get('review_status', '')).strip() if isinstance(payload, dict) else ''
+                if not fb_id or not str(fb_id).isdigit():
+                    raise RequestFailure(422, 'Thiếu mã báo cáo hợp lệ.')
+                try:
+                    ok = update_feedback_status(int(fb_id), new_status)
+                except ValueError as exc:
+                    raise RequestFailure(422, str(exc)) from exc
+                if not ok:
+                    self._json(503, {'status': 'error', 'message': 'Không thể cập nhật trạng thái trên SQL Server.'})
+                    return
+                self._json(200, {'status': 'ok', 'feedback_id': int(fb_id), 'review_status': new_status})
             elif parsed.path == '/api/columns':
                 params = parse_qs(parsed.query, keep_blank_values=True)
                 raw_csv, frame, sheet_names, selected_sheet = self._tabular_data(params)
                 roles = csv_column_roles(frame)
                 preview = [{name: str(row[name])[:180] for name in frame.columns}
-                           for _, row in frame.head(3).iterrows()]
+                           for _, row in frame.head(5).iterrows()]
+                column_stats = {}
+                for col in roles['text_candidates']:
+                    series = frame[col].fillna('').astype(str)
+                    valid_cnt = 0
+                    empty_cnt = 0
+                    invalid_cnt = 0
+                    for raw_val in series:
+                        stripped = raw_val.strip()
+                        if not stripped:
+                            empty_cnt += 1
+                            continue
+                        cleaned_val = normalize_text(raw_val)
+                        if (URL_PATTERN.fullmatch(stripped) or not cleaned_val
+                                or len(cleaned_val) > PREDICT_MAX_CHARS or vietnamese_warning(cleaned_val)):
+                            invalid_cnt += 1
+                        else:
+                            valid_cnt += 1
+                    column_stats[col] = {
+                        'valid_rows': valid_cnt,
+                        'empty_rows': empty_cnt,
+                        'invalid_rows': empty_cnt + invalid_cnt,
+                    }
                 self._json(200, {
                     'rows': len(frame), 'columns': list(frame.columns), 'size_bytes': len(raw_csv),
                     'sheets': sheet_names, 'selected_sheet': selected_sheet,
                     'suggested_column': roles['suggested_column'],
                     'text_candidates': roles['text_candidates'], 'label_columns': roles['label_columns'],
                     'index_columns': roles['index_columns'], 'link_columns': roles['link_columns'],
+                    'column_stats': column_stats,
                     'preview_rows': preview
                 })
             elif parsed.path == '/api/batch':
@@ -795,6 +1082,10 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                     raise RuntimeError('Số lượng kết quả không khớp số dòng dữ liệu.')
                 history_id = record_prediction_batch('binary', filename, results, len(raw_csv), raw_csv)
                 summary = build_batch_summary(frame, column, results, filename)
+                summary['batch_id'] = history_id
+                summary['filename'] = filename
+                summary['column'] = column
+                _store_last_batch_cache(history_id, filename, frame, column, results, summary)
                 data = safe_csv_bytes(output)
                 self._send(200, data, 'text/csv; charset=utf-8', {
                     'Content-Disposition': 'attachment; filename="TextSense-ket-qua.csv"',
@@ -802,6 +1093,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                     'X-Nonnegative-Rows': nonnegative_count, 'X-Negative-Rows': negative_count,
                     'X-Invalid-Rows': invalid_count,
                     'X-History-Saved': 'true' if history_id is not None else 'false',
+                    'X-Batch-Id': '' if history_id is None else str(history_id),
                     'X-TextSense-Summary': encode_summary_header(summary)
                 })
             elif parsed.path == '/api/export-xlsx':
@@ -837,6 +1129,175 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                              'sql_server': sql_status,
                              'history_storage': 'SQL Server',
                              'label_names': {'0': 'Không phát hiện nội dung tiêu cực', '1': 'Có nội dung tiêu cực'}})
+            return
+        if parsed.path == '/api/model-info':
+            if not METRICS_PATH.is_file():
+                self._json(404, {'message': 'Không tìm thấy tệp chỉ số mô hình.'})
+                return
+            try:
+                metrics = json.loads(METRICS_PATH.read_text(encoding='utf-8'))
+            except Exception as exc:
+                self._json(500, {'message': f'Không đọc được chỉ số mô hình: {exc}'})
+                return
+            cls_neg = metrics.get('classification_report', {}).get('Tiêu cực', {})
+            self._json(200, {
+                'model': metrics.get('model', 'TF-IDF + LinearSVC'),
+                'task': metrics.get('task', 'binary'),
+                'sklearn_version': metrics.get('sklearn_version'),
+                'python_version': metrics.get('python_version'),
+                'train_rows': metrics.get('train_rows'),
+                'validation_rows': metrics.get('validation_rows'),
+                'test_rows': metrics.get('test_rows'),
+                'accuracy': metrics.get('accuracy'),
+                'f1_macro': metrics.get('f1_macro'),
+                'precision_negative': cls_neg.get('precision'),
+                'recall_negative': cls_neg.get('recall'),
+                'f1_negative': cls_neg.get('f1-score'),
+                'confusion_matrix': metrics.get('confusion_matrix'),
+                'source_stats': {
+                    'unique_trainable_rows': metrics.get('source_stats', {}).get('unique_trainable_rows'),
+                    'source_counts': metrics.get('source_stats', {}).get('source_counts'),
+                    'binary_label_counts': metrics.get('source_stats', {}).get('binary_label_counts'),
+                    'binary_label_percentages': metrics.get('source_stats', {}).get('binary_label_percentages'),
+                },
+                'tuning': metrics.get('tuning'),
+                'decision': {
+                    'default_threshold': metrics.get('decision', {}).get('default_threshold'),
+                    'validation_selected_threshold': metrics.get('decision', {}).get('validation_selected_threshold'),
+                },
+                'preprocessing': {
+                    'version': 'textsense_clean_v3_context',
+                    'steps': [
+                        'Chuẩn hóa Unicode NFKC và dấu nháy',
+                        'Loại bỏ tiền tố RT @handle ở đầu bình luận',
+                        'Loại bỏ đường dẫn URL (http/https/www)',
+                        'Chuyển chữ hoa thành chữ thường (casefold)',
+                        'Chuẩn hóa từ viết tắt phủ định (cant -> can not, wasnt -> was not...)',
+                        'Tách dấu câu, thay dấu gạch dưới bằng khoảng trắng và chuẩn hóa khoảng trắng',
+                    ],
+                },
+                'vectorizer': {
+                    'max_features': 40000,
+                    'min_df': 2,
+                    'ngram_range': [1, 2],
+                    'sublinear_tf': True,
+                },
+            })
+            return
+        if parsed.path == '/api/history/batches':
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            limit = int(params.get('limit', ['50'])[0] or 50)
+            sql_st = sql_server_status()
+            if not sql_st.get('available'):
+                self._json(503, {'available': False, 'batches': [], 'message': sql_st.get('message', 'Chưa kết nối SQL Server.')})
+                return
+            try:
+                batches = list_prediction_batches(limit=limit)
+                self._json(200, {'available': True, 'batches': batches})
+            except Exception as exc:
+                self._json(503, {'available': False, 'batches': [], 'message': f'Không truy vấn được SQL Server: {exc}'})
+            return
+        if parsed.path == '/api/history/predictions':
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            batch_raw = params.get('batch_id', [''])[0].strip()
+            batch_id = int(batch_raw) if batch_raw.isdigit() else None
+            label_filter = params.get('label', [''])[0].strip()
+            search = params.get('search', [''])[0].strip()
+            date_from = params.get('date_from', [''])[0].strip()
+            date_to = params.get('date_to', [''])[0].strip()
+            page = int(params.get('page', ['1'])[0] or 1)
+            page_size = int(params.get('page_size', ['15'])[0] or 15)
+            data = query_predictions_paginated(
+                batch_id=batch_id, label_filter=label_filter, search=search,
+                date_from=date_from, date_to=date_to, page=page, page_size=page_size,
+            )
+            self._json(200 if data.get('available') else 503, data)
+            return
+        if parsed.path == '/api/feedback':
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            status_filter = params.get('status', [''])[0].strip()
+            reason_filter = params.get('reason', [''])[0].strip()
+            search = params.get('search', [''])[0].strip()
+            page = int(params.get('page', ['1'])[0] or 1)
+            page_size = int(params.get('page_size', ['15'])[0] or 15)
+            data = list_user_feedback(
+                status_filter=status_filter, reason_filter=reason_filter,
+                search=search, page=page, page_size=page_size,
+            )
+            self._json(200 if data.get('available') else 503, data)
+            return
+        if parsed.path == '/api/stats':
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            batch_raw = params.get('batch_id', [''])[0].strip()
+            batch_id = int(batch_raw) if batch_raw.isdigit() else None
+            with _LAST_BATCH_LOCK:
+                cached = _LAST_BATCH_CACHE
+            if batch_id is None:
+                if cached is not None:
+                    self._json(200, {'available': True, 'source': 'current_session', 'summary': cached['summary']})
+                    return
+                try:
+                    batches = list_prediction_batches(limit=1)
+                except Exception:
+                    batches = []
+                if not batches:
+                    self._json(200, {'available': False, 'summary': None, 'message': 'Chưa có dữ liệu phân tích nào.'})
+                    return
+                batch_id = batches[0]['id']
+            if cached is not None and cached.get('batch_id') == batch_id:
+                self._json(200, {'available': True, 'source': 'cache', 'summary': cached['summary']})
+                return
+            try:
+                rows = get_predictions(batch_id)
+            except Exception as exc:
+                self._json(503, {'available': False, 'message': f'Không truy vấn được SQL Server: {exc}'})
+                return
+            if not rows:
+                self._json(404, {'available': False, 'message': 'Không tìm thấy dữ liệu cho phiên phân tích đã chọn.'})
+                return
+            frame = pd.DataFrame({'text': [r.get('input_text') or '' for r in rows]})
+            results = [{
+                'text': r.get('input_text') or '',
+                'predicted_label': r.get('predicted_label'),
+                'label_name': r.get('label_name'),
+                'status': r.get('status') or 'ok',
+            } for r in rows]
+            summary = build_batch_summary(frame, 'text', results, f'batch_{batch_id}')
+            summary['batch_id'] = batch_id
+            self._json(200, {'available': True, 'source': 'sql_server', 'summary': summary})
+            return
+        if parsed.path == '/api/stats/term-comments':
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            term = params.get('term', [''])[0].strip()
+            label_filter = params.get('label', [''])[0].strip()
+            batch_raw = params.get('batch_id', [''])[0].strip()
+            batch_id = int(batch_raw) if batch_raw.isdigit() else None
+            if not term:
+                self._json(200, {'term': '', 'comments': []})
+                return
+            with _LAST_BATCH_LOCK:
+                cached = _LAST_BATCH_CACHE
+            if cached is not None and (batch_id is None or cached.get('batch_id') == batch_id):
+                rows = [
+                    {
+                        'row_number': i + 1,
+                        'text': cached['texts'][i],
+                        'predicted_label': cached['results'][i].get('predicted_label'),
+                        'label_name': cached['results'][i].get('label_name'),
+                    }
+                    for i in range(len(cached['texts']))
+                ]
+                self._json(200, {'term': term, 'comments': _find_comments_for_term(rows, term, label_filter)})
+                return
+            if batch_id is not None:
+                try:
+                    rows = get_predictions(batch_id)
+                    self._json(200, {'term': term, 'comments': _find_comments_for_term(rows, term, label_filter)})
+                    return
+                except Exception as exc:
+                    self._json(503, {'term': term, 'comments': [], 'message': str(exc)})
+                    return
+            self._json(200, {'term': term, 'comments': []})
             return
         relative = 'index.html' if parsed.path == '/' else unquote(parsed.path).lstrip('/')
         allowed = {'index.html', 'style.css', 'app.js', 'csv_viewer.js', 'binh_luan_mau.csv'}

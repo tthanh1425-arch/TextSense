@@ -1,16 +1,12 @@
 'use strict';
 
-const assetPrefix = (function() {
-  const script = document.querySelector('script[src*="app.js"]');
-  if (script) {
-    const src = script.getAttribute('src');
-    const idx = src.lastIndexOf('/');
-    if (idx !== -1) return src.substring(0, idx + 1);
-  }
-  return '';
-})();
+const byId = (id) => document.getElementById(id);
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const formatNumber = (n) => Number(n || 0).toLocaleString('vi-VN');
+const formatBytes = (n) => n >= 1048576
+  ? (n / 1048576).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' MB'
+  : (n / 1024).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + ' KB';
 
-// Giữ lối thông báo và biểu cảm chim của TextSense gốc; mô hình thực tế chỉ phân loại cảm xúc.
 const outcomes = {
   nonnegative: {
     title: 'Không phát hiện nội dung tiêu cực',
@@ -23,200 +19,164 @@ const outcomes = {
     alt: 'Chim xanh cau mày.'
   }
 };
-const birdAssets = {nonnegative:'friendly',negative:'alert'};
+const birdAssets = { nonnegative: 'friendly', negative: 'alert' };
 const descriptions = {
-  idle: 'Chim xanh ngồi thư thái.',
-  ready: 'Chim xanh cầm mẩu bình luận.',
-  work: 'Chim xanh đang gõ laptop.',
-  sad: 'Chim xanh cúi đầu.'
+  idle: 'Sẵn sàng phân tích',
+  ready: 'Sẵn sàng phân tích nội dung',
+  work: 'Đang phân tích…',
+  sad: 'Không thể xử lý yêu cầu',
+  nonnegative: 'Không phát hiện nội dung tiêu cực',
+  negative: 'Có nội dung tiêu cực'
 };
 
-let clientModel = null;
-let clientModelPromise = null;
-
-async function loadClientModel() {
-  if (clientModel) return clientModel;
-  if (!clientModelPromise) {
-    clientModelPromise = (async () => {
-      try {
-        const res = await fetch(assetPrefix + 'model_weights.json');
-        if (!res.ok) return null;
-        clientModel = await res.json();
-        return clientModel;
-      } catch (err) {
-        console.warn('Could not load client model weights:', err);
-        return null;
-      }
-    })();
-  }
-  return clientModelPromise;
+function appendText(tag, className, content) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  el.textContent = content;
+  return el;
 }
 
-const CONTRACTIONS = {
-  aint: 'is not', cant: 'can not', cannot: 'can not',
-  wont: 'will not', shant: 'shall not',
-  arent: 'are not', couldnt: 'could not', didnt: 'did not',
-  doesnt: 'does not', dont: 'do not',
-  hadnt: 'had not', hasn: 'has not', hasnt: 'has not', havent: 'have not',
-  isnt: 'is not', mightnt: 'might not', mustnt: 'must not',
-  neednt: 'need not', shouldnt: 'should not',
-  wasnt: 'was not', werent: 'were not', wouldnt: 'would not'
-};
-for (const [k, v] of Object.entries({...CONTRACTIONS})) {
-  if (k.endsWith('nt') && k !== 'cannot') {
-    CONTRACTIONS[k.slice(0, -2) + "'t"] = v;
+// ---------- Navigation (5 main areas, no numbers) ----------
+const navLinks = Array.from(document.querySelectorAll('.main-nav a[data-nav]'));
+function setActiveNav(id) {
+  for (const link of navLinks) {
+    if (link.dataset.nav === id) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
   }
 }
-const CONTRACTION_KEYS = Object.keys(CONTRACTIONS).sort((a, b) => b.length - a.length);
-const CONTRACTION_RE = new RegExp('\\b(' + CONTRACTION_KEYS.join('|') + ')\\b', 'gi');
-
-function normalizeText(str) {
-  if (!str) return '';
-  let s = String(str).normalize('NFKC').replace(/’/g, "'");
-  s = s.replace(/^\s*rt\s+@[\w_]+\s*:?[ \t]*/gi, ' ');
-  s = s.replace(/(?:https?:\/\/|www\.)\S+/gi, ' ');
-  s = s.toLowerCase();
-  s = s.replace(CONTRACTION_RE, (match) => CONTRACTIONS[match.toLowerCase()] || match);
-  s = s.replace(/[^\p{L}\p{N}\s]/gu, ' ');
-  s = s.replace(/_/g, ' ');
-  return s.trim().replace(/\s+/g, ' ');
+for (const link of document.querySelectorAll('[data-nav], [data-goto]')) {
+  link.addEventListener('click', (e) => {
+    const targetId = link.dataset.nav || link.dataset.goto;
+    const targetEl = byId(targetId);
+    if (!targetEl) return;
+    e.preventDefault();
+    setActiveNav(targetId);
+    history.replaceState(null, '', '#' + targetId);
+    targetEl.scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
+  });
 }
 
-const VIETNAMESE_MARKS = new Set('àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ');
-function isVietnamese(text) {
-  const letters = Array.from(String(text).toLowerCase()).filter(c => /\p{L}/u.test(c));
-  if (letters.length === 0) return false;
-  const marks = letters.filter(c => VIETNAMESE_MARKS.has(c)).length;
-  return (marks / letters.length) > 0.03;
-}
-
-function predictSentenceClient(text, model) {
-  const cleaned = normalizeText(text);
-  if (!cleaned) return { label: 'nonnegative', code: 0, score: 0 };
-  const words = cleaned.split(' ');
-  const termCounts = {};
-  for (let i = 0; i < words.length; i++) {
-    const unigram = words[i];
-    termCounts[unigram] = (termCounts[unigram] || 0) + 1;
-    if (i < words.length - 1) {
-      const bigram = unigram + ' ' + words[i + 1];
-      termCounts[bigram] = (termCounts[bigram] || 0) + 1;
+// ---------- Health & Model Info ----------
+async function refreshHealth() {
+  const pill = byId('model-state');
+  const txt = byId('model-state-text');
+  try {
+    const res = await fetch('/api/health');
+    const data = await res.json();
+    const sqlOk = Boolean(data.sql_server?.available);
+    if (data.model_present && sqlOk) {
+      txt.textContent = 'Hệ thống sẵn sàng';
+      pill.dataset.ok = 'true';
+      pill.title = 'Mô hình và SQL Server đều sẵn sàng';
+    } else if (data.model_present) {
+      txt.textContent = 'SQL chưa kết nối';
+      pill.dataset.ok = 'false';
+      pill.title = data.sql_server?.message || 'Chưa kết nối SQL Server';
+    } else {
+      txt.textContent = 'Thiếu mô hình';
+      pill.dataset.ok = 'false';
     }
+  } catch {
+    txt.textContent = 'Mất kết nối';
+    pill.dataset.ok = 'false';
   }
-  let dotProd = 0;
-  let sumSq = 0;
-  for (const [term, count] of Object.entries(termCounts)) {
-    const entry = model.weights[term];
-    if (entry) {
-      const idf = entry[0];
-      const weight = entry[1];
-      const tfIdf = count * idf;
-      sumSq += tfIdf * tfIdf;
-      dotProd += tfIdf * weight;
-    }
-  }
-  let score = model.intercept;
-  if (sumSq > 0) {
-    const l2Norm = Math.sqrt(sumSq);
-    score += dotProd / l2Norm;
-  }
-  const isNeg = score > model.threshold;
-  return {
-    label: isNeg ? 'negative' : 'nonnegative',
-    code: isNeg ? 1 : 0,
-    score
-  };
+}
+refreshHealth();
+
+fetch('/api/model-info').then((r) => (r.ok ? r.json() : null)).then((data) => {
+  if (!data) return;
+  const pct = (v) => (Number(v) * 100).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+  if (data.accuracy != null) byId('mi-acc').textContent = pct(data.accuracy);
+  if (data.precision_negative != null) byId('mi-prec').textContent = pct(data.precision_negative);
+  if (data.recall_negative != null) byId('mi-rec').textContent = pct(data.recall_negative);
+  if (data.f1_negative != null) byId('mi-f1').textContent = pct(data.f1_negative);
+  if (data.train_rows) byId('mi-train-rows').textContent = formatNumber(data.train_rows);
+  if (data.validation_rows) byId('mi-val-rows').textContent = formatNumber(data.validation_rows);
+  if (data.test_rows) byId('mi-test-rows').textContent = formatNumber(data.test_rows);
+  const src = data.source_stats || {};
+  if (src.unique_trainable_rows) byId('mi-total-rows').textContent = formatNumber(src.unique_trainable_rows);
+  if (src.source_counts?.['Twitter_Data.csv']) byId('mi-twitter-rows').textContent = formatNumber(src.source_counts['Twitter_Data.csv']);
+  if (src.source_counts?.['Reddit_Data.csv']) byId('mi-reddit-rows').textContent = formatNumber(src.source_counts['Reddit_Data.csv']);
+}).catch(() => {});
+
+// ---------- Detail Modal ----------
+const detailDialog = byId('detail-dialog');
+byId('close-detail-dialog').addEventListener('click', () => detailDialog.close());
+
+function openDetailDialog({ title, labelName, labelCode, timeText, text, sourceInfo }) {
+  byId('detail-dialog-title').textContent = title || 'Chi tiết kết quả phân tích';
+  const meta = byId('detail-meta');
+  meta.replaceChildren();
+  const badgeCls = labelCode === 1 ? 'badge badge-neg' : labelCode === 0 ? 'badge badge-nonneg' : 'badge badge-neutral';
+  meta.append(appendText('span', badgeCls, labelName || 'Không xác định'));
+  if (sourceInfo) meta.append(appendText('span', '', sourceInfo));
+  if (timeText) meta.append(appendText('span', '', timeText));
+  byId('detail-text').textContent = text || '';
+  detailDialog.showModal();
 }
 
-const SENTENCE_BOUNDARY_RE = /(?<!\d)[.!?。！？…]+|[.!?。！？…]+(?!\d)|[;；\r\n]+|[,，]\s*(?=(?:but|however|yet|though|although|nevertheless|whereas|while)\b)/i;
+// ---------- Section 2: 3 Tabs (Phân tích bình luận | Lịch sử | Báo cáo sai) ----------
+const subtabSingle = byId('subtab-single');
+const subtabHistory = byId('subtab-history');
+const subtabFeedback = byId('subtab-feedback');
+const panelSingle = byId('panel-single');
+const panelHistory = byId('panel-history');
+const panelFeedback = byId('panel-feedback');
 
-function splitSentences(text) {
-  return String(text)
-    .split(SENTENCE_BOUNDARY_RE)
-    .map(p => p.replace(/^[\s,，;；:：—–]+|[\s,，;；:：—–]+$/gu, ''))
-    .filter(p => /\p{L}|\p{N}/u.test(p));
-}
-
-async function inferClient(text) {
-  const model = await loadClientModel();
-  if (!model) throw new Error('Không thể nạp tệp trọng số mô hình.');
-
-  if (isVietnamese(text)) {
-    throw new Error('Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.');
+function setSection2Tab(tab) {
+  subtabSingle.setAttribute('aria-selected', String(tab === 'single'));
+  subtabHistory.setAttribute('aria-selected', String(tab === 'history'));
+  subtabFeedback.setAttribute('aria-selected', String(tab === 'feedback'));
+  panelSingle.hidden = tab !== 'single';
+  panelHistory.hidden = tab !== 'history';
+  panelFeedback.hidden = tab !== 'feedback';
+  if (tab === 'history') {
+    loadHistoryBatches();
+    loadHistoryPredictions();
+  } else if (tab === 'feedback') {
+    loadFeedbackList();
   }
-
-  const parts = splitSentences(text);
-  const wholePred = predictSentenceClient(text, model);
-
-  let sentenceAnalysis = { available: false, mixed: false, sentences: [] };
-  let hasNegativePart = false;
-
-  if (parts.length >= 2 && parts.length <= 24) {
-    const sentences = parts.map(part => {
-      const p = predictSentenceClient(part, model);
-      if (p.code === 1) hasNegativePart = true;
-      return {
-        text: part,
-        label: p.label,
-        code: p.code
-      };
-    });
-    const negCount = sentences.filter(s => s.code === 1).length;
-    sentenceAnalysis = {
-      available: true,
-      mixed: negCount > 0 && negCount < sentences.length,
-      total_parts: sentences.length,
-      negative_parts: negCount,
-      sentences: sentences
-    };
-  }
-
-  const isNegative = wholePred.code === 1 || hasNegativePart;
-  return {
-    label: isNegative ? 'negative' : 'nonnegative',
-    code: isNegative ? 1 : 0,
-    text: text,
-    confidence: null,
-    history_saved: false,
-    sentence_analysis: sentenceAnalysis
-  };
 }
+subtabSingle.addEventListener('click', () => setSection2Tab('single'));
+subtabHistory.addEventListener('click', () => setSection2Tab('history'));
+subtabFeedback.addEventListener('click', () => setSection2Tab('feedback'));
 
-const byId = (id) => document.getElementById(id);
+// ---------- Single Comment Analysis ----------
 const form = byId('comment-form');
 const input = byId('comment');
-const submit = byId('submit');
-const retry = byId('retry');
-const clear = byId('clear');
-const failure = byId('failure');
-const progress = byId('progress-message');
-const result = byId('result');
+const submitBtn = byId('submit');
+const retryBtn = byId('retry');
+const clearBtn = byId('clear');
+const failureBox = byId('failure');
+const progressMsg = byId('progress-message');
+const resultBox = byId('result');
 const resultTitle = byId('result-title');
 const mascot = byId('mascot');
+const mascotCaption = byId('mascot-caption');
 const workspace = byId('workspace');
-const reportDialog = byId('report-dialog');
-const reportForm = byId('report-form');
-const limit = 2000;
+const TEXT_LIMIT = 2000;
 let revision = 0;
-let active;
-let lastResult;
-let resultAnimation = 0;
+let activeController = null;
+let lastResult = null;
 let resultOrigin = 'single';
+let resultAnimation = 0;
 
 function setState(state) {
   workspace.dataset.state = state;
-  mascot.src = assetPrefix + 'media/' + (birdAssets[state] || state) + '.webp?v=mascot';
+  mascot.src = 'media/' + (birdAssets[state] || state) + '.webp?v=mascot';
   mascot.alt = descriptions[state] || outcomes[state]?.alt || '';
-  // Cho phep hieu ung cua mascot khoi chay lai khi xem hai ket qua cung nhan.
-  mascot.style.animation = 'none';
-  void mascot.offsetWidth;
-  mascot.style.animation = '';
+  if (mascotCaption) mascotCaption.textContent = descriptions[state] || '';
 }
 
 function renderSentenceBreakdown(analysis) {
   const section = byId('sentence-breakdown');
   const list = byId('sentence-breakdown-list');
+  const summaryEl = byId('result-sentence-summary');
   section.hidden = true;
+  if (summaryEl) {
+    summaryEl.hidden = true;
+    summaryEl.textContent = '';
+  }
   list.replaceChildren();
   if (!analysis?.available || !Array.isArray(analysis.sentences)) return;
 
@@ -225,76 +185,42 @@ function renderSentenceBreakdown(analysis) {
   if (!Number.isSafeInteger(negativeCount) || !Number.isSafeInteger(totalParts) ||
       totalParts < 2 || negativeCount < 1 || negativeCount > totalParts) return;
 
+  if (summaryEl) {
+    summaryEl.textContent = `Số câu/phần có nội dung tiêu cực: ${negativeCount} / ${totalParts}`;
+    summaryEl.hidden = false;
+  }
+
   byId('sentence-breakdown-title').textContent = analysis.mixed
-    ? 'Các sắc thái trong bình luận' : 'Những phần mang sắc thái tiêu cực';
-  byId('sentence-breakdown-description').textContent =
-    'Phân tích chi tiết từng phần; nếu có ít nhất một phần tiêu cực thì bình luận được xác định là có nội dung tiêu cực.';
+    ? 'Phân tích từng câu / vế (có sắc thái hỗn hợp)'
+    : 'Phân tích từng câu / vế';
   byId('sentence-breakdown-count').textContent =
-    'Phát hiện ' + negativeCount + ' phần tiêu cực trong ' + totalParts + ' phần được phân loại.';
+    `Phát hiện ${negativeCount} / ${totalParts} câu (phần) có nội dung tiêu cực.`;
 
   for (const [index, item] of analysis.sentences.entries()) {
     const row = document.createElement('li');
     row.className = 'sentence-item' + (item.label === 'negative' ? ' sentence-item-negative' : '');
     const header = document.createElement('div');
     header.className = 'sentence-item-header';
-    const number = document.createElement('span');
-    number.className = 'sentence-number';
-    number.textContent = 'Phần ' + (index + 1);
-    const tag = document.createElement('strong');
-    tag.className = 'sentence-label ' + (item.label === 'negative' ? 'negative' : item.label === 'nonnegative' ? 'nonnegative' : 'unknown');
-    tag.textContent = item.label === 'negative' ? 'Tiêu cực' :
-      item.label === 'nonnegative' ? 'Không tiêu cực' : 'Chưa xác định';
-    const content = document.createElement('p');
-    content.textContent = item.text || '';
-    header.append(number, tag);
-    row.append(header, content);
+    header.append(appendText('span', 'sentence-number', 'Phần ' + (index + 1)));
+    header.append(appendText(
+      'strong',
+      'sentence-label ' + (item.label === 'negative' ? 'negative' : 'nonnegative'),
+      item.label === 'negative' ? 'Có nội dung tiêu cực' : 'Không phát hiện tiêu cực'
+    ));
+    row.append(header, appendText('p', '', item.text || ''));
     list.append(row);
   }
   section.hidden = list.childElementCount < 2;
 }
 
-async function loadBatchSentenceBreakdown(text, shownAnimation, rowNumber = 0) {
-  if (!text || !/[,，;；:：.!?。！？…—–\n\r]/u.test(text)) return;
-  try {
-    const response = await fetch('/api/sentences', {
-      method: 'POST', headers: {'content-type':'application/json'},
-      body: JSON.stringify({input: text})
-    });
-    if (response.ok) {
-      const analysis = await response.json();
-      if (shownAnimation === resultAnimation && resultOrigin === 'batch') {
-        renderSentenceBreakdown(analysis);
-        if (analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
-          showClassification({label: 'negative', text, sentence_analysis: analysis}, 'batch', rowNumber);
-        }
-      }
-      return;
-    }
-  } catch {
-    // Backend API unavailable (e.g. GitHub Pages), fallback to client model
-  }
-
-  try {
-    const clientRes = await inferClient(text);
-    if (shownAnimation === resultAnimation && resultOrigin === 'batch') {
-      renderSentenceBreakdown(clientRes.sentence_analysis);
-      if (clientRes.sentence_analysis.negative_parts > 0 && lastResult?.label !== 'negative') {
-        showClassification({label: 'negative', text, sentence_analysis: clientRes.sentence_analysis}, 'batch', rowNumber);
-      }
-    }
-  } catch {
-    // The overall prediction already exists; keep it visible on failure.
-  }
-}
-
 function showClassification(payload, origin = 'single', rowNumber = 0) {
   const classification = outcomes[payload.label];
-  if (!classification) throw new Error('Nhan du doan khong hop le');
+  if (!classification) throw new Error('Nhãn dự đoán không hợp lệ');
   resultOrigin = origin;
-  lastResult = payload;
+  lastResult = { ...payload, rowNumber };
   byId('report').hidden = false;
   byId('result-label').textContent = origin === 'batch'
-    ? 'Kết quả · Bình luận số ' + formatNumber(rowNumber)
+    ? 'Kết quả phân tích hàng loạt · STT ' + formatNumber(rowNumber)
     : 'Kết quả phân loại';
   byId('back-input').hidden = origin === 'batch';
   byId('back-batch').hidden = origin !== 'batch';
@@ -302,69 +228,70 @@ function showClassification(payload, origin = 'single', rowNumber = 0) {
   byId('batch-detail-nav').hidden = origin !== 'batch';
   resultTitle.textContent = classification.title;
   byId('result-detail').textContent = classification.detail;
+  const ts = payload.analyzed_at ? new Date(payload.analyzed_at) : new Date();
+  byId('result-timestamp').textContent = ts.toLocaleString('vi-VN');
   renderSentenceBreakdown(payload.sentence_analysis);
   byId('result-quote').textContent = payload.text;
   byId('history-warning').hidden = origin !== 'single' || payload.history_saved !== false;
   byId('entry').hidden = true;
-  result.hidden = false;
-  const animation = ++resultAnimation;
+  resultBox.hidden = false;
+  const anim = ++resultAnimation;
   setState('work');
   window.setTimeout(() => {
-    if (animation === resultAnimation) setState(payload.label);
-  }, prefersReducedMotion.matches ? 0 : 200);
-  resultTitle.focus({preventScroll: true});
+    if (anim === resultAnimation) setState(payload.label);
+  }, prefersReducedMotion.matches ? 0 : 180);
+  resultTitle.focus({ preventScroll: true });
   if (origin === 'batch') {
-    setMode('single');
-    byId('batch-detail-position').textContent = formatNumber(rowNumber) + ' / ' + formatNumber(batchCsv?.rowCount || 0);
-    byId('batch-detail-prev').disabled = rowNumber <= 1;
-    byId('batch-detail-next').disabled = rowNumber >= (batchCsv?.rowCount || 0);
+    setSection2Tab('single');
+    byId('batch-detail-position').textContent = formatNumber(rowNumber) + ' / ' + formatNumber(batchState?.filteredRows.length || 0);
+    const idx = batchState?.filteredRows.findIndex((r) => r.rowNumber === rowNumber) ?? -1;
+    byId('batch-detail-prev').disabled = idx <= 0;
+    byId('batch-detail-next').disabled = idx < 0 || idx >= (batchState?.filteredRows.length || 0) - 1;
+    byId('phan-tich').scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
   }
-  requestAnimationFrame(() => byId('result').scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'}));
 }
 
 function updateInput() {
   resultAnimation += 1;
   revision += 1;
-  active?.abort();
-  active = undefined;
-  failure.hidden = true;
-  retry.hidden = true;
-  submit.hidden = false;
-  submit.firstChild.textContent = 'Phân tích ';
-  progress.textContent = '';
-  const text = input.value.trim();
-  const length = Array.from(text).length;
-  const tooLong = length > limit;
-  const count = byId('count');
-  count.textContent = length.toLocaleString('vi-VN') + ' / 2.000 ký tự';
-  count.dataset.invalid = String(tooLong);
+  activeController?.abort();
+  activeController = null;
+  failureBox.hidden = true;
+  retryBtn.hidden = true;
+  submitBtn.hidden = false;
+  submitBtn.textContent = 'Phân tích';
+  progressMsg.textContent = '';
+  const trimmed = input.value.trim();
+  const len = Array.from(trimmed).length;
+  const tooLong = len > TEXT_LIMIT;
+  const countEl = byId('count');
+  countEl.textContent = len.toLocaleString('vi-VN') + ' / 2.000 ký tự';
+  countEl.dataset.invalid = String(tooLong);
   input.setAttribute('aria-invalid', String(tooLong));
-  const error = byId('input-error');
-  error.hidden = !tooLong;
-  error.textContent = tooLong ? 'Nội dung vượt 2.000 ký tự và chưa được gửi. Hãy rút gọn nội dung để tiếp tục.' : '';
-  submit.disabled = tooLong || !input.value.trim();
-  clear.hidden = !input.value;
+  const errEl = byId('input-error');
+  errEl.hidden = !tooLong;
+  errEl.textContent = tooLong ? 'Nội dung vượt 2.000 ký tự và chưa được gửi. Hãy rút gọn nội dung để tiếp tục.' : '';
+  submitBtn.disabled = tooLong || !trimmed;
+  clearBtn.hidden = !input.value;
   byId('entry').hidden = false;
-  result.hidden = true;
+  resultBox.hidden = true;
   renderSentenceBreakdown(null);
   byId('history-warning').hidden = true;
-  lastResult = undefined;
-  setState(input.value.trim() ? 'ready' : 'idle');
+  lastResult = null;
+  setState(trimmed ? 'ready' : 'idle');
 }
 
 function showError(message, detail, retryable = false) {
   setState('sad');
   byId('failure-title').textContent = message;
-  byId('failure-detail').textContent = detail;
-  failure.hidden = false;
-  retry.hidden = !retryable;
-  submit.hidden = retryable;
-  submit.disabled = false;
-  submit.firstChild.textContent = 'Phân tích ';
-  progress.textContent = '';
-  if (retryable) retry.focus();
+  byId('failure-detail').textContent = detail || '';
+  failureBox.hidden = false;
+  retryBtn.hidden = !retryable;
+  submitBtn.hidden = retryable;
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Phân tích';
+  progressMsg.textContent = '';
 }
-
 
 function returnToInput(erase) {
   resultOrigin = 'single';
@@ -374,380 +301,384 @@ function returnToInput(erase) {
 }
 
 input.addEventListener('input', updateInput);
-clear.addEventListener('click', () => returnToInput(true));
+clearBtn.addEventListener('click', () => returnToInput(true));
 byId('new-comment').addEventListener('click', () => returnToInput(true));
 byId('back-input').addEventListener('click', () => returnToInput(false));
-byId('back-batch').addEventListener('click', () => returnToBatch());
-byId('batch-detail-prev').addEventListener('click', () => openBatchRow((batchCsv?.openRow || 1) - 1));
-byId('batch-detail-next').addEventListener('click', () => openBatchRow((batchCsv?.openRow || 0) + 1));
-retry.addEventListener('click', () => form.requestSubmit());
+byId('back-batch').addEventListener('click', () => {
+  byId('hang-loat').scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
+});
+retryBtn.addEventListener('click', () => form.requestSubmit());
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const value = input.value.trim();
-  if (!value || submit.disabled) return;
-  const request = ++revision;
-  active = new AbortController();
-  failure.hidden = true;
-  retry.hidden = true;
-  submit.hidden = false;
-  submit.disabled = true;
-  submit.firstChild.textContent = 'Đang phân tích… ';
-  progress.textContent = 'Đang phân tích nội dung.';
+  if (!value || submitBtn.disabled) return;
+  const req = ++revision;
+  activeController = new AbortController();
+  failureBox.hidden = true;
+  retryBtn.hidden = true;
+  submitBtn.hidden = false;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Đang phân tích…';
+  progressMsg.textContent = 'Đang phân tích nội dung.';
   setState('work');
 
   try {
-    let payload = null;
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({input: value}),
-        signal: active.signal
-      });
-      if (response.ok) {
-        payload = await response.json().catch(() => null);
-      }
-    } catch {
-      // Backend unavailable, fallback to client-side inference
-    }
-
-    if (!payload || !Object.hasOwn(outcomes, payload?.label)) {
-      payload = await inferClient(value);
-    }
-
-    if (request !== revision) return;
-    const exactCode = ({negative: 1, nonnegative: 0})[payload?.label];
-    if (!payload || !Object.hasOwn(outcomes, payload.label) || payload.code !== exactCode || typeof payload.text !== 'string') {
-      showError(payload?.message || 'Máy chủ không trả được kết quả',
-        payload?.detail || 'Nội dung vẫn ở ô nhập.', payload?.retryable ?? true);
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ input: value }),
+      signal: activeController.signal
+    });
+    const payload = await response.json().catch(() => null);
+    if (req !== revision) return;
+    if (!response.ok || !payload || !Object.hasOwn(outcomes, payload.label)) {
+      showError(
+        payload?.message || 'Không thể phân tích bình luận',
+        payload?.detail || 'Vui lòng kiểm tra nội dung hoặc kết nối máy chủ.',
+        payload?.retryable ?? true
+      );
       return;
     }
     showClassification(payload, 'single');
-    progress.textContent = '';
+    progressMsg.textContent = '';
   } catch (err) {
-    if (request === revision) {
-      showError('Không thể phân tích nội dung', err?.message || 'Hãy kiểm tra lại bình luận và thử lại.', true);
+    if (req === revision && err.name !== 'AbortError') {
+      showError('Không kết nối được máy chủ TextSense', 'Hãy đảm bảo serve_textsense.py đang chạy.', true);
     }
   } finally {
-    if (request === revision) active = undefined;
-  }
-});
-
-byId('report').addEventListener('click', () => {
-  reportForm.reset();
-  reportDialog.showModal();
-});
-byId('cancel-report').addEventListener('click', () => reportDialog.close());
-reportForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!lastResult) return;
-  const suggestedLabel = outcomes[byId('report-label').value]?.title || byId('report-label').value;
-  const note = byId('report-reason').value.trim();
-  const text = byId('report-include').checked ? lastResult.text : null;
-  const source = resultOrigin === 'batch' ? 'Tệp dữ liệu' : 'Bình luận riêng lẻ';
-  const prediction = outcomes[lastResult.label]?.title || lastResult.label;
-
-  const submitBtn = reportForm.querySelector('button[type="submit"]');
-  if (submitBtn) submitBtn.disabled = true;
-
-  try {
-    const res = await fetch('/api/feedback', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        source,
-        prediction,
-        suggested_label: suggestedLabel,
-        note,
-        text
-      })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (data.feedback_saved) {
-      alert('Đã ghi nhận báo cáo vào SQL Server (dbo.UserFeedback) thành công!');
-    } else {
-      alert('Đã gửi phản hồi. ' + (data.message || ''));
-    }
-  } catch (err) {
-    alert('Đã ghi nhận phản hồi của bạn! (Phiên bản tĩnh trên GitHub Pages không kết nối SQL Server nội bộ).');
-  } finally {
-    if (submitBtn) submitBtn.disabled = false;
-    reportDialog.close();
+    if (req === revision) activeController = null;
   }
 });
 
 updateInput();
 
-// Navigation must open the desired mode and always scroll to usable controls.
-const singleTab = byId('tab-single');
-const batchTab = byId('tab-batch');
-const batchPanel = byId('hang-loat');
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-function setMode(mode, shouldFocus = false) {
-  const batch = mode === 'batch';
-  workspace.hidden = batch;
-  batchPanel.hidden = !batch;
-  singleTab.setAttribute('aria-selected', String(!batch));
-  batchTab.setAttribute('aria-selected', String(batch));
-  singleTab.tabIndex = batch ? -1 : 0;
-  batchTab.tabIndex = batch ? 0 : -1;
-  if (shouldFocus) (batch ? batchTab : singleTab).focus({preventScroll: true});
-}
-function navigateToMode(mode, focusField = false) {
-  if (mode === 'single' && resultOrigin === 'batch') returnToInput(false);
-  setMode(mode);
-  const isBatch = mode === 'batch';
-  const target = isBatch ? batchPanel : byId('entry');
-  history.replaceState(null, '', isBatch ? '#hang-loat' : '#phan-tich');
-  requestAnimationFrame(() => {
-    target.scrollIntoView({
-      behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
-      block: 'start'
-    });
-    if (focusField && !isBatch) input.focus({preventScroll: true});
-  });
-}
-singleTab.addEventListener('click', () => navigateToMode('single'));
-batchTab.addEventListener('click', () => navigateToMode('batch'));
-for (const tab of [singleTab, batchTab]) {
-  tab.addEventListener('keydown', (e) => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-    e.preventDefault();
-    const mode = tab === singleTab ? 'batch' : 'single';
-    navigateToMode(mode);
-    (mode === 'batch' ? batchTab : singleTab).focus({preventScroll: true});
-  });
-}
-for (const link of document.querySelectorAll('a[href="#phan-tich"]')) {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    navigateToMode('single', link.classList.contains('primary'));
-  });
-}
-for (const link of document.querySelectorAll('[data-open-batch]')) {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    navigateToMode('batch');
-  });
-}
-window.addEventListener('hashchange', () => {
-  if (location.hash === '#hang-loat') navigateToMode('batch');
-  else if (location.hash === '#phan-tich') navigateToMode('single');
-});
-if (location.hash === '#hang-loat') navigateToMode('batch');
-else if (location.hash === '#phan-tich') navigateToMode('single');
+// ---------- Report Wrong Result Dialog ----------
+const reportDialog = byId('report-dialog');
+const reportForm = byId('report-form');
+const reportMsg = byId('report-feedback-msg');
+let reportContext = null;
 
-// Show truthful model file availability. Full compatibility is checked on use.
-fetch('/api/health').then(r => r.json()).then(data => {
-  const status = byId('model-state');
-  status.hidden = Boolean(data.model_present);
-  status.textContent = data.model_present ? '' : 'Chưa thể phân tích. Hãy kiểm tra cài đặt mô hình.';
-  status.dataset.ok = String(Boolean(data.model_present));
-}).catch(() => {
-  const status = byId('model-state');
-  loadClientModel().then(m => {
-    if (m) {
-      status.hidden = true;
-    } else {
-      status.hidden = false;
-      status.textContent = 'Không thể kết nối máy chủ hoặc nạp mô hình client.';
+function openReportDialog(ctx) {
+  reportContext = ctx;
+  reportForm.reset();
+  reportMsg.hidden = true;
+  reportMsg.textContent = '';
+  reportMsg.className = 'report-feedback-msg';
+  byId('report-text-preview').textContent = ctx.text || '';
+  byId('report-model-label').textContent = ctx.predictionTitle || '';
+  byId('report-submit-btn').disabled = false;
+  reportDialog.showModal();
+}
+
+byId('report').addEventListener('click', () => {
+  if (!lastResult) return;
+  openReportDialog({
+    source: resultOrigin === 'batch' ? 'Tệp dữ liệu' : 'Bình luận riêng lẻ',
+    text: lastResult.text,
+    predictionTitle: outcomes[lastResult.label]?.title || lastResult.label,
+    batchId: resultOrigin === 'batch' ? batchState?.batchId : lastResult.batch_id,
+    rowNumber: resultOrigin === 'batch' ? lastResult.rowNumber : 1,
+    onSaved: () => {
+      if (resultOrigin === 'batch' && batchState && lastResult.rowNumber) {
+        batchState.reportedRows.add(lastResult.rowNumber);
+        renderBatchPage(batchState.page);
+      }
     }
-  }).catch(() => {
-    status.hidden = false;
-    status.textContent = 'Không thể kết nối máy chủ. Hãy kiểm tra ứng dụng.';
   });
 });
 
+byId('cancel-report').addEventListener('click', () => reportDialog.close());
+
+reportForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!reportContext) return;
+  const suggestedLabel = byId('report-label').value;
+  const reasonCategory = byId('report-reason-cat').value;
+  const note = byId('report-reason').value.trim();
+  if (!suggestedLabel) return;
+
+  const submitButton = byId('report-submit-btn');
+  submitButton.disabled = true;
+  submitButton.textContent = 'Đang gửi…';
+  reportMsg.hidden = true;
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source: reportContext.source,
+        prediction: reportContext.predictionTitle,
+        suggested_label: suggestedLabel,
+        reason_category: reasonCategory,
+        note,
+        text: reportContext.text,
+        batch_id: reportContext.batchId || null,
+        row_number: reportContext.rowNumber || null
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.feedback_saved) {
+      reportMsg.textContent = data.message || 'Không lưu được báo cáo vào SQL Server. Vui lòng kiểm tra kết nối.';
+      reportMsg.className = 'report-feedback-msg err';
+      reportMsg.hidden = false;
+      return;
+    }
+    reportMsg.textContent = 'Đã gửi báo cáo (Trạng thái: Chờ xem xét).';
+    reportMsg.className = 'report-feedback-msg ok';
+    reportMsg.hidden = false;
+    if (typeof reportContext.onSaved === 'function') reportContext.onSaved();
+    window.setTimeout(() => reportDialog.close(), 900);
+  } catch {
+    reportMsg.textContent = 'Lỗi kết nối máy chủ. Chưa gửi được báo cáo.';
+    reportMsg.className = 'report-feedback-msg err';
+    reportMsg.hidden = false;
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Gửi báo cáo';
+  }
+});
+
+// ---------- History & Feedback Tabs ----------
+let histPage = 1;
+let fbPage = 1;
+
+async function loadHistoryBatches() {
+  const histSel = byId('hist-batch-filter');
+  const statsSel = byId('stats-batch-select');
+  try {
+    const res = await fetch('/api/history/batches?limit=50');
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.available) {
+      statsSel.replaceChildren(new Option('Chưa kết nối SQL Server để xem tệp đã lưu', ''));
+      return;
+    }
+    const prevHist = histSel.value;
+    const prevStats = statsSel.value;
+
+    histSel.replaceChildren(new Option('Tất cả phiên phân tích', ''));
+    const batches = (data.batches || []).filter((b) => b.source_name !== 'manual_input');
+    statsSel.replaceChildren(new Option(
+      batches.length ? 'Chọn tập dữ liệu đã lưu…' : 'Chưa có tệp nào được lưu trong SQL Server',
+      ''
+    ));
+
+    for (const b of data.batches || []) {
+      const label = `Phiên #${b.id} · ${b.analysis_type} · ${b.source_name} (${formatNumber(b.row_count)} dòng)`;
+      histSel.append(new Option(label, String(b.id)));
+      if (b.source_name !== 'manual_input') {
+        statsSel.append(new Option(label, String(b.id)));
+      }
+    }
+    if (prevHist) histSel.value = prevHist;
+    if (prevStats) statsSel.value = prevStats;
+  } catch {
+    statsSel.replaceChildren(new Option('Không kết nối được máy chủ', ''));
+  }
+}
+
+async function loadHistoryPredictions() {
+  const statusEl = byId('hist-status');
+  const tbody = byId('hist-table-body');
+  statusEl.textContent = 'Đang tải lịch sử từ SQL Server…';
+  const params = new URLSearchParams({
+    page: String(histPage),
+    page_size: '15',
+    search: byId('hist-search').value.trim(),
+    label: byId('hist-label-filter').value,
+    batch_id: byId('hist-batch-filter').value,
+    date_from: byId('hist-date-from').value,
+    date_to: byId('hist-date-to').value
+  });
+  try {
+    const res = await fetch('/api/history/predictions?' + params.toString());
+    const data = await res.json().catch(() => ({}));
+    tbody.replaceChildren();
+    if (!res.ok || !data.available) {
+      statusEl.textContent = data.error
+        ? `Chưa kết nối được SQL Server (${data.error})`
+        : 'Chưa kết nối được SQL Server để đọc lịch sử. Hãy đặt biến TEXTSENSE_SQLSERVER_CONNECTION_STRING trước khi chạy serve_textsense.py.';
+      return;
+    }
+    const items = data.items || [];
+    statusEl.textContent = `Hiển thị ${items.length} / ${formatNumber(data.total)} bản ghi.`;
+    for (const row of items) {
+      const tr = document.createElement('tr');
+      const snippet = (row.input_text || '').length > 140 ? row.input_text.slice(0, 140) + '…' : (row.input_text || '');
+      tr.append(appendText('td', '', snippet));
+
+      const tdBadge = document.createElement('td');
+      const cls = row.predicted_label === 1 ? 'badge badge-neg' : row.predicted_label === 0 ? 'badge badge-nonneg' : 'badge badge-neutral';
+      tdBadge.append(appendText('span', cls, row.label_name || row.status || 'Không xác định'));
+      tr.append(tdBadge);
+
+      const timeStr = row.created_utc ? new Date(row.created_utc).toLocaleString('vi-VN') : '—';
+      tr.append(appendText('td', '', timeStr));
+
+      const tdAct = document.createElement('td');
+      const viewBtn = appendText('button', 'text-button', 'Xem chi tiết');
+      viewBtn.type = 'button';
+      viewBtn.addEventListener('click', () => openDetailDialog({
+        title: `Lịch sử phân tích #${row.prediction_id}`,
+        labelName: row.label_name || row.status,
+        labelCode: row.predicted_label,
+        timeText: timeStr,
+        sourceInfo: `${row.analysis_type} · Phiên #${row.batch_id}`,
+        text: row.input_text
+      }));
+      tdAct.append(viewBtn);
+      tr.append(tdAct);
+      tbody.append(tr);
+    }
+    const maxPage = Math.max(1, Math.ceil((data.total || 0) / 15));
+    byId('hist-page-info').textContent = `Trang ${histPage} / ${maxPage}`;
+    byId('hist-prev').disabled = histPage <= 1;
+    byId('hist-next').disabled = histPage >= maxPage;
+  } catch {
+    statusEl.textContent = 'Không kết nối được máy chủ.';
+  }
+}
+
+byId('hist-refresh').addEventListener('click', () => { histPage = 1; loadHistoryPredictions(); });
+byId('hist-label-filter').addEventListener('change', () => { histPage = 1; loadHistoryPredictions(); });
+byId('hist-batch-filter').addEventListener('change', () => { histPage = 1; loadHistoryPredictions(); });
+byId('hist-search').addEventListener('keydown', (e) => { if (e.key === 'Enter') { histPage = 1; loadHistoryPredictions(); } });
+byId('hist-prev').addEventListener('click', () => { if (histPage > 1) { histPage--; loadHistoryPredictions(); } });
+byId('hist-next').addEventListener('click', () => { histPage++; loadHistoryPredictions(); });
+
+async function loadFeedbackList() {
+  const statusEl = byId('fb-status');
+  const tbody = byId('fb-table-body');
+  statusEl.textContent = 'Đang tải danh sách báo cáo sai…';
+  const params = new URLSearchParams({
+    page: String(fbPage),
+    page_size: '15',
+    status: byId('fb-status-filter').value,
+    reason: byId('fb-reason-filter').value,
+    search: byId('fb-search').value.trim()
+  });
+  try {
+    const res = await fetch('/api/feedback?' + params.toString());
+    const data = await res.json().catch(() => ({}));
+    tbody.replaceChildren();
+    if (!res.ok || !data.available) {
+      statusEl.textContent = data.error
+        ? `Chưa kết nối được SQL Server (${data.error})`
+        : 'Chưa kết nối được SQL Server để đọc phản hồi.';
+      return;
+    }
+    const counts = data.counts || {};
+    byId('fb-count-pending').textContent = formatNumber(counts['Chờ xem xét'] || 0);
+    byId('fb-count-verified').textContent = formatNumber(counts['Đã xác minh'] || 0);
+    byId('fb-count-rejected').textContent = formatNumber(counts['Không chấp nhận'] || 0);
+
+    const items = data.items || [];
+    statusEl.textContent = `Tổng ${formatNumber(data.total)} báo cáo.`;
+    for (const item of items) {
+      const tr = document.createElement('tr');
+      tr.append(appendText('td', '', '#' + item.feedback_id));
+      const loc = item.batch_id ? `${item.source_name} (Phiên #${item.batch_id}${item.row_number ? ' · STT ' + item.row_number : ''})` : item.source_name;
+      tr.append(appendText('td', '', loc));
+      tr.append(appendText('td', '', (item.input_text || '(không đính kèm)').slice(0, 120)));
+      tr.append(appendText('td', '', item.model_prediction || '—'));
+      tr.append(appendText('td', '', item.suggested_label || '—'));
+      tr.append(appendText('td', '', (item.reason_category || '') + (item.user_note ? ' — ' + item.user_note : '')));
+      tr.append(appendText('td', '', item.review_status || 'Chờ xem xét'));
+
+      const tdAct = document.createElement('td');
+      const sel = document.createElement('select');
+      for (const st of ['Chờ xem xét', 'Đã xác minh', 'Không chấp nhận']) sel.append(new Option(st, st));
+      sel.value = item.review_status || 'Chờ xem xét';
+      sel.addEventListener('change', async () => {
+        try {
+          const upd = await fetch('/api/feedback/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ feedback_id: item.feedback_id, review_status: sel.value })
+          });
+          if (!upd.ok) alert('Không thể cập nhật trạng thái trên SQL Server.');
+          loadFeedbackList();
+        } catch {
+          alert('Lỗi kết nối khi cập nhật trạng thái.');
+        }
+      });
+      tdAct.append(sel);
+      tr.append(tdAct);
+      tbody.append(tr);
+    }
+    const maxPage = Math.max(1, Math.ceil((data.total || 0) / 15));
+    byId('fb-page-info').textContent = `Trang ${fbPage} / ${maxPage}`;
+    byId('fb-prev').disabled = fbPage <= 1;
+    byId('fb-next').disabled = fbPage >= maxPage;
+  } catch {
+    statusEl.textContent = 'Không kết nối được máy chủ.';
+  }
+}
+
+byId('fb-refresh').addEventListener('click', () => { fbPage = 1; loadFeedbackList(); });
+byId('fb-status-filter').addEventListener('change', () => { fbPage = 1; loadFeedbackList(); });
+byId('fb-reason-filter').addEventListener('change', () => { fbPage = 1; loadFeedbackList(); });
+byId('fb-search').addEventListener('keydown', (e) => { if (e.key === 'Enter') { fbPage = 1; loadFeedbackList(); } });
+byId('fb-prev').addEventListener('click', () => { if (fbPage > 1) { fbPage--; loadFeedbackList(); } });
+byId('fb-next').addEventListener('click', () => { fbPage++; loadFeedbackList(); });
+
+// ---------- Section 3: Batch Analysis ----------
 const csvFile = byId('csv-file');
 const csvDropzone = byId('csv-dropzone');
 const csvColumn = byId('csv-column');
+const sheetSelect = byId('xlsx-sheet');
 const batchSubmit = byId('batch-submit');
 const batchStatus = byId('batch-status');
 const batchResult = byId('batch-result');
 const csvConfig = byId('csv-config');
 const batchProgress = byId('batch-progress');
+const confirmBox = byId('batch-confirm-box');
+
 let maxCsvBytes = 100 * 1024 * 1024;
 let maxCsvRows = 300000;
 let selectedCsv = null;
-let resultCsvBlob = null;
-const sheetSelect = byId('xlsx-sheet');
+let columnsMeta = null;
 let csvRevision = 0;
-let csvController;
-let batchController;
-let csvPreviewRows = [];
+let csvController = null;
+let batchController = null;
+let resultCsvBlob = null;
 let resultDownloadUrl = null;
-let batchCsv = null;
-let browseRevision = 0;
-const PAGE_SIZE = 8;
+let batchState = null;
+const BATCH_PAGE_SIZE = 10;
 
-const formatNumber = (n) => Number(n).toLocaleString('vi-VN');
-const formatBytes = (n) => n >= 1048576
-  ? (n / 1048576).toLocaleString('vi-VN', {maximumFractionDigits: 2}) + ' MB'
-  : (n / 1024).toLocaleString('vi-VN', {maximumFractionDigits: 1}) + ' KB';
+function setBatchMascot(state, title, note) {
+  const img = byId('batch-mascot');
+  if (img) img.src = `media/${state}.webp?v=mascot`;
+  if (title) byId('batch-mascot-title').textContent = title;
+  if (note) byId('batch-mascot-note').textContent = note;
+}
+
+function setPipelineStep(activeIds) {
+  for (const id of ['pipe-upload', 'pipe-check', 'pipe-confirm', 'pipe-run', 'pipe-result', 'pipe-export']) {
+    byId(id)?.classList.toggle('active', activeIds.includes(id));
+  }
+}
+
+fetch('/api/config').then((r) => (r.ok ? r.json() : null)).then((data) => {
+  if (!data) return;
+  if (data.max_csv_bytes > 0) maxCsvBytes = data.max_csv_bytes;
+  if (data.max_csv_rows > 0) maxCsvRows = data.max_csv_rows;
+  byId('csv-limit-label').textContent = formatBytes(maxCsvBytes);
+  byId('csv-rows-label').textContent = formatNumber(maxCsvRows) + ' dòng';
+}).catch(() => {});
 
 function decodeSummaryHeader(value) {
   if (!value) return null;
   try {
-    // Accept both regular and URL-safe base64 from the Python server.
-    // The previous version passed '-' and '_' to atob(), silently dropping
-    // ALL advanced dashboard statistics for some uploads.
     const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
     const binary = atob(normalized + '='.repeat((4 - normalized.length % 4) % 4));
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
     return JSON.parse(new TextDecoder('utf-8').decode(bytes));
   } catch {
     return null;
   }
 }
-
-function renderInsightBars(containerId, rows, tone = 'lime') {
-  const container = byId(containerId);
-  container.replaceChildren();
-  if (!Array.isArray(rows) || !rows.length) {
-    container.append(appendText('p', 'insight-empty', 'Không có dữ liệu phù hợp trong tệp.'));
-    return;
-  }
-  const max = Math.max(1, ...rows.map((row) => Number(row.count) || 0));
-  for (const row of rows) {
-    const count = Math.max(0, Number(row.count) || 0);
-    const line = document.createElement('div');
-    line.className = 'insight-bar-row';
-    const head = document.createElement('div');
-    head.className = 'insight-bar-head';
-    head.append(appendText('span', 'insight-bar-label', String(row.label ?? 'Không xác định')));
-    head.append(appendText('strong', 'insight-bar-count', formatNumber(count)));
-    const track = document.createElement('div');
-    track.className = 'insight-bar-track';
-    const fill = document.createElement('span');
-    fill.className = 'insight-bar-fill ' + tone;
-    fill.style.width = (count / max * 100).toFixed(2) + '%';
-    track.append(fill);
-    line.append(head, track);
-    container.append(line);
-  }
-}
-
-function renderSourceDistribution(rows) {
-  const container = byId('dash-source-bars');
-  container.replaceChildren();
-  if (!Array.isArray(rows) || !rows.length) {
-    container.append(appendText('p', 'insight-empty', 'Tệp không có thông tin nguồn.'));
-    return;
-  }
-  for (const row of rows) {
-    const total = Math.max(0, Number(row.count) || 0);
-    const negative = Math.max(0, Number(row.negative) || 0);
-    const nonnegative = Math.max(0, Number(row.nonnegative) || 0);
-    const item = document.createElement('div');
-    item.className = 'source-bar-item';
-    const head = document.createElement('div');
-    head.className = 'insight-bar-head';
-    head.append(appendText('span', 'insight-bar-label', String(row.label ?? 'Không xác định')));
-    head.append(appendText('strong', 'insight-bar-count', formatNumber(total) + ' dòng'));
-    const track = document.createElement('div');
-    track.className = 'source-stacked-track';
-    const neg = document.createElement('span');
-    neg.className = 'source-stacked-negative';
-    neg.style.width = (total ? negative / total * 100 : 0) + '%';
-    const nonneg = document.createElement('span');
-    nonneg.className = 'source-stacked-nonnegative';
-    nonneg.style.width = (total ? nonnegative / total * 100 : 0) + '%';
-    track.append(neg, nonneg);
-    const legend = document.createElement('p');
-    legend.className = 'source-stacked-legend';
-    legend.textContent = 'Có nội dung tiêu cực: ' + formatNumber(negative) + ' · Không phát hiện nội dung tiêu cực: ' + formatNumber(nonnegative);
-    item.append(head, track, legend);
-    container.append(item);
-  }
-}
-
-function renderTermList(containerId, terms) {
-  const container = byId(containerId);
-  container.replaceChildren();
-  if (!Array.isArray(terms) || !terms.length) {
-    container.append(appendText('p', 'insight-empty', 'Chưa có từ khóa phù hợp.'));
-    return;
-  }
-  for (const item of terms) {
-    const chip = document.createElement('span');
-    chip.className = 'term-chip';
-    chip.append(appendText('b', '', String(item.term ?? '')));
-    chip.append(appendText('small', '', formatNumber(Number(item.count) || 0)));
-    container.append(chip);
-  }
-}
-
-
-function renderSuspectTermTable(containerId, terms) {
-  const container = byId(containerId);
-  container.replaceChildren();
-  if (!Array.isArray(terms) || !terms.length) {
-    container.append(appendText('p', 'insight-empty', 'Không tìm thấy từ ngữ phù hợp trong tệp này.'));
-    return;
-  }
-  const table = document.createElement('table');
-  table.className = 'suspect-terms-table';
-  const thead = document.createElement('thead');
-  const header = document.createElement('tr');
-  for (const title of ['Từ ngữ', 'Tổng số lần', 'Nhóm Tiêu cực', 'Nhóm Không tiêu cực', 'Tỷ lệ trong nhóm Tiêu cực', 'Số bình luận chứa từ']) {
-    header.append(appendText('th', '', title));
-  }
-  thead.append(header);
-  const tbody = document.createElement('tbody');
-  for (const item of terms) {
-    const all = Math.max(0, Number(item.total_count) || 0);
-    const negative = Math.max(0, Number(item.negative_count) || 0);
-    const nonnegative = Math.max(0, all - negative);
-    const percent = all ? (negative / all * 100).toLocaleString('vi-VN', {maximumFractionDigits: 1}) + '%' : '—';
-    const row = document.createElement('tr');
-    for (const cell of [String(item.term ?? ''), formatNumber(all), formatNumber(negative), formatNumber(nonnegative), percent, formatNumber(Number(item.total_documents) || 0)]) {
-      row.append(appendText('td', '', cell));
-    }
-    tbody.append(row);
-  }
-  table.append(thead, tbody);
-  container.append(table);
-}
-
-function renderDatasetInsights(summary) {
-  if (!summary || typeof summary !== 'object') return;
-  byId('dash-avg-words').textContent = Number(summary.avg_words || 0).toLocaleString('vi-VN', {maximumFractionDigits: 1});
-  byId('dash-median-words').textContent = Number(summary.median_words || 0).toLocaleString('vi-VN', {maximumFractionDigits: 1});
-  byId('dash-duplicates').textContent = formatNumber(summary.duplicate_excess || 0);
-  renderInsightBars('dash-length-bars', summary.length_buckets, 'lime');
-
-  const sourceCard = byId('dash-source-card');
-  sourceCard.hidden = !Array.isArray(summary.source_distribution) || !summary.source_distribution.length;
-  if (!sourceCard.hidden) renderSourceDistribution(summary.source_distribution);
-
-  const originalCard = byId('dash-original-card');
-  originalCard.hidden = !Array.isArray(summary.original_labels) || !summary.original_labels.length;
-  if (!originalCard.hidden) {
-    renderInsightBars('dash-original-bars', summary.original_labels, 'blue');
-    const agreement = summary.proxy_agreement;
-    const note = byId('dash-proxy-agreement');
-    note.hidden = !agreement;
-    if (agreement) {
-      note.textContent = 'Mức khớp với nhãn cảm xúc gốc: ' + (Number(agreement.rate) * 100).toLocaleString('vi-VN', {maximumFractionDigits: 1}) + '% (' + formatNumber(agreement.count) + ' dòng). Đây không phải độ chính xác khi nhận diện lời lẽ xúc phạm.';
-    }
-  }
-
-  renderTermList('dash-top-terms', summary.top_terms);
-  renderTermList('dash-top-negative-terms', summary.top_negative_terms);
-  renderSuspectTermTable('dash-suspect-combined', summary.suspect_terms_combined);
-  const monthCard = byId('dash-month-card');
-  monthCard.hidden = !Array.isArray(summary.monthly_distribution) || !summary.monthly_distribution.length;
-  if (!monthCard.hidden) renderInsightBars('dash-month-bars', summary.monthly_distribution, 'rose');
-}
-
-fetch('/api/config').then((res) => res.ok ? res.json() : null).then((data) => {
-  if (!data) return;
-  if (Number.isSafeInteger(data.max_csv_bytes) && data.max_csv_bytes > 0) maxCsvBytes = data.max_csv_bytes;
-  if (Number.isSafeInteger(data.max_csv_rows) && data.max_csv_rows > 0) maxCsvRows = data.max_csv_rows;
-  byId('csv-limit-label').textContent = formatBytes(maxCsvBytes);
-  byId('csv-rows-label').textContent = formatNumber(maxCsvRows) + ' dòng';
-}).catch(() => {});
 
 function setBatchStatus(message, kind = '') {
   batchStatus.textContent = message;
@@ -755,6 +686,7 @@ function setBatchStatus(message, kind = '') {
   batchStatus.dataset.success = String(kind === 'success');
   batchStatus.dataset.warning = String(kind === 'warning');
 }
+
 function setBatchBusy(busy, message = '') {
   batchProgress.hidden = !busy;
   byId('batch-progress-label').textContent = message;
@@ -762,55 +694,67 @@ function setBatchBusy(busy, message = '') {
   sheetSelect.disabled = busy || byId('sheet-wrap').hidden;
   csvColumn.disabled = busy || !selectedCsv || csvConfig.hidden;
   batchSubmit.disabled = busy || !selectedCsv || csvConfig.hidden || !csvColumn.value;
-  batchSubmit.textContent = busy ? 'Đang phân loại…' : 'Phân tích toàn bộ tệp →';
-  batchPanel.setAttribute('aria-busy', String(busy));
 }
-function clearBatchResult() {
-  browseRevision += 1;
-  batchCsv = null;
-  byId('batch-browse').hidden = true;
-  byId('batch-rows').replaceChildren();
-  batchResult.hidden = true;
-  // Xóa dashboard cũ khi người dùng chọn tệp khác hoặc chạy lại.
-  ['dash-total','dash-valid','dash-invalid','dash-valid-rate','dash-invalid-rate','donut-total','dash-negative-count','dash-nonnegative-count','dash-negative-pct','dash-nonnegative-pct'].forEach((id) => { const node = byId(id); if (node) node.textContent = '—'; });
-  byId('batch-donut')?.style.setProperty('--negative-share', '0%');
-  byId('dash-negative-bar')?.style.setProperty('width', '0%');
-  byId('dash-nonnegative-bar')?.style.setProperty('width', '0%');
-  if (byId('dash-insight')) byId('dash-insight').textContent = 'Chưa có dữ liệu phân tích.';
-  ['dash-source-card','dash-original-card','dash-month-card'].forEach((id) => { if (byId(id)) byId(id).hidden = true; });
-  ['dash-length-bars','dash-source-bars','dash-original-bars','dash-top-terms','dash-top-negative-terms','dash-suspect-combined','dash-month-bars'].forEach((id) => { if (byId(id)) byId(id).replaceChildren(); });
-  ['dash-avg-words','dash-median-words','dash-duplicates'].forEach((id) => { if (byId(id)) byId(id).textContent = '—'; });
-  if (byId('dash-proxy-agreement')) byId('dash-proxy-agreement').hidden = true;
-  if (resultDownloadUrl) URL.revokeObjectURL(resultDownloadUrl);
-  resultDownloadUrl = null;
-  resultCsvBlob = null;
-  byId('batch-download').removeAttribute('href');
-  byId('batch-download-xlsx').disabled = true;
-  byId('batch-download-xlsx').textContent = 'Tải Excel ↓';
+
+function updateConfirmationBox() {
+  const col = csvColumn.value;
+  if (!selectedCsv || !columnsMeta || !col) {
+    confirmBox.hidden = true;
+    return;
+  }
+  const colStat = columnsMeta.column_stats?.[col] || { valid_rows: columnsMeta.rows, invalid_rows: 0 };
+  byId('confirm-filename').textContent = selectedCsv.name;
+  byId('confirm-sheet').textContent = columnsMeta.selected_sheet || 'Mặc định (CSV)';
+  byId('confirm-column').textContent = col;
+  byId('confirm-total').textContent = formatNumber(columnsMeta.rows) + ' dòng';
+  byId('confirm-valid').textContent = formatNumber(colStat.valid_rows) + ' dòng';
+  byId('confirm-empty').textContent = formatNumber(colStat.invalid_rows ?? colStat.empty_rows ?? 0) + ' dòng';
+  confirmBox.hidden = false;
+  setPipelineStep(['pipe-upload', 'pipe-check', 'pipe-confirm']);
 }
+
 function displayPreview() {
   const col = csvColumn.value;
   const panel = byId('csv-preview');
   const list = byId('csv-preview-list');
   list.replaceChildren();
-  if (!col || !csvPreviewRows.length) { panel.hidden = true; return; }
-  for (const sample of csvPreviewRows) {
+  const rows = columnsMeta?.preview_rows || [];
+  if (!col || !rows.length) { panel.hidden = true; return; }
+  for (const sample of rows) {
     const li = document.createElement('li');
     li.textContent = sample[col]?.trim() || '(trống)';
     list.append(li);
   }
   panel.hidden = false;
 }
-csvColumn.addEventListener('change', () => { displayPreview(); clearBatchResult(); batchSubmit.disabled = !selectedCsv || csvConfig.hidden || !csvColumn.value; });
+
+function clearBatchResult() {
+  batchState = null;
+  batchResult.hidden = true;
+  byId('batch-browse').hidden = true;
+  byId('batch-table-body').replaceChildren();
+  if (resultDownloadUrl) URL.revokeObjectURL(resultDownloadUrl);
+  resultDownloadUrl = null;
+  resultCsvBlob = null;
+  byId('batch-download-xlsx').disabled = true;
+}
+
+csvColumn.addEventListener('change', () => {
+  displayPreview();
+  updateConfirmationBox();
+  clearBatchResult();
+  batchSubmit.disabled = !selectedCsv || csvConfig.hidden || !csvColumn.value;
+});
 
 async function selectCsv(file, requestedSheet = '') {
-  const revision = ++csvRevision;
+  const rev = ++csvRevision;
   csvController?.abort();
   batchController?.abort();
   csvController = new AbortController();
   selectedCsv = null;
-  csvPreviewRows = [];
+  columnsMeta = null;
   csvConfig.hidden = true;
+  confirmBox.hidden = true;
   csvColumn.replaceChildren(new Option('Tự động nhận diện', ''));
   csvColumn.disabled = true;
   batchSubmit.disabled = true;
@@ -820,33 +764,47 @@ async function selectCsv(file, requestedSheet = '') {
   byId('selected-file').hidden = true;
   setBatchBusy(false);
   clearBatchResult();
-  if (!file) { setBatchStatus('Chọn tệp để bắt đầu.'); return; }
+  setPipelineStep(['pipe-upload']);
+
+  if (!file) {
+    setBatchStatus('Chưa có tệp được chọn.');
+    setBatchMascot('idle', 'Sẵn sàng nhận tệp', 'Tải lên tệp CSV hoặc XLSX chứa bình luận tiếng Anh để bắt đầu.');
+    return;
+  }
   if (!/\.(csv|xlsx)$/i.test(file.name)) {
-    setBatchStatus('Định dạng không hợp lệ. Hãy tải tệp CSV hoặc Excel (.xlsx).', 'error'); return;
+    setBatchStatus('Định dạng không hợp lệ. Chỉ hỗ trợ tệp CSV hoặc Excel (.xlsx).', 'error');
+    setBatchMascot('sad', 'Định dạng chưa đúng', 'Hãy chọn tệp có đuôi .csv hoặc .xlsx.');
+    return;
   }
   if (file.size === 0) {
-    setBatchStatus('Tệp đang trống.', 'error'); return;
+    setBatchStatus('Tệp đang trống.', 'error');
+    setBatchMascot('sad', 'Tệp trống', 'Tệp tải lên không có dữ liệu.');
+    return;
   }
   if (file.size > maxCsvBytes) {
-    setBatchStatus('Tệp ' + formatBytes(file.size) + ' vượt giới hạn ' + formatBytes(maxCsvBytes) + '.', 'error'); return;
+    setBatchStatus('Tệp vượt giới hạn ' + formatBytes(maxCsvBytes) + '.', 'error');
+    setBatchMascot('sad', 'Tệp quá lớn', 'Vui lòng chọn tệp dưới ' + formatBytes(maxCsvBytes) + '.');
+    return;
   }
+
   selectedCsv = file;
   byId('selected-file').hidden = false;
   byId('file-name').textContent = file.name;
-  byId('file-metadata').textContent = formatBytes(file.size) + ' · đang đọc tệp';
-  setBatchStatus('Đang đọc tệp và kiểm tra dữ liệu…');
-  setBatchBusy(true, 'Đang kiểm tra cấu trúc và cột dữ liệu…');
+  byId('file-metadata').textContent = formatBytes(file.size) + ' · đang kiểm tra…';
+  setBatchBusy(true, 'Đang kiểm tra cấu trúc tệp và cột dữ liệu…');
+  setBatchMascot('work', 'Đang kiểm tra tệp…', 'Đang đọc tiêu đề cột và thống kê dòng hợp lệ.');
+
   try {
-    const response = await fetch('/api/columns?filename=' + encodeURIComponent(file.name) + (requestedSheet ? '&sheet=' + encodeURIComponent(requestedSheet) : ''), {
-      method: 'POST', headers: {'content-type': 'application/octet-stream'},
-      body: file, signal: csvController.signal,
-    });
-    const data = await response.json().catch(() => null);
-    if (revision !== csvRevision) return;
-    if (!response.ok || !data || !Array.isArray(data.columns)) {
+    const url = '/api/columns?filename=' + encodeURIComponent(file.name) + (requestedSheet ? '&sheet=' + encodeURIComponent(requestedSheet) : '');
+    const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: file, signal: csvController.signal });
+    const data = await res.json().catch(() => null);
+    if (rev !== csvRevision) return;
+    if (!res.ok || !data || !Array.isArray(data.columns)) {
       setBatchStatus([data?.message || 'Không đọc được tệp.', data?.detail].filter(Boolean).join(' '), 'error');
+      setBatchMascot('sad', 'Không đọc được tệp', data?.message || 'Vui lòng kiểm tra định dạng tệp.');
       return;
     }
+    columnsMeta = data;
     const sheets = Array.isArray(data.sheets) ? data.sheets : [];
     if (sheets.length > 1) {
       for (const name of sheets) sheetSelect.append(new Option(name, name));
@@ -854,350 +812,556 @@ async function selectCsv(file, requestedSheet = '') {
       byId('sheet-wrap').hidden = false;
     }
     csvColumn.replaceChildren();
-    const initialOption = new Option('Chọn cột bình luận', '');
-    initialOption.disabled = true;
-    csvColumn.append(initialOption);
-    const labelColumns = new Set(data.label_columns || []);
-    const indexColumns = new Set([...(data.index_columns || []), ...(data.link_columns || [])]);
-    for (const name of data.columns) {
-      const option = new Option(
-        labelColumns.has(name) ? name + ' (không phải cột nội dung)' :
-        indexColumns.has(name) ? name + ' (không phải cột nội dung)' : name,
-        name
-      );
-      option.disabled = labelColumns.has(name) || indexColumns.has(name);
-      csvColumn.append(option);
+    const initOpt = new Option('Chọn cột bình luận', '');
+    initOpt.disabled = true;
+    csvColumn.append(initOpt);
+    const nonText = new Set([...(data.label_columns || []), ...(data.index_columns || []), ...(data.link_columns || [])]);
+    for (const col of data.columns) {
+      const opt = new Option(nonText.has(col) ? `${col} (không phải cột nội dung)` : col, col);
+      opt.disabled = nonText.has(col);
+      csvColumn.append(opt);
     }
     csvColumn.value = data.suggested_column && data.columns.includes(data.suggested_column) ? data.suggested_column : '';
-    csvPreviewRows = Array.isArray(data.preview_rows) ? data.preview_rows : [];
     csvConfig.hidden = false;
-    byId('file-metadata').textContent = formatBytes(file.size) + ' · ' + formatNumber(data.rows) + ' dòng · ' + data.columns.length + ' cột';
+    setPipelineStep(['pipe-upload', 'pipe-check']);
+    byId('file-metadata').textContent = `${formatBytes(file.size)} · ${formatNumber(data.rows)} dòng · ${data.columns.length} cột`;
     setBatchStatus(data.suggested_column
-      ? 'Đã đọc ' + formatNumber(data.rows) + ' bình luận. Kiểm tra cột nội dung và bắt đầu phân tích.'
-      : 'Không nhận diện được cột bình luận. Hãy chọn đúng cột nội dung.', data.suggested_column ? 'success' : 'error');
+      ? 'Đã kiểm tra xong. Xác nhận thông tin cột và nhấn bắt đầu phân tích.'
+      : 'Vui lòng chọn cột chứa bình luận để tiếp tục.', data.suggested_column ? 'success' : 'warning');
+    setBatchMascot('ready', 'Tệp đã sẵn sàng', `Đã đọc ${formatNumber(data.rows)} dòng. Hãy xác nhận cột để phân tích.`);
     displayPreview();
-  } catch (error) {
-    if (revision === csvRevision && error.name !== 'AbortError')
-      setBatchStatus('Không kết nối được máy chủ TextSense. Hãy kiểm tra ứng dụng đang chạy.', 'error');
+    updateConfirmationBox();
+  } catch (err) {
+    if (rev === csvRevision && err.name !== 'AbortError') {
+      setBatchStatus('Không kết nối được máy chủ TextSense.', 'error');
+      setBatchMascot('sad', 'Lỗi kết nối', 'Không thể liên hệ máy chủ cục bộ.');
+    }
   } finally {
-    if (revision === csvRevision) setBatchBusy(false);
+    if (rev === csvRevision) setBatchBusy(false);
   }
 }
 
-sheetSelect.addEventListener('change', () => {
-  if (selectedCsv && sheetSelect.value) selectCsv(selectedCsv, sheetSelect.value);
-});
+sheetSelect.addEventListener('change', () => { if (selectedCsv && sheetSelect.value) selectCsv(selectedCsv, sheetSelect.value); });
 csvFile.addEventListener('change', () => selectCsv(csvFile.files?.[0] || null));
-byId('file-remove').addEventListener('click', () => {
-  csvFile.value = '';
-  selectCsv(null);
-});
-for (const name of ['dragenter', 'dragover']) {
-  csvDropzone.addEventListener(name, (e) => {
-    e.preventDefault();
-    csvDropzone.classList.add('dragover');
-  });
-}
-for (const name of ['dragleave', 'drop']) {
-  csvDropzone.addEventListener(name, (e) => {
-    e.preventDefault();
-    csvDropzone.classList.remove('dragover');
-  });
-}
-csvDropzone.addEventListener('drop', (e) => {
-  const file = e.dataTransfer?.files?.[0];
-  if (file) selectCsv(file);
-});
+byId('file-remove').addEventListener('click', () => { csvFile.value = ''; selectCsv(null); });
+for (const ev of ['dragenter', 'dragover']) csvDropzone.addEventListener(ev, (e) => { e.preventDefault(); csvDropzone.classList.add('dragover'); });
+for (const ev of ['dragleave', 'drop']) csvDropzone.addEventListener(ev, (e) => { e.preventDefault(); csvDropzone.classList.remove('dragover'); });
+csvDropzone.addEventListener('drop', (e) => { const f = e.dataTransfer?.files?.[0]; if (f) selectCsv(f); });
+
 batchSubmit.addEventListener('click', async () => {
   const file = selectedCsv;
-  const column = csvColumn.value;
-  if (!file || !column || csvConfig.hidden || batchSubmit.disabled) return;
-  const revision = csvRevision;
+  const col = csvColumn.value;
+  if (!file || !col || csvConfig.hidden || batchSubmit.disabled) return;
+  const rev = csvRevision;
   batchController = new AbortController();
   clearBatchResult();
-  setBatchStatus('Đang phân tích bình luận trong tệp…');
-  setBatchBusy(true, 'Đang phân tích… Vui lòng giữ trang này mở.');
+  setBatchStatus('Đang phân tích dữ liệu…');
+  setBatchBusy(true, 'Đang phân loại từng bình luận bằng mô hình…');
+  setPipelineStep(['pipe-upload', 'pipe-check', 'pipe-confirm', 'pipe-run']);
+  setBatchMascot('work', 'Đang phân tích…', 'Vui lòng giữ trang mở trong khi hệ thống xử lý.');
+
   try {
-    const response = await fetch('/api/batch?column=' + encodeURIComponent(column) + '&filename=' + encodeURIComponent(file.name) + (sheetSelect.value && !byId('sheet-wrap').hidden ? '&sheet=' + encodeURIComponent(sheetSelect.value) : ''), {
-      method: 'POST', headers: {'content-type': 'application/octet-stream'},
-      body: file, signal: batchController.signal,
-    });
-    if (revision !== csvRevision) return;
-    if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      setBatchStatus([error?.message || 'Không phân tích được tệp.', error?.detail].filter(Boolean).join(' '), 'error');
+    const url = '/api/batch?column=' + encodeURIComponent(col) + '&filename=' + encodeURIComponent(file.name) +
+      (sheetSelect.value && !byId('sheet-wrap').hidden ? '&sheet=' + encodeURIComponent(sheetSelect.value) : '');
+    const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: file, signal: batchController.signal });
+    if (rev !== csvRevision) return;
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      setBatchStatus([err?.message || 'Không phân tích được tệp.', err?.detail].filter(Boolean).join(' '), 'error');
+      setBatchMascot('sad', 'Phân tích thất bại', err?.message || 'Vui lòng kiểm tra lại dữ liệu.');
       return;
     }
-    setBatchStatus('Đang chuẩn bị kết quả phân loại…');
-    const total = Number(response.headers.get('X-Total-Rows'));
-    const valid = Number(response.headers.get('X-Valid-Rows'));
-    const nonnegative = Number(response.headers.get('X-Nonnegative-Rows'));
-    const negative = Number(response.headers.get('X-Negative-Rows'));
-    const invalid = Number(response.headers.get('X-Invalid-Rows'));
-    const summary = decodeSummaryHeader(response.headers.get('X-TextSense-Summary'));
-    const blob = await response.blob();
-    if (revision !== csvRevision) return;
+
+    const total = Number(res.headers.get('X-Total-Rows')) || 0;
+    const valid = Number(res.headers.get('X-Valid-Rows')) || 0;
+    const negative = Number(res.headers.get('X-Negative-Rows')) || 0;
+    const nonnegative = Number(res.headers.get('X-Nonnegative-Rows')) || 0;
+    const invalid = Number(res.headers.get('X-Invalid-Rows')) || 0;
+    const historySaved = res.headers.get('X-History-Saved') === 'true';
+    const batchIdHeader = res.headers.get('X-Batch-Id');
+    const batchId = batchIdHeader && /^\d+$/.test(batchIdHeader) ? Number(batchIdHeader) : null;
+    const summary = decodeSummaryHeader(res.headers.get('X-TextSense-Summary'));
+
+    const blob = await res.blob();
+    if (rev !== csvRevision) return;
     resultCsvBlob = blob;
     resultDownloadUrl = URL.createObjectURL(blob);
-    byId('batch-download-xlsx').disabled = false;
-    const download = byId('batch-download');
-    download.href = resultDownloadUrl;
+
     const originalName = file.name.replace(/\.(csv|xlsx)$/i, '').replace(/[^\p{L}\p{N}_-]/gu, '_').slice(0, 55) || 'binh_luan';
-    download.download = 'TextSense_' + originalName + '_ket_qua.csv';
-    byId('batch-download-xlsx').dataset.filename = 'TextSense_' + originalName + '_ket_qua.xlsx';
-    byId('batch-facts').textContent = formatNumber(valid) + '/' + formatNumber(total) + ' dòng đã phân tích';
-    // Cập nhật dashboard từ số liệu tổng hợp do API trả về cho chính tệp này.
-    const safeTotal = Number.isFinite(total) && total >= 0 ? total : 0;
-    const safeValid = Number.isFinite(valid) && valid >= 0 ? valid : 0;
-    const safeInvalid = Number.isFinite(invalid) && invalid >= 0 ? invalid : Math.max(0, safeTotal - safeValid);
-    const safeNegative = Number.isFinite(negative) && negative >= 0 ? negative : 0;
-    const safeNonnegative = Number.isFinite(nonnegative) && nonnegative >= 0 ? nonnegative : 0;
-    const pct = (value, base) => base > 0 ? (value * 100 / base) : 0;
-    const negativePct = pct(safeNegative, safeValid);
-    const nonnegativePct = pct(safeNonnegative, safeValid);
-    const validPct = pct(safeValid, safeTotal);
-    const invalidPct = pct(safeInvalid, safeTotal);
-    const percentText = (value) => value.toLocaleString('vi-VN', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + '%';
-    byId('dash-total').textContent = formatNumber(safeTotal);
-    byId('dash-valid').textContent = formatNumber(safeValid);
-    byId('dash-invalid').textContent = formatNumber(safeInvalid);
-    byId('dash-valid-rate').textContent = percentText(validPct) + ' tổng số dòng';
-    byId('dash-invalid-rate').textContent = percentText(invalidPct) + ' tổng số dòng';
-    byId('donut-total').textContent = formatNumber(safeValid);
-    byId('dash-negative-count').textContent = formatNumber(safeNegative);
-    byId('dash-nonnegative-count').textContent = formatNumber(safeNonnegative);
-    byId('dash-negative-pct').textContent = percentText(negativePct);
-    byId('dash-nonnegative-pct').textContent = percentText(nonnegativePct);
-    byId('batch-donut').style.setProperty('--negative-share', negativePct + '%');
-    byId('batch-donut').setAttribute('aria-label', 'Có nội dung tiêu cực ' + percentText(negativePct) + ', Không phát hiện nội dung tiêu cực ' + percentText(nonnegativePct));
-    byId('dash-negative-bar').style.width = negativePct + '%';
-    byId('dash-nonnegative-bar').style.width = nonnegativePct + '%';
-    const dominant = safeNegative > safeNonnegative ? 'Có nội dung tiêu cực' : safeNonnegative > safeNegative ? 'Không phát hiện nội dung tiêu cực' : 'hai nhóm có số lượng bằng nhau';
-    const dominantPct = Math.max(negativePct, nonnegativePct);
-    byId('dash-insight').textContent = safeValid
-      ? 'Nhóm chiếm tỷ trọng lớn hơn: ' + dominant + (dominantPct ? ' (' + percentText(dominantPct) + ' số dòng hợp lệ).' : '.')
-      : 'Không có dòng hợp lệ để thống kê nhãn.';
-    if (summary) renderDatasetInsights(summary);
-    else console.warn('TextSense: thiếu dữ liệu thống kê. Cần cập nhật đồng bộ serve_textsense.py và web/app.js.');
-    byId('batch-facts').textContent += safeInvalid ? ' · ' + formatNumber(safeInvalid) + ' dòng chưa thể phân loại' : '';
+    byId('batch-download').href = resultDownloadUrl;
+    byId('batch-download').download = `TextSense_${originalName}_ket_qua.csv`;
+    const xlsxBtn = byId('batch-download-xlsx');
+    xlsxBtn.disabled = false;
+    xlsxBtn.dataset.filename = `TextSense_${originalName}_ket_qua.xlsx`;
+
+    byId('batch-kpi-total').textContent = formatNumber(total);
+    byId('batch-kpi-valid').textContent = formatNumber(valid);
+    byId('batch-kpi-success').textContent = formatNumber(valid);
+    byId('batch-kpi-invalid').textContent = formatNumber(invalid);
+    byId('batch-kpi-neg').textContent = formatNumber(negative);
+    byId('batch-kpi-nonneg').textContent = formatNumber(nonnegative);
+    byId('batch-facts').textContent = `${file.name} · Cột "${col}" · ${formatNumber(valid)}/${formatNumber(total)} dòng hợp lệ`;
+
     batchResult.hidden = false;
-    const historySaved = response.headers.get('X-History-Saved') === 'true';
-    setBatchStatus('Đã phân tích xong ' + formatNumber(valid) + ' bình luận.' +
-      (summary ? '' : ' Chưa tải được thống kê chi tiết, nhưng bạn vẫn có thể tải CSV.') +
-      (historySaved ? '' : ' Lưu ý: Lịch sử chưa được lưu vào SQL Server.'),
-      historySaved ? 'success' : 'warning');
-    try {
-      setBatchBusy(true, 'Đang mở danh sách bình luận…');
-      const index = await TextSenseCsv.indexBlob(blob);
-      if (revision !== csvRevision) return;
-      const columns = await TextSenseCsv.readRow(blob, index, 0);
-      if (index.rowCount !== total) throw new Error('Số dòng kết quả không khớp dữ liệu phân loại.');
-      if (columns.at(-1) !== 'Nhãn dự đoán TextSense (0/1)') throw new Error('Tệp kết quả không đúng định dạng.');
-      const textColumnIndex = columns.indexOf(column);
-      if (textColumnIndex < 0 || columns.length < 2) throw new Error('Không tìm thấy cột bình luận hoặc cột kết quả.');
-      batchCsv = {blob, index, rowCount: index.rowCount, columns, textColumnIndex,
-        resultIndex: columns.length - 1, page: 0, openRow: null};
-      byId('batch-browse').hidden = false;
-      byId('batch-jump-input').max = String(index.rowCount);
-      await renderBatchPage(0);
-    } catch (e) {
-      byId('batch-browse').hidden = true;
-      setBatchStatus('Đã phân tích xong nhưng không mở được phần xem từng dòng: ' + e.message, 'error');
-    } finally {
-      if (revision === csvRevision) setBatchBusy(false);
+    setPipelineStep(['pipe-upload', 'pipe-check', 'pipe-confirm', 'pipe-run', 'pipe-result', 'pipe-export']);
+    setBatchMascot('friendly', 'Hoàn thành phân tích', `Đã phân loại thành công ${formatNumber(valid)} bình luận.`);
+    setBatchStatus(
+      `Hoàn thành ${formatNumber(valid)}/${formatNumber(total)} dòng.` +
+      (historySaved ? ` Đã lưu lịch sử vào SQL Server (Phiên #${batchId}).` : ' Lưu ý: Chưa lưu được vào SQL Server.'),
+      historySaved ? 'success' : 'warning'
+    );
+
+    if (summary) {
+      renderStatsDashboard(summary, `${file.name} (Cột: ${col})`);
+      loadHistoryBatches();
     }
-    batchResult.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'});
-  } catch (error) {
-    if (revision === csvRevision && error.name !== 'AbortError')
-      setBatchStatus('Không kết nối được máy chủ. Hãy kiểm tra TextSense và thử lại.', 'error');
+
+    const index = await window.TextSenseCsv.indexBlob(blob);
+    if (rev !== csvRevision) return;
+    const columns = await window.TextSenseCsv.readRow(blob, index, 0);
+    const textColIdx = columns.indexOf(col);
+    const resultColIdx = columns.length - 1;
+    const allRows = [];
+    for (let r = 1; r <= index.rowCount; r++) {
+      const rec = await window.TextSenseCsv.readRow(blob, index, r);
+      const codeStr = (rec[resultColIdx] || '').trim();
+      const labelKey = codeStr === '1' ? 'negative' : codeStr === '0' ? 'nonnegative' : 'invalid';
+      allRows.push({ rowNumber: r, text: rec[textColIdx] || '', codeStr, labelKey });
+    }
+    batchState = { batchId, allRows, filteredRows: [...allRows], page: 0, reportedRows: new Set() };
+    byId('batch-browse').hidden = false;
+    byId('batch-jump-input').max = String(index.rowCount);
+    applyBatchFilters();
+  } catch (err) {
+    if (rev === csvRevision && err.name !== 'AbortError') {
+      setBatchStatus('Lỗi khi xử lý tệp: ' + (err.message || 'Vui lòng thử lại.'), 'error');
+      setBatchMascot('sad', 'Có lỗi xảy ra', err.message || 'Không hoàn tất được phân tích.');
+    }
   } finally {
-    if (revision === csvRevision) setBatchBusy(false);
+    if (rev === csvRevision) setBatchBusy(false);
   }
 });
 
+function applyBatchFilters() {
+  if (!batchState) return;
+  const query = byId('batch-search-input').value.trim().toLowerCase();
+  const labelFilter = byId('batch-label-filter').value;
+  const sortMode = byId('batch-sort-select').value;
 
-// The original result stays as CSV for fast browsing. Excel export is created on demand
-// on the local server, without calling the classifier again.
-byId('batch-download-xlsx').addEventListener('click', async () => {
-  const blob = resultCsvBlob;
-  const button = byId('batch-download-xlsx');
-  if (!blob || button.disabled) return;
-  button.disabled = true;
-  button.textContent = 'Đang tạo Excel…';
-  setBatchStatus('Đang tạo tệp Excel từ kết quả đã phân tích…');
-  try {
-    const response = await fetch('/api/export-xlsx', {
-      method: 'POST',
-      headers: {'content-type': 'application/octet-stream'},
-      body: blob
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => null);
-      throw new Error([error?.message || 'Không tạo được Excel.', error?.detail].filter(Boolean).join(' '));
-    }
-    const excelBlob = await response.blob();
-    if (blob !== resultCsvBlob) return;
-    const url = URL.createObjectURL(excelBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = button.dataset.filename || 'TextSense_ket_qua.xlsx';
-    document.body.append(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
-    setBatchStatus('Đã tạo tệp Excel. Bạn có thể tải CSV hoặc Excel.', 'success');
-  } catch (error) {
-    if (blob === resultCsvBlob) setBatchStatus(error.message || 'Không tạo được tệp Excel.', 'error');
-  } finally {
-    if (blob === resultCsvBlob) {
-      button.disabled = false;
-      button.textContent = 'Tải Excel ↓';
-    }
-  }
-});
-
-// Xem từng dòng kết quả; chi index vi tri byte, khong render 300.000 dong len DOM.
-function labelFromRecord(record) {
-  const value = (record[batchCsv.resultIndex] || '').trim();
-  if (value === '1') return 'negative';
-  if (value === '0') return 'nonnegative';
-  return null;
-}
-function rowText(record) {
-  return record[batchCsv.textColumnIndex] || '';
-}
-function rowStatus(record) {
-  return record[batchCsv.resultIndex] ? 'Nhãn không hợp lệ trong dữ liệu' : 'Không có kết quả cho bình luận này';
-}
-function appendText(tag, className, content) {
-  const el = document.createElement(tag);
-  el.className = className;
-  el.textContent = content;
-  return el;
-}
-async function getBatchRecord(rowNumber) {
-  if (!batchCsv || rowNumber < 1 || rowNumber > batchCsv.rowCount) throw new Error('Số dòng ngoài phạm vi.');
-  const data = batchCsv;
-  return TextSenseCsv.readRow(data.blob, data.index, rowNumber);
-}
-async function renderBatchPage(page) {
-  const data = batchCsv;
-  if (!data) return;
-  const maximum = Math.max(0, Math.ceil(data.rowCount / PAGE_SIZE) - 1);
-  const currentPage = Math.max(0, Math.min(maximum, page));
-  data.page = currentPage;
-  const request = ++browseRevision;
-  const first = currentPage * PAGE_SIZE + 1;
-  const last = Math.min(data.rowCount, first + PAGE_SIZE - 1);
-  const fragment = document.createDocumentFragment();
-  for (let rowNumber = first; rowNumber <= last; rowNumber++) {
-    const record = await TextSenseCsv.readRow(data.blob, data.index, rowNumber);
-    if (request !== browseRevision || data !== batchCsv) return;
-    const key = labelFromRecord(record);
-    const item = document.createElement('article');
-    item.className = 'batch-row-card';
-    item.id = 'batch-row-' + rowNumber;
-    const header = document.createElement('div');
-    header.className = 'batch-row-head';
-    header.append(appendText('span','batch-row-number','Bình luận số ' + formatNumber(rowNumber)));
-    header.append(appendText('span','batch-row-badge ' + (key || 'invalid'), key ? outcomes[key].title : 'Không phân loại được'));
-    item.append(header);
-    item.append(appendText('p','batch-row-snippet',rowText(record).trim() || '(Không có văn bản)'));
-    const footer = document.createElement('div');
-    footer.className = 'batch-row-footer';
-    footer.append(appendText('span','batch-row-status',key ? 'Đã phân loại' : rowStatus(record))); 
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'button secondary row-view-button';
-    button.textContent = 'Xem kết quả →';
-    button.addEventListener('click', () => openBatchRow(rowNumber));
-    footer.append(button);
-    item.append(footer);
-    fragment.append(item);
-  }
-  byId('batch-rows').replaceChildren(fragment);
-  byId('batch-page-label').textContent = 'Dòng ' + formatNumber(first) + '–' + formatNumber(last) + ' / ' + formatNumber(data.rowCount);
-  byId('batch-page-prev').disabled = currentPage === 0;
-  byId('batch-page-next').disabled = currentPage >= maximum;
-}
-async function openBatchRow(rowNumber) {
-  const data = batchCsv;
-  if (!data || !Number.isSafeInteger(rowNumber) || rowNumber < 1 || rowNumber > data.rowCount) return;
-  const request = ++browseRevision;
-  try {
-    const record = await getBatchRecord(rowNumber);
-    if (request !== browseRevision || batchCsv !== data) return;
-    data.openRow = rowNumber;
-    const key = labelFromRecord(record);
-    const text = rowText(record);
-    if (!key) {
-      resultAnimation += 1;
-      resultOrigin = 'batch';
-      lastResult = null;
-      byId('result-label').textContent = 'Kết quả · Bình luận số ' + formatNumber(rowNumber);
-      byId('back-input').hidden = true;
-      byId('back-batch').hidden = false;
-      byId('new-comment').hidden = true;
-      byId('report').hidden = true;
-      byId('batch-detail-nav').hidden = false;
-      byId('batch-detail-position').textContent = formatNumber(rowNumber) + ' / ' + formatNumber(data.rowCount);
-      byId('batch-detail-prev').disabled = rowNumber <= 1;
-      byId('batch-detail-next').disabled = rowNumber >= data.rowCount;
-      resultTitle.textContent = 'Chưa có kết quả';
-      byId('result-detail').textContent = rowStatus(record) + '. Hãy kiểm tra nội dung hoặc chọn dòng khác.';
-      renderSentenceBreakdown(null);
-      byId('history-warning').hidden = true;
-      byId('result-quote').textContent = text;
-      byId('entry').hidden = true;
-      result.hidden = false;
-      setState('sad');
-      setMode('single');
-      requestAnimationFrame(() => result.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth'}));
-      return;
-    }
-    byId('report').hidden = false;
-    showClassification({label: key, text}, 'batch', rowNumber);
-    loadBatchSentenceBreakdown(text, resultAnimation, rowNumber);
-  } catch (e) {
-    setBatchStatus('Không mở được dòng đã chọn: ' + e.message, 'error');
-  }
-}
-function returnToBatch() {
-  resultAnimation += 1;
-  navigateToMode('batch');
-  requestAnimationFrame(() => {
-    const el = byId('batch-browse');
-    if (!el.hidden) el.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'});
+  let rows = batchState.allRows.filter((item) => {
+    if (labelFilter === '1' && item.codeStr !== '1') return false;
+    if (labelFilter === '0' && item.codeStr !== '0') return false;
+    if (labelFilter === 'invalid' && item.labelKey !== 'invalid') return false;
+    if (query && !item.text.toLowerCase().includes(query)) return false;
+    return true;
   });
+
+  if (sortMode === 'row-desc') rows.sort((a, b) => b.rowNumber - a.rowNumber);
+  else if (sortMode === 'label-neg') rows.sort((a, b) => (b.codeStr === '1' ? 1 : 0) - (a.codeStr === '1' ? 1 : 0) || a.rowNumber - b.rowNumber);
+  else if (sortMode === 'label-nonneg') rows.sort((a, b) => (b.codeStr === '0' ? 1 : 0) - (a.codeStr === '0' ? 1 : 0) || a.rowNumber - b.rowNumber);
+  else rows.sort((a, b) => a.rowNumber - b.rowNumber);
+
+  batchState.filteredRows = rows;
+  renderBatchPage(0);
 }
-byId('batch-page-prev').addEventListener('click', () => renderBatchPage((batchCsv?.page || 0) - 1));
-byId('batch-page-next').addEventListener('click', () => renderBatchPage((batchCsv?.page || 0) + 1));
-function jumpToBatchRow() {
-  if (!batchCsv) return;
-  const row = Number(byId('batch-jump-input').value);
-  if (!Number.isSafeInteger(row) || row < 1 || row > batchCsv.rowCount) {
-    setBatchStatus('Số dòng phải nằm trong khoảng 1–' + formatNumber(batchCsv.rowCount) + '.', 'error');
+
+function renderBatchPage(page) {
+  if (!batchState) return;
+  const list = batchState.filteredRows;
+  const total = list.length;
+  const maxPage = Math.max(0, Math.ceil(total / BATCH_PAGE_SIZE) - 1);
+  const current = Math.max(0, Math.min(maxPage, page));
+  batchState.page = current;
+  const start = current * BATCH_PAGE_SIZE;
+  const slice = list.slice(start, start + BATCH_PAGE_SIZE);
+
+  const tbody = byId('batch-table-body');
+  tbody.replaceChildren();
+  if (!slice.length) {
+    const tr = document.createElement('tr');
+    const td = appendText('td', '', 'Không có dòng nào phù hợp bộ lọc.');
+    td.colSpan = 4;
+    tr.append(td);
+    tbody.append(tr);
+  }
+
+  for (const item of slice) {
+    const tr = document.createElement('tr');
+    tr.id = 'batch-row-' + item.rowNumber;
+    tr.append(appendText('td', '', formatNumber(item.rowNumber)));
+
+    const snippet = item.text.trim() ? (item.text.length > 160 ? item.text.slice(0, 160) + '…' : item.text) : '(Trống)';
+    tr.append(appendText('td', '', snippet));
+
+    const tdBadge = document.createElement('td');
+    const badgeCls = item.labelKey === 'negative' ? 'badge badge-neg' : item.labelKey === 'nonnegative' ? 'badge badge-nonneg' : 'badge badge-neutral';
+    const badgeText = item.labelKey === 'invalid' ? 'Bỏ qua / không hợp lệ' : outcomes[item.labelKey].title;
+    tdBadge.append(appendText('span', badgeCls, badgeText));
+    tr.append(tdBadge);
+
+    const tdAct = document.createElement('td');
+    tdAct.style.whiteSpace = 'nowrap';
+    const viewBtn = appendText('button', 'text-button', 'Xem chi tiết');
+    viewBtn.type = 'button';
+    viewBtn.style.marginRight = '10px';
+    viewBtn.addEventListener('click', () => openBatchRow(item));
+    tdAct.append(viewBtn);
+
+    if (item.labelKey !== 'invalid') {
+      const reported = batchState.reportedRows.has(item.rowNumber);
+      const repBtn = appendText('button', 'text-button', reported ? 'Đã báo sai' : 'Báo cáo sai');
+      repBtn.type = 'button';
+      repBtn.style.color = reported ? 'var(--text-secondary)' : 'var(--danger)';
+      repBtn.disabled = reported;
+      repBtn.addEventListener('click', () => {
+        openReportDialog({
+          source: 'Tệp dữ liệu',
+          text: item.text,
+          predictionTitle: outcomes[item.labelKey].title,
+          batchId: batchState.batchId,
+          rowNumber: item.rowNumber,
+          onSaved: () => {
+            batchState.reportedRows.add(item.rowNumber);
+            renderBatchPage(batchState.page);
+          }
+        });
+      });
+      tdAct.append(repBtn);
+    }
+    tr.append(tdAct);
+    tbody.append(tr);
+  }
+
+  byId('batch-page-label').textContent = total
+    ? `Hiển thị ${formatNumber(start + 1)}–${formatNumber(start + slice.length)} / ${formatNumber(total)} dòng`
+    : '0 dòng';
+  byId('batch-page-prev').disabled = current === 0;
+  byId('batch-page-next').disabled = current >= maxPage;
+}
+
+async function openBatchRow(item) {
+  if (!item) return;
+  if (item.labelKey === 'invalid') {
+    openDetailDialog({
+      title: `Dòng STT ${item.rowNumber}`,
+      labelName: 'Bỏ qua / không hợp lệ',
+      labelCode: null,
+      sourceInfo: `Lô #${batchState?.batchId || '—'}`,
+      text: item.text || '(Trống)'
+    });
     return;
   }
-  const targetPage = Math.floor((row - 1) / PAGE_SIZE);
-  renderBatchPage(targetPage).then(() => {
-    const targetCard = byId('batch-row-' + row);
-    if (targetCard) {
-      targetCard.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'center'});
-      targetCard.classList.add('batch-row-highlight');
-      window.setTimeout(() => {
-        targetCard.classList.remove('batch-row-highlight');
-      }, 2500);
-    } else {
-      const target = byId('batch-rows');
-      target.scrollIntoView({behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'start'});
-    }
-  });
+  showClassification({ label: item.labelKey, text: item.text, sentence_analysis: { available: false } }, 'batch', item.rowNumber);
+  try {
+    const res = await fetch('/api/sentences', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: item.text })
+    });
+    if (res.ok) renderSentenceBreakdown(await res.json());
+  } catch {
+    // Keep main prediction visible
+  }
 }
-byId('batch-jump-go').addEventListener('click', jumpToBatchRow);
-byId('batch-jump-input').addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {event.preventDefault(); jumpToBatchRow();}
+
+byId('batch-detail-prev').addEventListener('click', () => {
+  if (!batchState || !lastResult) return;
+  const idx = batchState.filteredRows.findIndex((r) => r.rowNumber === lastResult.rowNumber);
+  if (idx > 0) openBatchRow(batchState.filteredRows[idx - 1]);
 });
+byId('batch-detail-next').addEventListener('click', () => {
+  if (!batchState || !lastResult) return;
+  const idx = batchState.filteredRows.findIndex((r) => r.rowNumber === lastResult.rowNumber);
+  if (idx >= 0 && idx < batchState.filteredRows.length - 1) openBatchRow(batchState.filteredRows[idx + 1]);
+});
+
+byId('batch-search-input').addEventListener('input', applyBatchFilters);
+byId('batch-label-filter').addEventListener('change', applyBatchFilters);
+byId('batch-sort-select').addEventListener('change', applyBatchFilters);
+byId('batch-page-prev').addEventListener('click', () => renderBatchPage((batchState?.page || 0) - 1));
+byId('batch-page-next').addEventListener('click', () => renderBatchPage((batchState?.page || 0) + 1));
+byId('batch-jump-go').addEventListener('click', () => {
+  if (!batchState) return;
+  const rowNum = Number(byId('batch-jump-input').value);
+  const idx = batchState.filteredRows.findIndex((r) => r.rowNumber === rowNum);
+  if (idx < 0) return;
+  renderBatchPage(Math.floor(idx / BATCH_PAGE_SIZE));
+  const rowEl = byId('batch-row-' + rowNum);
+  if (rowEl) {
+    rowEl.scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth', block: 'center' });
+    rowEl.classList.add('row-highlight');
+    window.setTimeout(() => rowEl.classList.remove('row-highlight'), 2200);
+  }
+});
+
+byId('batch-download-xlsx').addEventListener('click', async () => {
+  if (!resultCsvBlob) return;
+  const btn = byId('batch-download-xlsx');
+  btn.disabled = true;
+  btn.textContent = 'Đang tạo Excel…';
+  try {
+    const res = await fetch('/api/export-xlsx', {
+      method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: resultCsvBlob
+    });
+    if (!res.ok) throw new Error('Không tạo được Excel.');
+    const excelBlob = await res.blob();
+    const url = URL.createObjectURL(excelBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = btn.dataset.filename || 'TextSense_ket_qua.xlsx';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch (e) {
+    setBatchStatus(e.message || 'Lỗi xuất Excel.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Xuất Excel';
+  }
+});
+
+// ---------- Section 4: Statistics ----------
+let currentStatsSummary = null;
+
+function renderInsightBars(containerId, rows, tone = '') {
+  const container = byId(containerId);
+  container.replaceChildren();
+  if (!Array.isArray(rows) || !rows.length) {
+    container.append(appendText('p', 'status-note', 'Không có dữ liệu phù hợp.'));
+    return;
+  }
+  const max = Math.max(1, ...rows.map((r) => Number(r.count) || 0));
+  for (const row of rows) {
+    const count = Math.max(0, Number(row.count) || 0);
+    const wrap = document.createElement('div');
+    const head = document.createElement('div');
+    head.className = 'insight-bar-head';
+    head.append(appendText('span', '', String(row.label ?? row.term ?? '')));
+    head.append(appendText('strong', '', formatNumber(count)));
+    const track = document.createElement('div');
+    track.className = 'insight-bar-track';
+    const fill = document.createElement('span');
+    fill.className = 'insight-bar-fill ' + tone;
+    fill.style.width = (count / max * 100).toFixed(1) + '%';
+    track.append(fill);
+    wrap.append(head, track);
+    container.append(wrap);
+  }
+}
+
+function renderSuspectTable(terms) {
+  const container = byId('dash-suspect-combined');
+  container.replaceChildren();
+  if (!Array.isArray(terms) || !terms.length) {
+    container.append(appendText('p', 'status-note', 'Không ghi nhận từ ngữ nào khớp danh sách tham chiếu.'));
+    return;
+  }
+  const table = document.createElement('table');
+  table.className = 'suspect-terms-table';
+  const thead = document.createElement('thead');
+  const hr = document.createElement('tr');
+  for (const h of ['Từ ngữ', 'Tổng số lần', 'Nhóm Tiêu cực', 'Nhóm Không tiêu cực', 'Số bình luận']) {
+    hr.append(appendText('th', '', h));
+  }
+  thead.append(hr);
+  const tbody = document.createElement('tbody');
+  for (const item of terms) {
+    const tr = document.createElement('tr');
+    const nonneg = Math.max(0, (item.total_count || 0) - (item.negative_count || 0));
+    for (const val of [item.term, formatNumber(item.total_count), formatNumber(item.negative_count), formatNumber(nonneg), formatNumber(item.total_documents)]) {
+      tr.append(appendText('td', '', val));
+    }
+    tbody.append(tr);
+  }
+  table.append(thead, tbody);
+  container.append(table);
+}
+
+function renderTermFrequencyExplorer() {
+  if (!currentStatsSummary) return;
+  const ngram = byId('term-ngram-select').value;
+  const label = byId('term-label-select').value;
+  const sortBy = byId('term-sort-select').value;
+  const limit = Number(byId('term-limit-select').value) || 10;
+  const query = byId('term-search-input').value.trim().toLowerCase();
+
+  const keyMap = {
+    unigram: { all: 'top_unigrams_all', negative: 'top_unigrams_negative', nonnegative: 'top_unigrams_nonnegative' },
+    bigram: { all: 'top_bigrams_all', negative: 'top_bigrams_negative', nonnegative: 'top_bigrams_nonnegative' }
+  };
+  let list = [...(currentStatsSummary[keyMap[ngram][label]] || [])];
+  if (query) list = list.filter((x) => x.term.toLowerCase().includes(query));
+  list.sort((a, b) => sortBy === 'documents'
+    ? (b.documents - a.documents || b.count - a.count)
+    : (b.count - a.count || b.documents - a.documents));
+  list = list.slice(0, limit);
+
+  const tbody = byId('term-freq-tbody');
+  tbody.replaceChildren();
+  if (!list.length) {
+    const tr = document.createElement('tr');
+    const td = appendText('td', '', 'Không có từ khóa phù hợp.');
+    td.colSpan = 5;
+    tr.append(td);
+    tbody.append(tr);
+  }
+  for (const item of list) {
+    const tr = document.createElement('tr');
+    tr.append(appendText('td', '', item.term));
+    tr.append(appendText('td', '', formatNumber(item.count)));
+    tr.append(appendText('td', '', formatNumber(item.documents ?? item.count)));
+    const rate = item.doc_rate != null ? (item.doc_rate * 100).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + '%' : '—';
+    tr.append(appendText('td', '', rate));
+    const tdBtn = document.createElement('td');
+    const btn = appendText('button', 'text-button', 'Xem bình luận');
+    btn.type = 'button';
+    btn.addEventListener('click', () => loadCommentsForTerm(item.term, label));
+    tdBtn.append(btn);
+    tr.append(tdBtn);
+    tbody.append(tr);
+  }
+  renderInsightBars('term-freq-bars', list.map((x) => ({
+    label: x.term,
+    count: sortBy === 'documents' ? (x.documents ?? x.count) : x.count
+  })), label === 'negative' ? 'rose' : label === 'nonnegative' ? 'lime' : '');
+}
+
+async function loadCommentsForTerm(term, labelGroup) {
+  const box = byId('term-comments-box');
+  const list = byId('term-comments-list');
+  byId('term-comments-title').textContent = `Bình luận chứa "${term}"`;
+  list.replaceChildren(appendText('li', '', 'Đang tải…'));
+  box.hidden = false;
+
+  const params = new URLSearchParams({ term });
+  if (labelGroup === 'negative') params.set('label', '1');
+  else if (labelGroup === 'nonnegative') params.set('label', '0');
+  if (currentStatsSummary?.batch_id) params.set('batch_id', String(currentStatsSummary.batch_id));
+
+  try {
+    const res = await fetch('/api/stats/term-comments?' + params.toString());
+    const data = await res.json().catch(() => ({}));
+    list.replaceChildren();
+    const comments = data.comments || [];
+    if (!comments.length) {
+      list.append(appendText('li', '', 'Không tìm thấy bình luận mẫu trong phạm vi hiện tại.'));
+      return;
+    }
+    for (const c of comments) {
+      const li = document.createElement('li');
+      const badge = appendText('span', c.predicted_label === 1 ? 'badge badge-neg' : 'badge badge-nonneg', c.label_name);
+      li.append(badge, document.createTextNode(' ' + c.text));
+      list.append(li);
+    }
+  } catch {
+    list.replaceChildren(appendText('li', '', 'Lỗi khi truy xuất bình luận.'));
+  }
+}
+
+byId('term-comments-close').addEventListener('click', () => { byId('term-comments-box').hidden = true; });
+for (const id of ['term-search-input', 'term-ngram-select', 'term-label-select', 'term-sort-select', 'term-limit-select']) {
+  byId(id).addEventListener('input', renderTermFrequencyExplorer);
+  byId(id).addEventListener('change', renderTermFrequencyExplorer);
+}
+
+function renderStatsDashboard(summary, scopeLabel = '') {
+  if (!summary) return;
+  currentStatsSummary = summary;
+  byId('stats-empty').hidden = true;
+  byId('batch-dashboard').hidden = false;
+  byId('stats-scope-banner').textContent = `Phạm vi dữ liệu: ${scopeLabel || (summary.batch_id ? 'Phiên #' + summary.batch_id : 'Phiên hiện tại')} · ${formatNumber(summary.valid)} dòng hợp lệ / ${formatNumber(summary.total)} tổng số dòng.`;
+
+  const total = summary.total || 0;
+  const valid = summary.valid || 0;
+  const invalid = summary.invalid || 0;
+  const neg = summary.negative || 0;
+  const nonneg = summary.nonnegative || 0;
+  const pctText = (v, b) => (b > 0 ? (v * 100 / b) : 0).toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+  const negPct = valid > 0 ? (neg * 100 / valid) : 0;
+  const nonnegPct = valid > 0 ? (nonneg * 100 / valid) : 0;
+
+  byId('dash-total').textContent = formatNumber(total);
+  byId('dash-valid').textContent = formatNumber(valid);
+  byId('dash-invalid').textContent = formatNumber(invalid);
+  byId('dash-analyzed').textContent = formatNumber(valid);
+  byId('dash-valid-rate').textContent = pctText(valid, total) + ' tổng dòng';
+  byId('dash-invalid-rate').textContent = pctText(invalid, total) + ' tổng dòng';
+
+  byId('donut-total').textContent = formatNumber(valid);
+  byId('dash-negative-count').textContent = formatNumber(neg);
+  byId('dash-nonnegative-count').textContent = formatNumber(nonneg);
+  byId('dash-negative-pct').textContent = pctText(neg, valid);
+  byId('dash-nonnegative-pct').textContent = pctText(nonneg, valid);
+  byId('batch-donut').style.setProperty('--negative-share', negPct + '%');
+  byId('dash-negative-bar').style.width = negPct + '%';
+  byId('dash-nonnegative-bar').style.width = nonnegPct + '%';
+
+  const dom = neg > nonneg ? 'Có nội dung tiêu cực' : nonneg > neg ? 'Không phát hiện nội dung tiêu cực' : 'Hai nhóm bằng nhau';
+  byId('dash-insight').textContent = valid
+    ? `Nhóm chiếm tỷ trọng cao hơn: ${dom} (${Math.max(negPct, nonnegPct).toLocaleString('vi-VN', { maximumFractionDigits: 1 })}%).`
+    : 'Không có dòng hợp lệ.';
+
+  byId('dash-avg-words').textContent = Number(summary.avg_words || 0).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+  byId('dash-median-words').textContent = Number(summary.median_words || 0).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+  byId('dash-duplicates').textContent = formatNumber(summary.duplicate_excess || 0);
+  renderInsightBars('dash-length-bars', summary.length_buckets, 'lime');
+  renderSuspectTable(summary.suspect_terms_combined);
+  renderTermFrequencyExplorer();
+
+  const hasSource = Array.isArray(summary.source_distribution) && summary.source_distribution.length > 0;
+  const hasMonth = Array.isArray(summary.monthly_distribution) && summary.monthly_distribution.length > 0;
+  byId('stats-source-time-block').hidden = !hasSource && !hasMonth;
+  byId('dash-source-card').hidden = !hasSource;
+  byId('dash-month-card').hidden = !hasMonth;
+  if (hasSource) renderInsightBars('dash-source-bars', summary.source_distribution);
+  if (hasMonth) renderInsightBars('dash-month-bars', summary.monthly_distribution, 'rose');
+
+  const hasRef = Boolean(summary.reference_evaluation);
+  byId('dash-original-card').hidden = !hasRef;
+  if (hasRef) {
+    const ev = summary.reference_evaluation;
+    const fmtP = (v) => (Number(v) * 100).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+    const kpis = byId('ref-eval-metrics');
+    kpis.replaceChildren();
+    for (const [label, val] of [['Accuracy', fmtP(ev.accuracy)], ['Precision (1)', fmtP(ev.precision)], ['Recall (1)', fmtP(ev.recall)], ['F1-score (1)', fmtP(ev.f1)]]) {
+      const card = appendText('div', 'kpi-box', '');
+      card.append(appendText('span', '', label), appendText('strong', '', val));
+      kpis.append(card);
+    }
+    renderInsightBars('dash-original-bars', summary.original_labels);
+    const cm = ev.confusion_matrix || [[0, 0], [0, 0]];
+    const cmWrap = byId('ref-confusion-wrap');
+    cmWrap.replaceChildren(appendText('h4', 'card-title', 'Ma trận nhầm lẫn (Confusion Matrix)'));
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th>Thực tế \\ Dự đoán</th><th>Nhãn 0</th><th>Nhãn 1</th></tr></thead>
+      <tbody><tr><td><strong>Tham chiếu 0</strong></td><td>${formatNumber(cm[0][0])} (TN)</td><td>${formatNumber(cm[0][1])} (FP)</td></tr>
+      <tr><td><strong>Tham chiếu 1</strong></td><td>${formatNumber(cm[1][0])} (FN)</td><td>${formatNumber(cm[1][1])} (TP)</td></tr></tbody>`;
+    cmWrap.append(tbl);
+  }
+}
+
+async function loadStatsFromServer(batchId = '') {
+  if (!batchId) {
+    currentStatsSummary = null;
+    byId('stats-empty').hidden = false;
+    byId('batch-dashboard').hidden = true;
+    return;
+  }
+  try {
+    const url = '/api/stats?batch_id=' + encodeURIComponent(batchId);
+    const res = await fetch(url);
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.available && data.summary) {
+      renderStatsDashboard(data.summary, data.summary.filename || (data.summary.batch_id ? `Phiên phân tích #${data.summary.batch_id}` : 'Phiên hiện tại'));
+    }
+  } catch {
+    // Ignore when empty
+  }
+}
+byId('stats-reload').addEventListener('click', () => loadStatsFromServer(byId('stats-batch-select').value));
+byId('stats-batch-select').addEventListener('change', () => loadStatsFromServer(byId('stats-batch-select').value));
+loadHistoryBatches();
 
 window.addEventListener('beforeunload', () => {
   if (resultDownloadUrl) URL.revokeObjectURL(resultDownloadUrl);

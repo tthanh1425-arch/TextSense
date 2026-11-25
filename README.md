@@ -1,73 +1,66 @@
-# TextSense — đồ án phân tích cảm xúc bình luận mạng xã hội
+# TextSense — Hệ thống phân tích cảm xúc và nhận diện nội dung tiêu cực
 
-TextSense sử dụng **TF-IDF + LinearSVC** để phân loại **toàn bộ bình luận tiếng Anh** thành **Tiêu cực (1)** hoặc **Không tiêu cực (0)**. Khi bình luận có nhiều câu/vế, ứng dụng có thể **chỉ ra phần nào được dự đoán tiêu cực**, kèm các phần còn lại để đối chiếu. Phân tích theo vế là chức năng hỗ trợ, **không thay thế nhãn của toàn bình luận**.
+## 1. Giới thiệu dự án
+**TextSense** là hệ thống phân tích cảm xúc bình luận mạng xã hội (nguồn Twitter và Reddit) sử dụng mô hình học máy **TF-IDF + LinearSVC** để phân loại bình luận tiếng Anh thành 2 nhóm nhãn:
+- **Nhãn 1 (`Có nội dung tiêu cực`)**: Bình luận có sắc thái tiêu cực, bức xúc, thất vọng, chỉ trích hoặc phản đối (ánh xạ từ nhãn gốc `-1`).
+- **Nhãn 0 (`Không phát hiện nội dung tiêu cực`)**: Bao gồm cả bình luận tích cực (`+1`) và trung tính (`0`).
 
-Dữ liệu gốc Twitter/Reddit có ba nhãn: `-1` (tiêu cực), `0` (trung tính), `1` (tích cực). Trong đồ án, `-1 -> 1`, còn `0` và `1 -> 0`. **Không phải** mô hình phát hiện phân biệt chủng tộc, giới tính hoặc mức độ xúc phạm. Model cũng chưa được đánh giá độc lập cho tiếng Việt hoặc phân loại các vế câu ngắn.
+## 2. Chức năng chính (5 khu vực)
+1. **01. Trang chủ**: Giới thiệu hệ thống, quy ước 2 nhãn phân loại và quy trình sử dụng 3 bước.
+2. **02. Phân tích cảm xúc**:
+   - Phân tích một bình luận (tối đa 2.000 ký tự), phân tích chi tiết từng câu/vế, báo cáo kết quả sai.
+   - Tích hợp **Lịch sử phân tích** và **Quản lý báo cáo sai** truy xuất trực tiếp từ SQL Server.
+3. **03. Phân tích hàng loạt**: Tải tệp CSV/XLSX (tối đa 100 MB / 300.000 dòng), chọn sheet & cột văn bản, xem trước, bước xác nhận trước khi chạy, tìm kiếm/lọc/sắp xếp kết quả từng dòng, báo sai từng dòng và xuất CSV/Excel.
+4. **04. Thống kê và trực quan hóa**: Tổng quan dữ liệu, phân bố 2 nhãn (Donut & Bar), độ dài & trùng lặp, từ ngữ cần xem xét thêm, thống kê từ/cụm từ (Unigram & Bigram, phân biệt tần suất xuất hiện và số bình luận chứa từ, xem bình luận chứa từ), phân tích theo nguồn/thời gian và đối chiếu nhãn tham chiếu (nếu tệp có).
+5. **05. Thông tin mô hình**: Tham số TF-IDF + LinearSVC, quy trình tiền xử lý, dữ liệu huấn luyện (196.056 mẫu), chỉ số thực nghiệm trên tập Test và các giới hạn trung thực.
 
-## Cấu trúc chính (giữ nguyên thư mục hiện có)
+## 3. Công nghệ sử dụng
+- **Backend**: Python (`http.server`, `pandas`, `scikit-learn`, `joblib`, `openpyxl`, `pyodbc`)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Machine Learning**: `TfidfVectorizer(max_features=40000, ngram_range=(1, 2), min_df=2, sublinear_tf=True)` + `LinearSVC(C=1.0, threshold=-0.2203)`
+- **Cơ sở dữ liệu**: Microsoft SQL Server (`TextSenseDB`)
 
-- `01_TRAIN_MODEL/TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb`: notebook huấn luyện và kết quả thực nghiệm, dữ liệu trong `data/`, model trong `outputs/`.
-- `02_SQL_SERVER/textsense.sql`: lược đồ `TextSenseDB` và các bảng Tweets, TweetTokens, TrainingRuns, PredictionBatches, Predictions.
-- `03_GIAO_DIEN/serve_textsense.py`, `predict.py`, `database.py`: web API, suy luận bằng model đã lưu và SQL Server.
-- `03_GIAO_DIEN/web/`: giao diện duy nhất được web server phục vụ (file `03_GIAO_DIEN/index.html` là bản sao được giữ lại để không mất file cũ).
-- `03_GIAO_DIEN/app.py`: dashboard và quản lý lịch sử bằng Streamlit.
-- `04_BAO_CAO/`: báo cáo và minh chứng; **không xóa hoặc sửa nội dung nghiên cứu cũ khi nâng cấp giao diện**.
+## 4. Cấu trúc thư mục
+- `01_TRAIN_MODEL/`: Notebook huấn luyện (`TextSense_Notebook_SQLServer_Hoan_Thien_v3.ipynb`), dữ liệu (`data/`) và mô hình/chỉ số (`outputs/`).
+- `02_SQL_SERVER/`: Script khởi tạo & cập nhật lược đồ (`textsense.sql`) và `requirements.txt`.
+- `03_GIAO_DIEN/`: Máy chủ web (`serve_textsense.py`), suy luận (`predict.py`), kết nối SQL Server (`database.py`) và giao diện (`web/`).
+- `04_BAO_CAO/`: Tài liệu báo cáo và hình minh chứng.
+- `tests/`: Bộ kiểm thử tự động (`test_web_sentiment.py`).
 
-**Giữ nguyên `.venv-1` và `.git` đang có trên máy.** Gói dự án phát hành không đóng gói lại hai thư mục này (môi trường Python được tạo theo đường dẫn máy Windows và lịch sử Git riêng của bạn). Khi **giải nén đè vào thư mục TextSense cũ**, chúng không bị xóa hay thay đổi. Dữ liệu, model, kết quả, báo cáo, SQLite lịch sử cũ và cache được giữ trong gói. Chương trình hiện tại không ghi lịch sử vào SQLite.
+## 5. Yêu cầu môi trường
+- Windows 10/11, Python 3.10+ (dự án dùng `.venv-1` với Python 3.14.8 và `scikit-learn==1.9.1`).
+- Microsoft SQL Server + ODBC Driver 17/18 for SQL Server.
 
-## Mở web UI trên Windows / PowerShell
-
-Mở **PowerShell** tại thư mục TextSense, ví dụ:
-
+## 6. Cách cài đặt
 ```powershell
 cd 'C:\Users\vothi\OneDrive\Desktop\TextSense'
-$env:TEXTSENSE_SQLSERVER_CONNECTION_STRING = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=TextSenseDB;Trusted_Connection=yes;'
-.\.venv-1\Scripts\python.exe .\03_GIAO_DIEN\serve_textsense.py
-```
-
-Mở **http://127.0.0.1:8502**. Nhấn `Ctrl+C` trong terminal để dừng. Biến kết nối SQL phải được đặt **trong cùng cửa sổ** chạy web (không tự chuyển sang terminal khác). Nếu SQL Server không kết nối, vẫn có kết quả dự đoán nhưng giao diện sẽ cảnh báo rằng **lịch sử chưa được lưu**.
-
-**Lần đầu hoặc thiếu thư viện** (không xóa `.venv-1`):
-
-```powershell
 .\.venv-1\Scripts\python.exe -m pip install -r .\03_GIAO_DIEN\requirements.txt
 ```
 
-Môi trường trong ZIP được tạo trên Windows bằng Python 3.14.8. Nếu giải nén sang máy khác, môi trường này có thể không còn hợp lệ; tạo mới môi trường chỉ khi thật sự cần. Model đã lưu dùng scikit-learn **1.9.1** (đã ghim trong `requirements.txt`), nên tránh tự đổi phiên bản thư viện.
+## 7. Cách cấu hình SQL Server
+1. Mở **SQL Server Management Studio (SSMS)**.
+2. Mở và chạy toàn bộ tệp `02_SQL_SERVER/textsense.sql` để tạo `TextSenseDB` và các bảng (`Tweets`, `TweetTokens`, `TrainingRuns`, `PredictionBatches`, `Predictions`, `UserFeedback`) cùng các cột mở rộng mới.
 
-## Dashboard Streamlit (PowerShell thứ hai)
-
+## 8. Cách cấu hình biến môi trường
+Đặt chuỗi kết nối trong PowerShell trước khi chạy backend (không lưu thông tin nhạy cảm vào mã nguồn):
 ```powershell
-cd 'C:\Users\vothi\OneDrive\Desktop\TextSense'
 $env:TEXTSENSE_SQLSERVER_CONNECTION_STRING = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=TextSenseDB;Trusted_Connection=yes;'
-.\.venv-1\Scripts\python.exe -m streamlit run .\03_GIAO_DIEN\app.py
 ```
 
-Mở **http://localhost:8501**. Tỷ lệ % của số **bình luận** Tiêu cực / Không tiêu cực trong một tệp CSV hoặc XLSX vẫn hiển thị trên dashboard vì có mẫu số và ý nghĩa thống kê. **Không** hiển thị % tiêu cực bên trong một bình luận riêng lẻ.
+## 9. Cách khởi động backend & frontend
+`serve_textsense.py` phục vụ cả API và giao diện web tĩnh tại `web/`:
+```powershell
+.\.venv-1\Scripts\python.exe .\03_GIAO_DIEN\serve_textsense.py
+```
+Mở trình duyệt tại: `http://127.0.0.1:8502`
 
-## Notebook / huấn luyện lại (chỉ khi cần)
-
-Mở dự án bằng VS Code, sau đó mở:
-
-`01_TRAIN_MODEL/TextSense_Notebook_SQLServer_Hoan_Thien_v2.ipynb`
-
-Chọn kernel **`.venv-1 (Python 3.14.8)`**. Không cần huấn luyện lại để chạy web với model `01_TRAIN_MODEL/outputs/binary_linear_svm.joblib` đã có.
-
-**Cẩn trọng khi Run All:** cell **1.4** của notebook **xóa và nạp lại** dữ liệu ở `dbo.TweetTokens` và `dbo.Tweets` trong một transaction. Những bảng này hiện có thể đã chứa dữ liệu quan trọng. Chỉ chạy lại toàn bộ notebook khi đã sao lưu và có chủ đích tái nạp. Lịch sử trong `dbo.TrainingRuns`, `dbo.PredictionBatches`, `dbo.Predictions` không bị câu lệnh xóa dữ liệu huấn luyện này tác động.
-
-Để tạo bảng SQL trên máy **chưa từng cài đặt**, mở `02_SQL_SERVER/textsense.sql` trong SSMS, chạy toàn bộ một lần. Không cần tạo lại database/bảng trên máy đã cài và nạp đủ dữ liệu.
-
-### Lệnh kiểm tra lưu lịch sử trong SSMS
-
-```sql
-USE TextSenseDB;
-SELECT TOP (10) * FROM dbo.PredictionBatches ORDER BY BatchID DESC;
-SELECT TOP (20) * FROM dbo.Predictions ORDER BY PredictionID DESC;
-SELECT TOP (10) * FROM dbo.TrainingRuns ORDER BY TrainingRunID DESC;
+## 10. Kiểm thử tự động
+```powershell
+.\.venv-1\Scripts\python.exe .\tests\test_web_sentiment.py
 ```
 
-## Kết quả đánh giá và giới hạn
-
-Model hiện có (file kết quả đi kèm): Test 39.212 mẫu; Accuracy khoảng **94,55%**, F1 lớp Tiêu cực khoảng **87,89%** trên tập Test của đồ án. Không lấy chỉ số này để khẳng định độ chính xác ở cấp độ **từng câu/vế**, vì không có tập kiểm thử riêng ở cấp độ đó. Với phủ định phức tạp như `wasn't bad`, mô hình có thể nhầm; không dùng từ khóa tự sửa nhãn để che lỗi.
-
-Khi dùng ZIP cập nhật, **sao lưu thư mục TextSense đang sử dụng trước khi giải nén**. Không xóa dữ liệu SQL Server, `.venv-1`, `.git`, notebook, model hoặc bất kỳ file cá nhân nào. Các cập nhật chủ yếu nằm trong backend, UI và hướng dẫn.
+## 11. Những giới hạn hiện tại
+- Mô hình chỉ hỗ trợ **tiếng Anh**; văn bản tiếng Việt có dấu sẽ bị từ chối để tránh dự đoán sai lệch.
+- Nhãn `0` gộp chung bình luận tích cực và trung tính.
+- Mô hình có thể phân loại nhầm với câu mỉa mai, châm biếm hoặc thiếu ngữ cảnh.
+- Phản hồi của người dùng được lưu ở trạng thái `Chờ xem xét` và **không** tự động huấn luyện lại mô hình.
