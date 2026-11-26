@@ -3,13 +3,15 @@
   --font-heading: 'Nunito', sans-serif;
   --font-body: 'Be Vietnam Pro', sans-serif;
 
-  --bg: #F2F5F2;
+  --bg: #EDF0EA;
+  --taskbar: #DCE5DF;
   --surface: #FFFFFF;
-  --surface-subtle: #EFF4F1;
-  --navy: #1E2E3E;
-  --blue: #356391;
-  --blue-hover: #274D74;
-  --blue-soft: #E2ECE8;
+  --surface-subtle: #E7EEE8;
+  --navy: #24364B;
+  --blue: #4775B9;
+  --blue-hover: #365FA0;
+  --blue-soft: #E7EEE8;
+  --btn-secondary: #C8D8CE;
   --sky-accent: #5C8B82;
   --yellow: #E6B84D;
   --yellow-soft: #FDF6E2;
@@ -17,10 +19,10 @@
   --danger-soft: #FCEBEB;
   --success: #1E6B4F;
   --success-soft: #E3F1EA;
-  --border: #7E968D;
-  --border-soft: #A6B9B2;
-  --text-secondary: #4D5F5A;
-  --text-muted-light: #7B8B86;
+  --border: #C5D1C9;
+  --border-soft: #D3DDD7;
+  --text-secondary: #5B6B65;
+  --text-muted-light: #8B989A;
 
   --text-hero: 52px;
   --text-page-title: 38px;
@@ -52,7 +54,7 @@ html {
 body {
   margin: 0;
   color: var(--navy);
-  background-color: #F4F8FF;
+  background-color: var(--bg);
   background-image: url("media/bg-frame.png");
   background-size: cover;
   background-position: center bottom;
@@ -123,18 +125,23 @@ a {
   border-radius: 999px;
 }
 
-/* Header */
+/* Header (Floating Pill Taskbar) */
 .site-header {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  width: min(100% - 2 * var(--pad), 1240px);
+  margin: 14px auto 0;
+  background: #FFFFFF;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(36, 54, 75, 0.09);
 }
 
 .masthead {
-  min-height: 66px;
+  min-height: 64px;
+  width: 100%;
+  padding-inline: 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -178,43 +185,56 @@ a {
 }
 
 .main-nav a:hover {
-  background: var(--blue-soft);
+  background: var(--btn-secondary);
   color: var(--navy);
 }
 
 .main-nav a[aria-current="location"] {
-  background: var(--blue-soft);
-  color: var(--blue);
-  font-weight: 600;
+  background: var(--navy);
+  color: #FFFFFF;
+  font-weight: 700;
 }
 
 .status-indicator {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
+  font-family: var(--font-heading);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #94A3B8;
 }
 
+.status-indicator[data-ok="true"] {
+  background: #1E7A58;
+  border-color: #165E43;
+  color: #FFFFFF;
+}
+
 .status-indicator[data-ok="true"] .status-dot {
-  background: var(--success);
+  background: #86EFAC;
+}
+
+.status-indicator[data-ok="false"] {
+  background: #C94E4E;
+  border-color: #A93838;
+  color: #FFFFFF;
 }
 
 .status-indicator[data-ok="false"] .status-dot {
-  background: var(--danger);
+  background: #FECACA;
 }
 
 /* Headings & Surfaces */
@@ -295,30 +315,30 @@ button {
 
 .button.primary {
   background: var(--navy);
-  color: #fff;
+  color: #FFFFFF;
 }
 
 .button.primary:hover:not(:disabled) {
-  background: #1E3A6A;
+  background: #1B2939;
   transform: translateY(-1px);
 }
 
 .button.primary:disabled {
   background: #CBD5E1;
-  color: #fff;
+  color: #FFFFFF;
   cursor: not-allowed;
 }
 
 .button.secondary {
-  background: var(--surface);
+  background: var(--btn-secondary);
   border-color: var(--border);
   color: var(--navy);
 }
 
 .button.secondary:hover:not(:disabled) {
-  background: var(--blue-soft);
-  border-color: #C4D7F5;
-  color: var(--blue);
+  background: #B8CBBE;
+  border-color: #9FB5A8;
+  color: var(--navy);
 }
 
 .button.secondary:disabled {
