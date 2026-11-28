@@ -1,0 +1,1 @@
+E4a (char_wb 2-5, base=E2w): thr=-0.208551, pol_val F1=0.7613

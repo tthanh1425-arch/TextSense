@@ -1,0 +1,164 @@
+{
+  "project": "TextSense V4",
+  "created_utc": "2026-11-27T08:28:52.306125+00:00",
+  "preprocessing_version": "textsense_clean_v4",
+  "random_seed": 42,
+  "label_convention": {
+    "0": "Không tiêu cực (Non-negative)",
+    "1": "Tiêu cực (Negative)"
+  },
+  "e6_nesting_relation": {
+    "description": "E6-50k ⊂ E6-120k ⊂ E6-400k (all stratified 50/50 by orig_idx from s140_train_400k)",
+    "e6_50k_in_e6_120k": true,
+    "e6_120k_in_e6_400k": true
+  },
+  "baseline_v3_integrity": {
+    "test_csv_sha256_expected": "d6fa7f3fa45ef5bac8eff90673ecb929144921cc84a6b71ffd26afaf3634cf1c",
+    "test_csv_sha256_actual": "d6fa7f3fa45ef5bac8eff90673ecb929144921cc84a6b71ffd26afaf3634cf1c",
+    "untouched": true
+  },
+  "leakage_checks": {
+    "pol_train_vs_T1": 0,
+    "pol_val_vs_T1": 0,
+    "pol_train_vs_pol_val": 0,
+    "s140_train_vs_T1": 0,
+    "s140_val_vs_T1": 0,
+    "T2_vs_T1": 0,
+    "s140_train_vs_s140_val": 0,
+    "s140_train_vs_T2": 0,
+    "s140_val_vs_T2": 0,
+    "s140_train_vs_pol_train": 0,
+    "s140_train_vs_pol_val": 0
+  },
+  "datasets": {
+    "political_train": {
+      "path": "data/splits/political_train.csv",
+      "source": "Twitter_Data.csv + Reddit_Data.csv (baseline_v3 train split)",
+      "purpose": "Train",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "af203576bd351cde73526b84eab3d7e7fca1dd4e30be32441154f29855d67902",
+      "rows": 133314,
+      "label_counts": {
+        "0": 103974,
+        "1": 29340
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "political_val": {
+      "path": "data/splits/political_val.csv",
+      "source": "Twitter_Data.csv + Reddit_Data.csv (baseline_v3 validation split)",
+      "purpose": "Validation",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "65b9fbb2c477475314d9db8016a9db3e7f15b23ff0b5de94b7999ffcd4e65d7f",
+      "rows": 23526,
+      "label_counts": {
+        "0": 18349,
+        "1": 5177
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "political_test_T1": {
+      "path": "data/splits/political_test_T1.csv",
+      "source": "Twitter_Data.csv + Reddit_Data.csv (baseline_v3 test split - PROTECTED)",
+      "purpose": "Test",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "baseline_v3_raw_sha256": "d6fa7f3fa45ef5bac8eff90673ecb929144921cc84a6b71ffd26afaf3634cf1c",
+      "sha256": "5654ab35f4ceb09eb67cc2b781be3909810d1e03a9e47aa9fa9a8c934cf849f0",
+      "rows": 39210,
+      "label_counts": {
+        "0": 30581,
+        "1": 8629
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "s140_train_400k": {
+      "path": "data/splits/s140_train_400k.csv",
+      "source": "sentiment140_train.csv",
+      "purpose": "Train",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "5f74f2540333a083fa5c0f4c4f4e35a2b3ebc7664483e103e99f5525da700cdb",
+      "rows": 400000,
+      "label_counts": {
+        "0": 200000,
+        "1": 200000
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "s140_val_60k": {
+      "path": "data/splits/s140_val_60k.csv",
+      "source": "sentiment140_train.csv",
+      "purpose": "Validation",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "b5eb7a5b76d918658f1fc40686f1d18384ae0da2e597d32e951e193699336f74",
+      "rows": 60000,
+      "label_counts": {
+        "0": 30000,
+        "1": 30000
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "s140_test_T2_60k": {
+      "path": "data/splits/s140_test_T2_60k.csv",
+      "source": "sentiment140_train.csv",
+      "purpose": "Test",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "dcd4c1e5920d4ed92bb09459a4d72056e82928ad4952953701d0d3565be0970a",
+      "rows": 60000,
+      "label_counts": {
+        "0": 30000,
+        "1": 30000
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "s140_train_e6_50k": {
+      "path": "data/splits/s140_train_e6_50k.csv",
+      "source": "sentiment140_train.csv (nested subset of s140_train_400k)",
+      "purpose": "Train",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "7c939de795e285754e14cf6b30de10ac6f008986dbb8313c1e67cc863f9a7ed1",
+      "rows": 50000,
+      "label_counts": {
+        "0": 25000,
+        "1": 25000
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    },
+    "s140_train_e6_120k": {
+      "path": "data/splits/s140_train_e6_120k.csv",
+      "source": "sentiment140_train.csv (nested subset of s140_train_400k)",
+      "purpose": "Train",
+      "preprocessing_version": "textsense_clean_v4",
+      "random_seed": 42,
+      "sha256": "8ece80d446408dd1311138366b0ba2d8b497ab7d94c90dc76cad5ab4409df177",
+      "rows": 120000,
+      "label_counts": {
+        "0": 60000,
+        "1": 60000
+      },
+      "empty_after_v4": 0,
+      "lt3_after_v4": 0,
+      "internal_duplicates": 0
+    }
+  }
+}

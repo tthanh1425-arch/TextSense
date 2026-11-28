@@ -1,0 +1,138 @@
+﻿case_id,group,input_text,predict_label,predict_status,decision_score,sentence_count,negative_parts,infer_comment_label,infer_status,difference_reason
+A-01,A_basic,The new policy is a complete disaster for working families.,0.0,ok,-0.9868523653693887,1,0,0.0,ok,same
+A-02,A_basic,Corrupt politicians are ruining the country's economy.,1.0,ok,1.6712503083074772,1,0,1.0,ok,same
+A-03,A_basic,This leadership has failed miserably on every promise.,1.0,ok,3.753583219862308,1,0,1.0,ok,same
+A-04,A_basic,Terrible decision that hurts poor citizens the most.,1.0,ok,2.1711999893351503,1,0,1.0,ok,same
+A-05,A_basic,The minister's speech was full of lies and propaganda.,0.0,ok,-0.343437714040876,1,0,0.0,ok,same
+A-06,A_basic,Unemployment is rising and nobody in power cares.,0.0,ok,-1.1181385609511438,1,0,0.0,ok,same
+A-07,A_basic,Horrible handling of the crisis by the administration.,1.0,ok,1.8777629516568644,1,0,1.0,ok,same
+A-08,A_basic,Wasting taxpayer money on useless projects is shameful.,1.0,ok,1.4051624725615468,1,0,1.0,ok,same
+A-09,A_basic,The healthcare system is broken and getting worse.,1.0,ok,2.8302020243754376,1,0,1.0,ok,same
+A-10,A_basic,Disgusting behavior from elected officials during the debate.,1.0,ok,1.8181332258139353,1,0,1.0,ok,same
+A-11,A_basic,The infrastructure project created thousands of new jobs.,0.0,ok,-1.1049953907196985,1,0,0.0,ok,same
+A-12,A_basic,Great progress in renewable energy over the past year.,0.0,ok,-1.600755307454102,1,0,0.0,ok,same
+A-13,A_basic,The committee released its annual budget report today.,0.0,ok,-0.9271245232522205,1,0,0.0,ok,same
+A-14,A_basic,Voters turned out in large numbers for the local election.,0.0,ok,-1.7539899778683679,1,0,0.0,ok,same
+A-15,A_basic,Public schools received additional funding for science labs.,0.0,ok,-1.574903516541272,1,0,0.0,ok,same
+A-16,A_basic,The parliament will convene on Monday morning to discuss the bill.,0.0,ok,-0.318046886843792,1,0,0.0,ok,same
+A-17,A_basic,Strong economic growth helped stabilize inflation this quarter.,0.0,ok,-3.0421562339657324,1,0,0.0,ok,same
+A-18,A_basic,Citizens welcomed the transparent digital government portal.,0.0,ok,-1.4668154347868123,1,0,0.0,ok,same
+A-19,A_basic,The diplomatic summit concluded with a trade agreement.,0.0,ok,-0.756179996034346,1,0,0.0,ok,same
+A-20,A_basic,Clean water access improved in several rural districts.,0.0,ok,-2.1457424924739854,1,0,0.0,ok,same
+A-21,A_basic,"The bill has some good ideas, though implementation remains unclear.",0.0,ok,-3.1819101963681,2,0,0.0,ok,same
+A-22,A_basic,"Taxes were reduced, yet public transit fares increased.",0.0,ok,-1.152970151291213,2,0,0.0,ok,same
+A-23,A_basic,Some critics raised concerns while supporters praised the reform.,0.0,ok,-0.8099408097301397,1,0,0.0,ok,same
+A-24,A_basic,"The speech was long and technical, covering many topics.",0.0,ok,-1.5597909600086153,1,0,0.0,ok,same
+A-25,A_basic,"Maybe this policy will help in the long run, who knows.",1.0,ok,0.38665555343133295,1,0,1.0,ok,same
+A-26,A_basic,Exports rose slightly despite global supply chain pressures.,0.0,ok,-1.8307509618514672,1,0,0.0,ok,same
+A-27,A_basic,Half of the council voted yes and half voted no.,1.0,ok,1.2677426158465444,1,0,1.0,ok,same
+A-28,A_basic,"The mayor promised changes, but results are still pending.",0.0,ok,-0.869828264173776,2,0,0.0,ok,same
+A-29,A_basic,Interesting proposal that needs much more data to evaluate.,0.0,ok,-5.113293322205631,1,0,0.0,ok,same
+A-30,A_basic,"Prices stabilized, though wages have barely moved.",0.0,ok,-1.2200412114583439,2,0,0.0,ok,same
+B-01,B_contrastive,"The design is beautiful, but the performance is disappointing.",0.0,ok,-0.6516931144520608,2,1,1.0,ok,OR_rule_clause_negative
+B-02,B_contrastive,"The food wasn't bad, but I wouldn't call it delicious either.",0.0,ok,-0.5814130338483282,2,0,0.0,ok,same
+B-03,B_contrastive,"The service was excellent, although the price was disappointing.",0.0,ok,-0.681814105649724,2,1,1.0,ok,OR_rule_clause_negative
+B-04,B_contrastive,"I like the product, but the customer support is terrible.",1.0,ok,1.0120437728756568,2,1,1.0,ok,same
+B-05,B_contrastive,"The update fixed several bugs, but introduced new problems.",0.0,ok,-1.7218554625588278,2,0,0.0,ok,same
+B-06,B_contrastive,"The speech sounded inspiring, however the actual policy is awful.",1.0,ok,0.2906394493236899,2,1,1.0,ok,same
+B-07,B_contrastive,"Education funding increased, yet teacher morale is terrible.",1.0,ok,1.5866327982715072,2,1,1.0,ok,same
+B-08,B_contrastive,"The roads are smoother, but traffic congestion is worse than ever.",1.0,ok,0.5685855539781062,2,1,1.0,ok,same
+B-09,B_contrastive,"Healthcare access expanded, although wait times remain unacceptable.",0.0,ok,-1.1596864839305923,2,0,0.0,ok,same
+B-10,B_contrastive,"The new law protects consumers, but hurts small businesses badly.",1.0,ok,2.0994383296611545,2,1,1.0,ok,same
+B-11,B_contrastive,"Great presentation by the minister, but zero accountability for failures.",0.0,ok,-2.9918519773815806,2,0,0.0,ok,same
+B-12,B_contrastive,"Inflation cooled slightly, however grocery prices are still outrageous.",1.0,ok,1.5119805635100898,2,2,1.0,ok,same
+B-13,B_contrastive,"The app looks modern, but crashes constantly during checkout.",0.0,ok,-1.5446693487273504,2,0,0.0,ok,same
+B-14,B_contrastive,"Good intentions behind the reform, but poor execution ruined it.",1.0,ok,0.8873273492431031,2,1,1.0,ok,same
+B-15,B_contrastive,"The city built new parks, yet homelessness continues to worsen.",0.0,ok,-1.1358228425300219,2,0,0.0,ok,same
+B-16,B_contrastive,"Strong defense spending, but veterans are neglected.",0.0,ok,-2.0882882951437542,2,0,0.0,ok,same
+B-17,B_contrastive,"I appreciate the effort, although the outcome is a total failure.",1.0,ok,0.6947049452250911,2,1,1.0,ok,same
+B-18,B_contrastive,"The train is fast, but the stations are filthy and unsafe.",1.0,ok,1.1264918625485685,2,1,1.0,ok,same
+B-19,B_contrastive,"Economic indicators look solid, yet many families feel abandoned.",0.0,ok,-3.4409345064204153,2,0,0.0,ok,same
+B-20,B_contrastive,"Nice rhetoric during the campaign, but broken promises afterward.",0.0,ok,-0.27250335824053007,2,1,1.0,ok,OR_rule_clause_negative
+B-21,B_contrastive,"The policy helps exporters, while domestic workers suffer.",0.0,ok,-0.8504825119422793,2,0,0.0,ok,same
+B-22,B_contrastive,"Clean interface, but customer complaints are ignored.",0.0,ok,-2.5108170228399893,2,0,0.0,ok,same
+B-23,B_contrastive,"The bridge was completed on time, though the budget exploded.",0.0,ok,-0.2533630033815648,2,0,0.0,ok,same
+B-24,B_contrastive,"Police response was quick, but the investigation was sloppy.",0.0,ok,-1.810258070644252,2,0,0.0,ok,same
+B-25,B_contrastive,"Solar adoption is growing, however coal pollution remains terrible.",1.0,ok,1.4689447008681136,2,1,1.0,ok,same
+B-26,B_contrastive,"The mayor is popular, yet city services are failing.",0.0,ok,-2.1157402608896843,2,0,0.0,ok,same
+B-27,B_contrastive,"Good battery life, awful screen quality.",0.0,ok,-1.7341507024931597,1,0,0.0,ok,same
+B-28,B_contrastive,"Helpful staff, but the waiting room was dirty and chaotic.",1.0,ok,1.947902586196441,2,1,1.0,ok,same
+B-29,B_contrastive,"Transparent reporting, but disastrous financial management.",1.0,ok,1.2653653198781438,2,1,1.0,ok,same
+B-30,B_contrastive,"Impressive growth numbers, although inequality is worsening rapidly.",0.0,ok,-1.9025528240402272,2,0,0.0,ok,same
+C-01,C_negation,not good,1.0,ok,2.121258399747406,1,0,1.0,ok,same
+C-02,C_negation,not bad,1.0,ok,-0.14321255891904783,1,0,1.0,ok,same
+C-03,C_negation,never worked,1.0,ok,-0.13154450969503007,1,0,1.0,ok,same
+C-04,C_negation,no problem,0.0,ok,-1.1348448682966583,1,0,0.0,ok,same
+C-05,C_negation,not only good but excellent,0.0,ok,-6.384833429094269,2,0,0.0,ok,same
+C-06,C_negation,not as bad as expected,1.0,ok,8.750933682398946,1,0,1.0,ok,same
+C-07,C_negation,I don't dislike it,0.0,ok,-1.2045374909614328,1,0,0.0,ok,same
+C-08,C_negation,I wouldn't recommend it,0.0,ok,-1.4667160234431753,1,0,0.0,ok,same
+C-09,C_negation,"The product is not perfect, but acceptable.",0.0,ok,-1.3710856429933869,2,1,1.0,ok,OR_rule_clause_negative
+C-10,C_negation,"I thought it was terrible, but it turned out fine.",1.0,ok,1.096204627356599,2,1,1.0,ok,same
+C-11,C_negation,This policy is not helpful at all.,0.0,ok,-0.831272332895035,1,0,0.0,ok,same
+C-12,C_negation,They did not fail to deliver on time.,1.0,ok,1.7041443345162686,1,0,1.0,ok,same
+C-13,C_negation,Nobody believes the official report.,0.0,ok,-1.2572251634261313,1,0,0.0,ok,same
+C-14,C_negation,Nothing in this budget helps poor families.,1.0,ok,2.191853005076898,1,0,1.0,ok,same
+C-15,C_negation,"Without transparency, democracy suffers.",1.0,ok,0.968031365375287,1,0,1.0,ok,same
+C-16,C_negation,Neither the mayor nor the council took responsibility.,0.0,ok,-0.9641394811326037,1,0,0.0,ok,same
+C-17,C_negation,I cannot say this is a bad decision.,1.0,ok,2.125514975354455,1,0,1.0,ok,same
+C-18,C_negation,It is not the worst law ever passed.,1.0,ok,3.6237400918554092,1,0,1.0,ok,same
+C-19,C_negation,The minister never lies to the public.,0.0,ok,-0.8700743549887087,1,0,0.0,ok,same
+C-20,C_negation,No one can deny the terrible damage done.,1.0,ok,1.4214767114605171,1,0,1.0,ok,same
+C-21,C_negation,This isn't going to end well for voters.,0.0,ok,-1.0009803921113565,1,0,0.0,ok,same
+C-22,C_negation,He didn't do anything wrong in that debate.,1.0,ok,2.3389800515608155,1,0,1.0,ok,same
+C-23,C_negation,We shouldn't ignore the rising poverty rate.,0.0,ok,-1.2102201468905118,1,0,0.0,ok,same
+C-24,C_negation,She wasn't happy about the unfair tax hike.,1.0,ok,2.9454193377783566,1,0,1.0,ok,same
+C-25,C_negation,Not a single promise was kept by the party.,1.0,ok,-0.02673686018727306,1,0,1.0,ok,same
+C-26,C_negation,"Don't worry, the economy is not collapsing.",0.0,ok,-0.8016029543448355,1,0,0.0,ok,same
+C-27,C_negation,"I don't hate the proposal, it's just incomplete.",1.0,ok,1.942423869442287,1,0,1.0,ok,same
+C-28,C_negation,There is no reason to panic about the audit.,0.0,ok,-1.465106386082983,1,0,0.0,ok,same
+C-29,C_negation,This is anything but a successful reform.,0.0,ok,-3.1059163017368117,2,0,0.0,ok,same
+C-30,C_negation,Hardly anyone supports this corrupt bill.,1.0,ok,4.65857401616428,1,0,1.0,ok,same
+D-01,D_boundary,,,Văn bản rỗng,,0,0,,HTTP_422:Chưa có nội dung,both_rejected
+D-02,D_boundary,     	  ,,Văn bản rỗng,,0,0,,HTTP_422:Chưa có nội dung,both_rejected
+D-03,D_boundary,!!! ??? --- ...,,Văn bản rỗng,,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-04,D_boundary,https://example.com/news/123,,"Đây là đường dẫn, không phải nội dung bình luận",,0,0,,HTTP_422:TextSense chỉ phân tích nội dung bình luận,both_rejected
+D-05,D_boundary,www.example.com/politics,,"Đây là đường dẫn, không phải nội dung bình luận",,0,0,,HTTP_422:TextSense chỉ phân tích nội dung bình luận,both_rejected
+D-06,D_boundary,https://x.com/user/status/12345,,"Đây là đường dẫn, không phải nội dung bình luận",,0,0,,HTTP_422:TextSense chỉ phân tích nội dung bình luận,both_rejected
+D-07,D_boundary,Terrible policy! https://t.co/abc123,1.0,ok,4.0898895656731264,2,1,1.0,ok,same
+D-08,D_boundary,RT @user123: Great speech today! http://news.org,0.0,ok,-4.7277760799533,2,0,0.0,ok,same
+D-09,D_boundary,policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform,0.0,ok,-1.3903610298112186,1,0,0.0,ok,same
+D-10,D_boundary,terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy,,"Vượt quá 2,000 ký tự",,0,0,,HTTP_413:Văn bản vượt giới hạn,both_rejected
+D-11,D_boundary,bad !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!,1.0,ok,9.890249277877604,0,0,,HTTP_413:Văn bản vượt giới hạn,predict_accepted_vs_infer_rejected(413)
+D-12,D_boundary,😡😡😡,,Văn bản rỗng,,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-13,D_boundary,Bad policy 😡😡,1.0,ok,6.3403040415779905,1,0,1.0,ok,same
+D-14,D_boundary,Ｔｈｉｓ　ｉｓ　ａｗｆｕｌ！,1.0,ok,2.1024085134746855,1,0,1.0,ok,same
+D-15,D_boundary,It’s a terrible—broken—system…,1.0,ok,5.603666657313853,1,0,1.0,ok,same
+D-16,D_boundary,@#$%^&*()_+={}[]|\,,Văn bản rỗng,,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-17,D_boundary,"Line one is good.
+Line two is terrible.",0.0,ok,-0.9260209076463887,2,1,1.0,ok,OR_rule_clause_negative
+D-18,D_boundary,bad bad bad bad bad bad,1.0,ok,9.890249277877604,1,0,1.0,ok,same
+D-19,D_boundary,1234567890 2026,0.0,ok,-1.1482702029176977,1,0,0.0,ok,same
+D-20,D_boundary,Chính sách này thật tệ hại và gây bức xúc.,,"Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.",,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-21,D_boundary,Bình luận tiếng Việt có dấu rất rõ ràng.,,"Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.",,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-22,D_boundary,The policy is bad nhưng thực sự rất tệ hại.,,"Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.",,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-23,D_boundary,The policy is bad nhưng ok,,"Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.",,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+D-24,D_boundary,a,0.0,ok,-1.1482702029176977,1,0,0.0,ok,same
+D-25,D_boundary,no,0.0,ok,-1.1482702029176977,1,0,0.0,ok,same
+D-26,D_boundary,News &amp; politics &lt;fail&gt;,1.0,ok,1.6768094620673633,3,1,1.0,ok,same
+E-01,E_stability,The economic policy is terrible and hurts workers.,1.0,ok,0.8549990310705387,1,0,1.0,ok,same
+E-02,E_stability,Great progress on clean energy infrastructure.,0.0,ok,-5.3772143936298695,1,0,0.0,ok,same
+E-03,E_stability,I don't think this law is fair.,0.0,ok,-3.060659273127855,1,0,0.0,ok,same
+E-04,E_stability,"Good design, but awful battery life.",0.0,ok,-1.4840747833169272,2,1,1.0,ok,OR_rule_clause_negative
+E-05,E_stability,https://example.com,,"Đây là đường dẫn, không phải nội dung bình luận",,0,0,,HTTP_422:TextSense chỉ phân tích nội dung bình luận,both_rejected
+E-06,E_stability,,,Văn bản rỗng,,0,0,,HTTP_422:Chưa có nội dung,both_rejected
+E-07,E_stability,Văn bản tiếng Việt có dấu.,,"Văn bản có dấu tiếng Việt; mô hình được huấn luyện trên dữ liệu tiếng Anh, không trả nhãn.",,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+E-08,E_stability,Corrupt officials must be held accountable.,1.0,ok,1.9943149851188637,1,0,1.0,ok,same
+E-09,E_stability,Public schools received new funding.,0.0,ok,-1.7705069319103819,1,0,0.0,ok,same
+E-10,E_stability,"Not bad at all, actually quite good.",0.0,ok,-3.85857521816144,1,0,0.0,ok,same
+E-11,E_stability,They won't listen to citizens.,0.0,ok,-0.808735594102736,1,0,0.0,ok,same
+E-12,E_stability,The budget passed without debate.,0.0,ok,-0.8314829568532126,1,0,0.0,ok,same
+E-13,E_stability,Prices are rising fast!,0.0,ok,-1.6099273598113575,1,0,0.0,ok,same
+E-14,E_stability,Thank you for the transparent report.,0.0,ok,-1.0612467704167008,1,0,0.0,ok,same
+E-15,E_stability,Nothing worked as promised.,0.0,ok,-0.5606373438672423,1,0,0.0,ok,same
+E-16,E_stability,!!!???,,Văn bản rỗng,,0,0,,HTTP_422:Không thể phân loại văn bản,both_rejected
+E-17,E_stability,Terrible crisis management.,1.0,ok,2.833470643339729,1,0,1.0,ok,same
+E-18,E_stability,Strong leadership and steady growth.,0.0,ok,-2.6103834326176876,1,0,0.0,ok,same
+E-19,E_stability,Mixed results across the region.,0.0,ok,-0.8699958495810887,1,0,0.0,ok,same
+E-20,E_stability,Another broken promise from the minister.,1.0,ok,1.0690694201026532,1,0,1.0,ok,same

@@ -1,7 +1,7 @@
 ﻿source,category,original_sentiment,label,binary_name,samples,percent_within_source,percent_overall
 Reddit_Data.csv,-1,Tiêu cực,1,Tiêu cực,8227,22.56,4.196
-Reddit_Data.csv,0,Trung tính,0,Không tiêu cực,12562,34.447,6.407
+Reddit_Data.csv,0,Trung tính,0,Không tiêu cực,12562,34.447,6.408
 Reddit_Data.csv,1,Tích cực,0,Không tiêu cực,15679,42.994,7.997
-Twitter_Data.csv,-1,Tiêu cực,1,Tiêu cực,34920,21.881,17.811
-Twitter_Data.csv,0,Trung tính,0,Không tiêu cực,53677,33.635,27.378
-Twitter_Data.csv,1,Tích cực,0,Không tiêu cực,70991,44.484,36.21
+Twitter_Data.csv,-1,Tiêu cực,1,Tiêu cực,34919,21.882,17.811
+Twitter_Data.csv,0,Trung tính,0,Không tiêu cực,53673,33.633,27.377
+Twitter_Data.csv,1,Tích cực,0,Không tiêu cực,70990,44.485,36.21

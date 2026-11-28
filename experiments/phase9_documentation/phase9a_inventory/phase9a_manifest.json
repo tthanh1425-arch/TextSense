@@ -1,0 +1,49 @@
+{
+  "phase": "Phase 9A - Documentation Inventory & Freeze",
+  "version": "9A-v1",
+  "created_utc": "2026-11-27T19:34:56.279248+00:00",
+  "created_local": "2026-11-28T02:35:00+07:00",
+  "official_artifact_sha256": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+  "matrix_counts": {
+    "total": 17,
+    "VERIFIED": 13,
+    "NEEDS_REVISION": 1,
+    "MISSING": 3,
+    "EXISTS_UNVERIFIED_extra": 1
+  },
+  "inventory_files_sha256": {
+    "repository_inventory.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/repository_inventory.md",
+      "sha256": "0454d619f01525002cbf6ed8a33345d9d92dec386ce22e5575c91b9461eaf832"
+    },
+    "experiment_evidence_inventory.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/experiment_evidence_inventory.md",
+      "sha256": "2e5b6231057ee1900dc7ce166fe23f0f3bb99fd4220801a2d5097e9f59ba140c"
+    },
+    "model_artifact_inventory.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/model_artifact_inventory.md",
+      "sha256": "344a234d68170148ac418d1c5df41914d2b2037a6ae66f7f7c8da1141cfd58ef"
+    },
+    "phase8_testing_inventory.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/phase8_testing_inventory.md",
+      "sha256": "6705f93e4926bd06b977fb93aad5e2510f77bcf5be11ebeca9ec37d6db7c1939"
+    },
+    "final_report_outline.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/final_report_outline.md",
+      "sha256": "4394e45cf896dcb315c0c6cb68a301beeaf29e5e856a06b556daace3e9503dda"
+    },
+    "documentation_gap_analysis.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/documentation_gap_analysis.md",
+      "sha256": "29ad39090f97ddcc29c83ebde80e1e5c1ca790f90f8439dd75daa38d4fc297a2"
+    },
+    "phase9a_completion_report.md": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/phase9a_completion_report.md",
+      "sha256": "12391b380d8582d738850ebf261827f2496a05e2da78291c8b2d98046b531774"
+    },
+    "_repo_scan.json": {
+      "path": "experiments/phase9_documentation/phase9a_inventory/_repo_scan.json",
+      "sha256": "ef153ef97f1d29ae8c61b87ac7447391a1d3248f7e78f0514809ccca4cebcf76"
+    }
+  },
+  "conclusion": "PASS WITH WARNINGS"
+}

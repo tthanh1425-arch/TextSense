@@ -1,0 +1,131 @@
+﻿id,topic,text,annotator_1,annotator_2
+1,tech,"Just updated my phone and the battery drains twice as fast now, super frustrating.",1,1
+2,tech,"The new laptop keyboard feels amazing, typing on this all day is a breeze.",0,0
+3,tech,App keeps crashing every time I try to upload a photo. Fix your servers!,1,1
+4,tech,"Honestly this software update is not bad at all, way smoother than before.",0,0
+5,tech,Paid 900 dollars for a tablet that lags on basic PDFs. Complete waste of money.,1,1
+6,tech,Does anyone know when the dark mode patch rolls out for Android?,0,0
+7,tech,Customer support told me to restart my router three times. Useless.,1,1
+8,tech,Switched to fiber internet today and my ping dropped from 80ms to 9ms!,0,0
+9,tech,Why do companies keep removing headphone jacks? Nobody asked for this.,1,1
+10,tech,The camera quality in low light is actually decent for a budget phone.,0,0
+11,tech,Another data breach and they send a generic apology email. Pathetic.,1,1
+12,tech,"Tested the new open source model locally, runs fast even on 8GB VRAM.",0,0
+13,tech,"My headphones broke after two weeks of normal use, cheap plastic garbage.",1,1
+14,tech,Finally backed up all my photos to an external drive.,0,0
+15,tech,"Oh great, another mandatory 4GB update right before my presentation.",1,1
+16,tech,"The UI redesign looks clean, though it took me a minute to find settings.",0,0
+17,tech,Stop forcing AI popups into every single text editor.,1,1
+18,tech,This mechanical keyboard is worth every penny.,0,0
+19,tech,"Wi-Fi died in the middle of my interview, I hate this ISP so much.",1,1
+20,tech,"Battery life is okay, gets me through the workday.",0,0
+21,tech,"Smartwatch tracking is wildly inaccurate, says I ran 5km while sitting.",1,1
+22,tech,Loving the new noise cancellation on the train.,0,0
+23,tech,Why is the login page broken again? Terrible engineering.,1,1
+24,tech,The screen brightness is fine indoors but hard to read in direct sun.,1,0
+25,tech,Just ordered a new USB-C hub for my desk setup.,0,0
+26,service,Waited 45 minutes on hold only to get disconnected. Worst service ever.,1,1
+27,service,Shoutout to the barista who remade my coffee without me even asking!,0,0
+28,service,Package arrived damaged and missing half the items. Never ordering here again.,1,1
+29,service,Delivery was right on time and the driver was super polite.,0,0
+30,service,They charged my card twice and refuse to issue a refund for 10 business days.,1,1
+31,service,"Returned the jacket because the size ran small, refund processed in 2 days.",0,0
+32,service,Rude staff at the front desk acted like helping customers was a burden.,1,1
+33,service,"Food was fresh, hot, and portion sizes were generous.",0,0
+34,service,Ordered medium rare and got a burnt piece of shoe leather.,1,1
+35,service,The store was crowded because of the weekend sale.,0,0
+36,service,Airline lost my luggage and offered a 20 dollar voucher. Insulting.,1,1
+37,service,"Smooth check-in at the airport today, security took less than 10 minutes.",0,0
+38,service,"Hidden fees everywhere at checkout, total scam.",1,1
+39,service,"Not the fastest shipping, but everything arrived intact.",0,0
+40,service,"Manager actually came out and apologized for the mix-up, appreciate that.",0,0
+41,service,Restaurant was freezing cold and the music was deafening.,1,1
+42,service,Bought these running shoes last month and they still feel great.,0,0
+43,service,The instructions in the box were completely illegible.,1,1
+44,service,"Tried the new bakery downtown, croissants are flaky and delicious.",0,0
+45,service,They canceled my reservation an hour before dinner with zero explanation.,1,1
+46,service,"Prices went up again this month, getting harder to justify.",1,0
+47,service,Picked up groceries on the way home.,0,0
+48,life,Exhausted from back-to-back meetings that could have been a two-line email.,1,1
+49,life,Nothing beats a quiet Sunday morning walk with a cup of tea.,0,0
+50,life,"Traffic was a complete nightmare this morning, stuck for over an hour.",1,1
+51,life,Finished my project ahead of schedule and now I can actually relax.,0,0
+52,life,Feeling really overwhelmed and burned out lately.,1,1
+53,life,Cooked pasta from scratch for the first time and it turned out great!,0,0
+54,life,My neighbor has been drilling into the wall since 7am on a Saturday.,1,1
+55,life,Looking forward to catching up with old friends tonight.,0,0
+56,life,Rent just went up by 15 percent while my paycheck stayed the same.,1,1
+57,life,The weather today is sunny with a nice cool breeze.,0,0
+58,life,Spilled coffee all over my white shirt five minutes before the client call.,1,1
+59,life,Got promoted today! Still cannot believe it.,0,0
+60,life,I am so tired of people talking loudly in the quiet car on the train.,1,1
+61,life,Started reading a new mystery novel before bed.,0,0
+62,life,Could not be happier with how the team handled the launch.,0,0
+63,life,"Honestly, this week has been a total disaster from start to finish.",1,1
+64,life,Gym session felt tough today but glad I showed up.,0,0
+65,life,Forgot my umbrella and got soaked walking back from the station.,1,1
+66,life,"Adopted a rescue puppy this weekend, he is already asleep on my shoes.",0,0
+67,life,My back hurts from sitting in this terrible office chair all day.,1,1
+68,life,Working from home today while waiting for the plumber.,0,1
+69,life,Made a grocery list for the week.,0,0
+70,entertainment,That referee ruined the entire match with those awful calls.,1,1
+71,entertainment,What an incredible comeback in the final five minutes!,0,0
+72,entertainment,The sequel was a boring cash grab with zero plot.,1,1
+73,entertainment,"Just watched the season finale, easily one of the best episodes on TV.",0,0
+74,entertainment,Ticket prices for concerts have gotten completely out of control.,1,1
+75,entertainment,The soundtrack of this game is pure nostalgia.,0,0
+76,entertainment,"Turned off the movie halfway through, dialogue was painfully bad.",1,1
+77,entertainment,"Great defense tonight, kept them scoreless in the second half.",0,0
+78,entertainment,Another lazy remake instead of an original script.,1,1
+79,entertainment,The animation style in this film is breathtaking.,0,0
+80,entertainment,"Our defense collapsed again, embarrassing performance.",1,1
+81,entertainment,Had a blast at the comedy show last night.,0,0
+82,entertainment,The ending felt rushed and left way too many plot holes.,1,1
+83,entertainment,Listening to the new album on repeat while studying.,0,0
+84,entertainment,"Not gonna lie, the trailer looked awful but the movie was actually fun.",0,0
+85,entertainment,Worst halftime show I have ever seen.,1,1
+86,entertainment,Congrats to the team on winning the championship!,0,0
+87,entertainment,Streaming platforms keep canceling every good show after one season.,1,1
+88,entertainment,"The cinematography was decent, though the pacing dragged a bit.",0,1
+89,entertainment,Match kicks off at 8pm tonight.,0,0
+90,entertainment,This game has way too many microtransactions.,1,1
+91,news,Public transit funding was cut again while highways get billions. Ridiculous.,1,1
+92,news,City council approved three new bike lanes and a community park.,0,0
+93,news,Politicians promising transparency and delivering more corruption as usual.,1,1
+94,news,Local volunteers cleaned up over two tons of trash from the riverfront.,0,0
+95,news,Housing affordability is a crisis and nobody in power seems to care.,1,1
+96,news,Renewable energy generation hit a new record this quarter.,0,0
+97,news,Misinformation online is getting worse every election cycle.,1,1
+98,news,The library is extending its weekend hours starting next month.,0,0
+99,news,Another pointless press conference with zero concrete answers.,1,1
+100,news,Free vaccination clinic is open at the community center until 5pm.,0,0
+101,news,Taxpayers are footing the bill for corporate bailouts again. Disgusting.,1,1
+102,news,University researchers published an open dataset on urban heat islands.,0,0
+103,news,The debate devolved into shouting and personal insults.,1,1
+104,news,Voter turnout was higher than expected in several districts.,0,0
+105,news,Inflation is making basic groceries unaffordable for working families.,1,1
+106,news,New bridge construction is scheduled to finish in October.,0,0
+107,news,Stop blaming young people for an economy they did not break.,1,1
+108,news,Public schools received new science lab equipment this semester.,0,0
+109,news,"The new policy might help small businesses, or it might just add red tape.",0,1
+110,news,Annual budget report was released this morning.,0,0
+111,slang,"Yeah sure, waiting three hours at the DMV is my favorite hobby.",1,1
+112,slang,Lowkey this cafe is the best study spot in town.,0,0
+113,slang,"This update is straight up trash, broke my whole workflow.",1,1
+114,slang,"Not terrible at all, I actually enjoyed the workshop.",0,0
+115,slang,"Oh wonderful, my flight got delayed another four hours. Love that for me.",1,1
+116,slang,"That presentation didn't suck, honestly pretty solid!",0,0
+117,slang,"Bro really thought nobody would notice the fake reviews lol, pathetic.",1,1
+118,slang,"The new track is fire, been playing it all morning.",0,0
+119,slang,I am not happy with how they handled my complaint at all.,1,1
+120,slang,"Cannot complain, everything worked right out of the box.",0,0
+121,slang,"Mid at best, definitely overhyped on social media.",1,0
+122,slang,"No hate, just wish the app had offline mode.",0,0
+123,slang,Absolute clown show from management today.,1,1
+124,slang,"Never thought I would say this, but Monday went pretty well.",0,0
+125,slang,"Thanks for nothing, support bot.",1,1
+126,slang,Respect to the devs for fixing that bug in less than an hour.,0,0
+127,slang,"Honestly not good, would not recommend to anyone.",1,1
+128,slang,This coffee shop never misses.,0,0
+129,slang,"Why is everything so broken today, I give up.",1,1
+130,slang,Wild how fast technology moves these days.,0,1

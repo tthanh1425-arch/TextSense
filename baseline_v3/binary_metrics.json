@@ -1,0 +1,893 @@
+{
+  "task": "binary",
+  "model": "TF-IDF + LinearSVC",
+  "train_rows": 133314,
+  "validation_rows": 23526,
+  "test_rows": 39210,
+  "accuracy": 0.944427441979087,
+  "f1_macro": 0.9199141744737365,
+  "classification_report": {
+    "Không tiêu cực": {
+      "precision": 0.9683398192731351,
+      "recall": 0.9601386481802426,
+      "f1-score": 0.9642217953138598,
+      "support": 30581.0
+    },
+    "Tiêu cực": {
+      "precision": 0.8628487848784878,
+      "recall": 0.8887472476532623,
+      "f1-score": 0.8756065536336131,
+      "support": 8629.0
+    },
+    "accuracy": 0.944427441979087,
+    "macro avg": {
+      "precision": 0.9155943020758115,
+      "recall": 0.9244429479167524,
+      "f1-score": 0.9199141744737365,
+      "support": 39210.0
+    },
+    "weighted avg": {
+      "precision": 0.9451242585541498,
+      "recall": 0.944427441979087,
+      "f1-score": 0.9447201140983829,
+      "support": 39210.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      29362,
+      1219
+    ],
+    [
+      960,
+      7669
+    ]
+  ],
+  "classes": [
+    0,
+    1
+  ],
+  "class_names": {
+    "0": "Không tiêu cực",
+    "1": "Tiêu cực"
+  },
+  "source_stats": {
+    "raw_rows": 200229,
+    "raw_source_counts": {
+      "Twitter_Data.csv": 162980,
+      "Reddit_Data.csv": 37249
+    },
+    "raw_category_counts": {
+      "-1": 43787,
+      "0": 68355,
+      "1": 88080
+    },
+    "raw_source_category_counts": {
+      "Reddit_Data.csv": {
+        "-1": 8277,
+        "0": 13142,
+        "1": 15830
+      },
+      "Twitter_Data.csv": {
+        "-1": 35510,
+        "0": 55213,
+        "1": 72250
+      }
+    },
+    "source_file_sha256": {
+      "Twitter_Data.csv": "5a7af1ec5fc749ec8e5ea13c574aeb5c06254aa1c081e3421868079d5356b3f4",
+      "Reddit_Data.csv": "441cae031c856b9239091b00c683dd13d8624d09e973a91f010e3cc432455370"
+    },
+    "dropped_na_rows": 111,
+    "retweet_prefix_rows_normalized": 0,
+    "invalid_category_rows": 0,
+    "empty_after_normalize_rows": 171,
+    "too_short_rows_lt3": 0,
+    "valid_before_dedup": 199947,
+    "empty_token_key_rows": 0,
+    "conflicting_token_groups_removed": 2,
+    "conflicting_token_rows_removed": 14,
+    "duplicate_token_rows_removed": 3883,
+    "unique_trainable_rows": 196050,
+    "counts": {
+      "-1": 43146,
+      "0": 66235,
+      "1": 86669
+    },
+    "source_counts": {
+      "Twitter_Data.csv": 159582,
+      "Reddit_Data.csv": 36468
+    },
+    "clean_source_category_counts": {
+      "Reddit_Data.csv": {
+        "-1": 8227,
+        "0": 12562,
+        "1": 15679
+      },
+      "Twitter_Data.csv": {
+        "-1": 34919,
+        "0": 53673,
+        "1": 70990
+      }
+    },
+    "canonical_dataset_sha256": "cb38aecc6397db54434596376434be6bec61a2896d48c969c18907b61f5be517",
+    "binary_mapping": {
+      "-1": 1,
+      "0": 0,
+      "1": 0
+    },
+    "binary_label_names": {
+      "0": "Không tiêu cực",
+      "1": "Tiêu cực"
+    },
+    "binary_label_counts": {
+      "0": 152904,
+      "1": 43146
+    },
+    "binary_label_percentages": {
+      "0": 77.992,
+      "1": 22.008
+    }
+  },
+  "descriptive_stats": {
+    "total_clean_unique_rows": 196050,
+    "rows_by_source": {
+      "Twitter_Data.csv": 159582,
+      "Reddit_Data.csv": 36468
+    },
+    "original_label_counts": {
+      "-1": 43146,
+      "0": 66235,
+      "1": 86669
+    },
+    "binary_label_counts": {
+      "0": 152904,
+      "1": 43146
+    },
+    "text_length_words": {
+      "mean": 22.002433052792654,
+      "median": 18.0,
+      "q1": 10.0,
+      "q3": 30.0,
+      "min": 1,
+      "max": 1308
+    },
+    "top_20_terms": [
+      {
+        "term": "modi",
+        "frequency": 157301
+      },
+      {
+        "term": "india",
+        "frequency": 33573
+      },
+      {
+        "term": "bjp",
+        "frequency": 19497
+      },
+      {
+        "term": "people",
+        "frequency": 19225
+      },
+      {
+        "term": "congress",
+        "frequency": 14828
+      },
+      {
+        "term": "now",
+        "frequency": 14379
+      },
+      {
+        "term": "only",
+        "frequency": 14065
+      },
+      {
+        "term": "narendra",
+        "frequency": 11376
+      },
+      {
+        "term": "did",
+        "frequency": 11011
+      },
+      {
+        "term": "more",
+        "frequency": 10964
+      },
+      {
+        "term": "govt",
+        "frequency": 10470
+      },
+      {
+        "term": "vote",
+        "frequency": 10298
+      },
+      {
+        "term": "country",
+        "frequency": 9602
+      },
+      {
+        "term": "even",
+        "frequency": 9546
+      },
+      {
+        "term": "time",
+        "frequency": 9494
+      },
+      {
+        "term": "indian",
+        "frequency": 8778
+      },
+      {
+        "term": "also",
+        "frequency": 8637
+      },
+      {
+        "term": "which",
+        "frequency": 8599
+      },
+      {
+        "term": "good",
+        "frequency": 8503
+      },
+      {
+        "term": "years",
+        "frequency": 8483
+      }
+    ],
+    "note": "Thống kê mô tả từ dữ liệu đã làm sạch và loại trùng, trước khi chia tập."
+  },
+  "random_seed": 42,
+  "sklearn_version": "1.9.1",
+  "class_distribution_by_split": {
+    "train": {
+      "0": 103974,
+      "1": 29340
+    },
+    "validation": {
+      "0": 18349,
+      "1": 5177
+    },
+    "test": {
+      "0": 30581,
+      "1": 8629
+    }
+  },
+  "baseline_comparison": {
+    "baselines": [
+      "Majority (all 0)",
+      "VADER (lexicon)",
+      "MultinomialNB + TF-IDF",
+      "LogisticRegression + TF-IDF"
+    ],
+    "majority_all_0": {
+      "validation": {
+        "samples": 23526,
+        "accuracy": 0.7799455921108561,
+        "precision_1": 0.0,
+        "recall_1": 0.0,
+        "f1_1": 0.0,
+        "confusion_matrix_labels_0_1": [
+          [
+            18349,
+            0
+          ],
+          [
+            5177,
+            0
+          ]
+        ],
+        "pr_auc": 0.22005440788914393
+      },
+      "test": {
+        "samples": 39210,
+        "accuracy": 0.7799285896454986,
+        "precision_1": 0.0,
+        "recall_1": 0.0,
+        "f1_1": 0.0,
+        "confusion_matrix_labels_0_1": [
+          [
+            30581,
+            0
+          ],
+          [
+            8629,
+            0
+          ]
+        ],
+        "pr_auc": 0.2200714103545014
+      }
+    },
+    "vader": {
+      "threshold": 0.0,
+      "validation": {
+        "samples": 23526,
+        "accuracy": 0.7341664541358497,
+        "precision_1": 0.42824783477681544,
+        "recall_1": 0.6208228703882558,
+        "f1_1": 0.5068601167008359,
+        "confusion_matrix_labels_0_1": [
+          [
+            14058,
+            4291
+          ],
+          [
+            1963,
+            3214
+          ]
+        ],
+        "pr_auc": 0.4339967901151691
+      },
+      "test": {
+        "samples": 39210,
+        "accuracy": 0.733996429482275,
+        "precision_1": 0.42780405676260724,
+        "recall_1": 0.6183798817939506,
+        "f1_1": 0.5057340536442043,
+        "confusion_matrix_labels_0_1": [
+          [
+            23444,
+            7137
+          ],
+          [
+            3293,
+            5336
+          ]
+        ],
+        "pr_auc": 0.43446531887744744
+      }
+    },
+    "bootstrap_f1_95pct_by_model": {
+      "Majority (all 0)": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0
+      },
+      "VADER (lexicon)": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.5055776127315135,
+        "ci_low": 0.496660705494016,
+        "ci_high": 0.5140265288974617
+      },
+      "MultinomialNB + TF-IDF": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.6692490312055575,
+        "ci_low": 0.6615113369182999,
+        "ci_high": 0.6772742607392925
+      },
+      "LogisticRegression + TF-IDF": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.8364650299740758,
+        "ci_low": 0.8308856622047209,
+        "ci_high": 0.8421504267324532
+      },
+      "LinearSVC + TF-IDF (mô hình chính)": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.8756201502664124,
+        "ci_low": 0.8698757980481479,
+        "ci_high": 0.8805207145675878
+      },
+      "LinearSVC + TF-IDF (class_weight=balanced)": {
+        "samples": 500,
+        "seed": 42,
+        "mean": 0.8690479005082479,
+        "ci_low": 0.8635231491742228,
+        "ci_high": 0.8739519781467275
+      }
+    },
+    "paired_bootstrap_significance": {
+      "LinearSVC_vs_LogisticRegression": {
+        "mean_diff": 0.03915512029233654,
+        "ci_low": 0.03485893564270626,
+        "ci_high": 0.04334276717794531,
+        "statistically_significant_95pct": true
+      },
+      "LinearSVC_vs_MultinomialNB": {
+        "mean_diff": 0.20637111906085484,
+        "ci_low": 0.19910265105704536,
+        "ci_high": 0.21414998599447965,
+        "statistically_significant_95pct": true
+      },
+      "LinearSVC_vs_VADER": {
+        "mean_diff": 0.3700425375348989,
+        "ci_low": 0.36076246660951783,
+        "ci_high": 0.37844224808456384,
+        "statistically_significant_95pct": true
+      }
+    },
+    "naive_bayes": {
+      "alpha": 0.5,
+      "threshold": 0.2819956780984972,
+      "validation": {
+        "samples": 23526,
+        "accuracy": 0.8503357986908102,
+        "precision_1": 0.6466524973432518,
+        "recall_1": 0.7052346919065096,
+        "f1_1": 0.6746743047214266,
+        "confusion_matrix_labels_0_1": [
+          [
+            16354,
+            1995
+          ],
+          [
+            1526,
+            3651
+          ]
+        ],
+        "pr_auc": 0.7312124405903846
+      },
+      "test": {
+        "samples": 39210,
+        "accuracy": 0.8484570262688089,
+        "precision_1": 0.6439515696989179,
+        "recall_1": 0.6964885850040561,
+        "f1_1": 0.669190513305868,
+        "confusion_matrix_labels_0_1": [
+          [
+            27258,
+            3323
+          ],
+          [
+            2619,
+            6010
+          ]
+        ],
+        "pr_auc": 0.7291256621206442
+      }
+    },
+    "logistic_regression": {
+      "C": 1.0,
+      "threshold": 0.29580535861867846,
+      "validation": {
+        "samples": 23526,
+        "accuracy": 0.9268893989628496,
+        "precision_1": 0.8087158421146633,
+        "recall_1": 0.8746378211319297,
+        "f1_1": 0.8403860430586488,
+        "confusion_matrix_labels_0_1": [
+          [
+            17278,
+            1071
+          ],
+          [
+            649,
+            4528
+          ]
+        ],
+        "pr_auc": 0.8979039938349764
+      },
+      "test": {
+        "samples": 39210,
+        "accuracy": 0.9252741647538893,
+        "precision_1": 0.8063649069992473,
+        "recall_1": 0.8691621277088887,
+        "f1_1": 0.8365867261572784,
+        "confusion_matrix_labels_0_1": [
+          [
+            28780,
+            1801
+          ],
+          [
+            1129,
+            7500
+          ]
+        ],
+        "pr_auc": 0.8928932911656525
+      }
+    },
+    "class_weight_experiment": {
+      "default": {
+        "samples": 39210,
+        "accuracy": 0.944427441979087,
+        "precision_1": 0.8628487848784878,
+        "recall_1": 0.8887472476532623,
+        "f1_1": 0.8756065536336131,
+        "confusion_matrix_labels_0_1": [
+          [
+            29362,
+            1219
+          ],
+          [
+            960,
+            7669
+          ]
+        ],
+        "pr_auc": 0.9336064303292156
+      },
+      "balanced": {
+        "samples": 39210,
+        "accuracy": 0.9402703391991839,
+        "precision_1": 0.8401688128990369,
+        "recall_1": 0.8997566346042415,
+        "f1_1": 0.8689423614997202,
+        "confusion_matrix_labels_0_1": [
+          [
+            29104,
+            1477
+          ],
+          [
+            865,
+            7764
+          ]
+        ],
+        "pr_auc": 0.927231706789367
+      }
+    },
+    "comparison_file": "binary_model_comparison.csv",
+    "note": "Các mô hình dùng cùng tập Train/Validation/Test; tham số và ngưỡng được chọn trên Validation hoặc CV của Train, không dùng Test để điều chỉnh."
+  },
+  "data_provenance": {
+    "dataset": "Twitter and Reddit Sentimental Analysis Dataset",
+    "creator": "cosmos98 (Kaggle)",
+    "url": "https://www.kaggle.com/datasets/cosmos98/twitter-and-reddit-sentimental-analysis-dataset",
+    "license": "CC BY-NC-SA 4.0 (as displayed on the Kaggle dataset page; verify terms before redistribution)",
+    "files_used": [
+      "Twitter_Data.csv",
+      "Reddit_Data.csv"
+    ],
+    "labeling_method": "Bộ dữ liệu Kaggle (cosmos98) gán nhãn -1/0/1 tự động bằng công cụ phân tích cảm xúc (không do người gán); nhãn nhị phân 1 là tiêu cực theo nhãn gốc."
+  },
+  "preprocessing": {
+    "version": "textsense_clean_v3_context",
+    "same_for_train_and_inference": true,
+    "steps": [
+      "NFKC Unicode",
+      "remove leading RT @handle prefix",
+      "remove URLs",
+      "casefold",
+      "expand contractions",
+      "replace punctuation with space",
+      "collapse whitespace"
+    ]
+  },
+  "python_version": "3.14.8",
+  "created_utc": "2026-11-27T01:17:37.461784+00:00",
+  "split_protocol": {
+    "train_validation_test": [
+      0.68,
+      0.12,
+      0.2
+    ],
+    "validation_size_within_train_val": 0.15,
+    "seed": 42,
+    "token_normalized_deduplication": true,
+    "retweet_prefix_normalization": true,
+    "fuzzy_minhash_deduplication": false,
+    "assert_no_token_overlap": true,
+    "leakage_report": {
+      "exact_overlap": 0,
+      "near_sig_train_val_overlap": 119,
+      "near_sig_train_test_overlap": 189,
+      "near_sig_val_test_overlap": 55
+    }
+  },
+  "data_hashes": {
+    "canonical_dataset_sha256": "cb38aecc6397db54434596376434be6bec61a2896d48c969c18907b61f5be517",
+    "source_file_sha256": {
+      "Twitter_Data.csv": "5a7af1ec5fc749ec8e5ea13c574aeb5c06254aa1c081e3421868079d5356b3f4",
+      "Reddit_Data.csv": "441cae031c856b9239091b00c683dd13d8624d09e973a91f010e3cc432455370"
+    }
+  },
+  "split_file_sha256": {
+    "train": "113638fa85d3d16fd93feab932daaa5d37a772333b090e89c6961a9a7ba37d2b",
+    "validation": "34e0ccb303a1a9e6c64939a37c96c390c3cf7cdf676a39f96f0a1c5a828bae86",
+    "test": "d6fa7f3fa45ef5bac8eff90673ecb929144921cc84a6b71ffd26afaf3634cf1c"
+  },
+  "tuning": {
+    "method": "StratifiedKFold",
+    "folds": 5,
+    "tuning_rows": 133314,
+    "requested_tuning_fraction": 1.0,
+    "actual_tuning_fraction": 1.0,
+    "c_values": [
+      0.5,
+      1.0,
+      2.0,
+      5.0
+    ],
+    "selected_C": 1.0,
+    "selection_metric": "average_precision (AP, class 1) trên decision_function của CV; không dùng test để chọn tham số"
+  },
+  "note": "Quy ước nhãn proxy của đồ án: category -1 (Tiêu cực) → 1 (Tiêu cực); category 0 (Trung tính) và category 1 (Tích cực) → 0 (Không tiêu cực). Đây là quy ước ánh xạ từ nhãn cảm xúc, không phải nhãn phản cảm được xác minh độc lập.",
+  "decision": {
+    "default_threshold": 0.0,
+    "validation_selected_threshold": -0.19220128657328076,
+    "validation_f1_selected": 0.8791690489803697,
+    "test_threshold_0": {
+      "samples": 39210,
+      "accuracy": 0.9421321091558276,
+      "precision_1": 0.9059229001787082,
+      "recall_1": 0.8224591493799976,
+      "f1_1": 0.8621757881309603,
+      "confusion_matrix_labels_0_1": [
+        [
+          29844,
+          737
+        ],
+        [
+          1532,
+          7097
+        ]
+      ],
+      "pr_auc": 0.9336064303292156
+    },
+    "test_threshold_selected": {
+      "samples": 39210,
+      "accuracy": 0.944427441979087,
+      "precision_1": 0.8628487848784878,
+      "recall_1": 0.8887472476532623,
+      "f1_1": 0.8756065536336131,
+      "confusion_matrix_labels_0_1": [
+        [
+          29362,
+          1219
+        ],
+        [
+          960,
+          7669
+        ]
+      ],
+      "pr_auc": 0.9336064303292156
+    }
+  },
+  "test_bootstrap_95pct_f1_1": {
+    "samples": 500,
+    "seed": 42,
+    "mean": 0.8756201502664124,
+    "ci_low": 0.8698757980481479,
+    "ci_high": 0.8805207145675878
+  },
+  "diagnostics": {
+    "test_average_precision": 0.9336064303292156,
+    "pr_curve_csv": "binary_pr_curve.csv",
+    "pr_curve_png": "binary_pr_curve.png",
+    "misclassified_rows": 2179,
+    "false_negative_rows": 960,
+    "false_positive_rows": 1219,
+    "error_analysis_csv": "binary_error_analysis.csv",
+    "feature_importance_csv": "binary_feature_importance.csv",
+    "feature_importance_note": "LinearSVC coefficients describe association in this fitted TF-IDF model, not causal explanations."
+  },
+  "by_source": {
+    "Reddit_Data.csv": {
+      "samples": 7293,
+      "accuracy": 0.9321266968325792,
+      "precision_1": 0.8263337116912599,
+      "recall_1": 0.8851063829787233,
+      "f1_1": 0.8547108893454652,
+      "confusion_matrix_labels_0_1": [
+        [
+          5342,
+          306
+        ],
+        [
+          189,
+          1456
+        ]
+      ],
+      "pr_auc": 0.919867164328251
+    },
+    "Twitter_Data.csv": {
+      "samples": 31917,
+      "accuracy": 0.9472381489488361,
+      "precision_1": 0.8718776312096548,
+      "recall_1": 0.8896048109965635,
+      "f1_1": 0.8806520198440823,
+      "confusion_matrix_labels_0_1": [
+        [
+          24020,
+          913
+        ],
+        [
+          771,
+          6213
+        ]
+      ],
+      "pr_auc": 0.9379540486461763
+    }
+  },
+  "by_length": {
+    "<=8": {
+      "samples": 7623,
+      "accuracy": 0.9897678079496262,
+      "precision_1": 0.9416553595658074,
+      "recall_1": 0.9519890260631001,
+      "f1_1": 0.946793997271487,
+      "confusion_matrix_labels_0_1": [
+        [
+          6851,
+          43
+        ],
+        [
+          35,
+          694
+        ]
+      ],
+      "pr_auc": 0.9692601111995987
+    },
+    "9-20": {
+      "samples": 14571,
+      "accuracy": 0.963420492759591,
+      "precision_1": 0.9056667797760435,
+      "recall_1": 0.9127906976744186,
+      "f1_1": 0.9092147845341509,
+      "confusion_matrix_labels_0_1": [
+        [
+          11369,
+          278
+        ],
+        [
+          255,
+          2669
+        ]
+      ],
+      "pr_auc": 0.9522496125998603
+    },
+    ">=21": {
+      "samples": 17016,
+      "accuracy": 0.9078514339445228,
+      "precision_1": 0.8274404304381245,
+      "recall_1": 0.8653536977491961,
+      "f1_1": 0.8459724950884087,
+      "confusion_matrix_labels_0_1": [
+        [
+          11142,
+          898
+        ],
+        [
+          670,
+          4306
+        ]
+      ],
+      "pr_auc": 0.9131228016071984
+    }
+  },
+  "length_analysis_note": "Hiệu năng có thể giảm ở văn bản dài; cần đọc chỉ số by_length trên test, không suy rộng thành quy luật phổ quát.",
+  "by_original_sentiment": {
+    "-1": {
+      "samples": 8629,
+      "positive_prediction_rate": 0.8887472476532623
+    },
+    "0": {
+      "samples": 13273,
+      "positive_prediction_rate": 0.018232502071875236
+    },
+    "1": {
+      "samples": 17308,
+      "positive_prediction_rate": 0.05644788537092674
+    }
+  },
+  "cv_results": [
+    {
+      "C": 1.0,
+      "mean_cv_average_precision": 0.9251378847324798,
+      "std_cv_average_precision": 0.003083565801013784,
+      "rank": 1
+    },
+    {
+      "C": 2.0,
+      "mean_cv_average_precision": 0.9237026391810375,
+      "std_cv_average_precision": 0.0026712198069072293,
+      "rank": 2
+    },
+    {
+      "C": 0.5,
+      "mean_cv_average_precision": 0.921273184452812,
+      "std_cv_average_precision": 0.0035977782651346432,
+      "rank": 3
+    },
+    {
+      "C": 5.0,
+      "mean_cv_average_precision": 0.9154774214351251,
+      "std_cv_average_precision": 0.0022042282081617464,
+      "rank": 4
+    }
+  ],
+  "cross_domain": [
+    {
+      "train_source": "Twitter_Data.csv",
+      "test_source": "Reddit_Data.csv",
+      "train_rows": 108515,
+      "test_rows": 7293,
+      "threshold": -0.16827466981065878,
+      "precision_1": 0.7676348547717843,
+      "recall_1": 0.8996960486322189,
+      "f1_1": 0.8284354883851105,
+      "pr_auc": 0.8858796228821708,
+      "accuracy": 0.9159467982997395
+    },
+    {
+      "train_source": "Reddit_Data.csv",
+      "test_source": "Twitter_Data.csv",
+      "train_rows": 24799,
+      "test_rows": 31917,
+      "threshold": -0.2599843733367069,
+      "precision_1": 0.7621017156862745,
+      "recall_1": 0.7123424971363116,
+      "f1_1": 0.7363824748371818,
+      "pr_auc": 0.8208880471459106,
+      "accuracy": 0.8883980323965285
+    }
+  ],
+  "error_20_group_counts": {
+    "Phủ định / Đảo nghĩa": 15,
+    "Nhãn gốc tự động đáng ngờ / Mơ hồ": 4,
+    "Thiếu ngữ cảnh / Quá ngắn": 1
+  },
+  "three_class_extension": {
+    "macro_f1": 0.936147159212625,
+    "accuracy": 0.9423616424381536,
+    "per_class": {
+      "Tiêu cực (-1)": {
+        "precision": 0.9211714460036607,
+        "recall": 0.87484065360992,
+        "f1-score": 0.8974084640989063,
+        "support": 8629.0
+      },
+      "Trung tính (0)": {
+        "precision": 0.9490296594653973,
+        "recall": 0.9763429518571536,
+        "f1-score": 0.9624925727866904,
+        "support": 13273.0
+      },
+      "Tích cực (1)": {
+        "precision": 0.9471198156682028,
+        "recall": 0.9499653339496187,
+        "f1-score": 0.9485404407522787,
+        "support": 17308.0
+      }
+    },
+    "confusion_matrix_labels_-1_0_1": [
+      [
+        7549,
+        361,
+        719
+      ],
+      [
+        115,
+        12959,
+        199
+      ],
+      [
+        531,
+        335,
+        16442
+      ]
+    ]
+  },
+  "real_world_eval": {
+    "total_raw_tweets": 130,
+    "cohen_kappa": 0.8922566895571868,
+    "disagreed_removed": 7,
+    "agreed_eval_rows": 123,
+    "samples": 123,
+    "accuracy": 0.6666666666666666,
+    "precision_1": 0.7714285714285715,
+    "recall_1": 0.45,
+    "f1_1": 0.5684210526315789,
+    "confusion_matrix_labels_0_1": [
+      [
+        55,
+        8
+      ],
+      [
+        33,
+        27
+      ]
+    ],
+    "pr_auc": 0.7377354356918393,
+    "note": "Kết quả trên tập tweet thực tế thường thấp hơn tập Test Kaggle do khác biệt miền (domain shift), câu châm biếm, tiếng lóng và nhãn Kaggle là nhãn tự động."
+  },
+  "final_production_model": {
+    "trained_on": "train+validation",
+    "rows": 156840,
+    "selected_C": 1.0,
+    "threshold": -0.19220128657328076,
+    "note": "Mọi đánh giá Test ở trên được đo trên mô hình fit bằng Train; artifact .joblib cuối cùng được fit lại trên Train+Validation với cùng siêu tham số đã chọn."
+  }
+}

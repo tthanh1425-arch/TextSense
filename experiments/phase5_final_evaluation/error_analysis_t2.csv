@@ -1,0 +1,1201 @@
+﻿model,row_index,source,truth,predicted,decision_score,error_type,error_category,text
+E0-Artifact,43,sentiment140,0,1,0.8177573690225268,FP,domain_or_context_nuance,the solstice technologies web demo will be up shortly to showcase our crazy programming skills
+E0-Artifact,73,sentiment140,0,1,0.9911792519244911,FP,domain_or_context_nuance,can you believe my room is still tidy and shiz and i am listening to boyz ii men can u believe i missed them this weekend fuck
+E0-Artifact,89,sentiment140,0,1,0.7175406310914927,FP,domain_or_context_nuance,bought robert kiyosaki s cashflow board game and is looking for people to play it with
+E0-Artifact,98,sentiment140,0,1,2.6860640632060004,FP,domain_or_context_nuance,guess who caught a cold in may june shit gt lt
+E0-Artifact,102,sentiment140,0,1,0.6334319187429498,FP,domain_or_context_nuance,youngest made banoffi pie as post exam therapy yesterday which makes life brighter all round
+E0-Artifact,109,sentiment140,0,1,0.18323236499537998,FP,short_ambiguous_text,restocking the pork rinds
+E0-Artifact,112,sentiment140,0,1,0.7335368031031335,FP,domain_or_context_nuance,finally cusat join other universities by postponing exams brother celebrating here
+E0-Artifact,115,sentiment140,0,1,0.1399355207372226,FP,domain_or_context_nuance,new kittens in too two little ladies looking for their forever home once check is finished
+E0-Artifact,125,sentiment140,0,1,1.4792062385343707,FP,domain_or_context_nuance,spent today at the boston aquarium meeting friends and seeing up in theaters just got home and tired
+E0-Artifact,128,sentiment140,0,1,1.6070840881613841,FP,domain_or_context_nuance,oh from my delicious bookmarks via facebook i am slow today
+E0-Artifact,138,sentiment140,0,1,0.7663097935241954,FP,domain_or_context_nuance,take me to cannes watch the video and tell other to watch
+E0-Artifact,145,sentiment140,0,1,0.690518432954113,FP,negation_scope,excited for the twins game wednesday can not wait to see ou ou
+E0-Artifact,157,sentiment140,0,1,0.21650775457809868,FP,domain_or_context_nuance,at least incubus did their website in an appropriate way or have they just bought a domain congratulations anyway
+E0-Artifact,159,sentiment140,0,1,0.2275687374303894,FP,domain_or_context_nuance,rise and shine give god the glory i used to hate to hear that early in the morning before church happy sunday yall
+E0-Artifact,200,sentiment140,0,1,0.2168250315383744,FP,negation_scope,yes i am go burn no no i am not amp im famous coz i fucked your boyfrannn a k a mattg d digitalimpregnation
+E0-Artifact,203,sentiment140,0,1,0.0649941406504162,FP,negation_scope,having a frankie valli remix kind of morning and chair dancing in the office mondays do not have to be bad
+E0-Artifact,214,sentiment140,0,1,-0.02795367888809208,FP,domain_or_context_nuance,eating hot chips that i bought home from work mmm chicken salt
+E0-Artifact,218,sentiment140,0,1,-0.13512994461444205,FP,contrastive_clause,says however hyperdrive mind lots of ideas so if i can remember them all i will write em down and hopefu
+E0-Artifact,226,sentiment140,0,1,3.053997554287255,FP,short_ambiguous_text,dude seriously heeeeeeeee
+E0-Artifact,293,sentiment140,0,1,2.781038180481964,FP,domain_or_context_nuance,youre a boring talker g night
+E0-Artifact,351,sentiment140,0,1,1.018999082400627,FP,negation_scope,well actually not even school were going to the beach swimming bowling amp crazy golf xx
+E0-Artifact,382,sentiment140,0,1,0.8162973177719661,FP,domain_or_context_nuance,just for a little while to get an impression of how twitter copy topify
+E0-Artifact,389,sentiment140,0,1,0.06404666384234758,FP,domain_or_context_nuance,sitting eating ice cream whilst watching the comedy festival missing michelle
+E0-Artifact,405,sentiment140,0,1,2.657969832870802,FP,domain_or_context_nuance,oz osbourne sues black sabbath over rights to name tony iommi feeling a little quot paranoid quot
+E0-Artifact,409,sentiment140,0,1,3.034404225019564,FP,contrastive_clause,i guard a house like i said bit dangerous maybe but nothing bad has not happend so and i do not like fighting at all d
+E0-Artifact,442,sentiment140,0,1,1.0499457200825548,FP,contrastive_clause,how was your abitur what marks did you got i got in phy and in sozi but i fucked up math with but still got
+E0-Artifact,473,sentiment140,0,1,-0.05978595503940776,FP,domain_or_context_nuance,what a fine fine day gonna go see quot up quot today with the little kiddos little as in they are and
+E0-Artifact,479,sentiment140,0,1,2.386646743678776,FP,domain_or_context_nuance,phillies game today phillie phanatic birthday
+E0-Artifact,484,sentiment140,0,1,0.6908433379278986,FP,domain_or_context_nuance,today i will attempt to be extremely productive and then tonight maybe i can relax a little here goes
+E0-Artifact,492,sentiment140,0,1,0.4289947220404513,FP,domain_or_context_nuance,chilling jim s w the boys
+E0-Artifact,575,sentiment140,0,1,0.4704624208018682,FP,negation_scope,i d donate my brain as long as i am definitely not still in there when they start poking at it
+E0-Artifact,577,sentiment140,0,1,0.5692806484724786,FP,negation_scope,i seriously do not know how there is a recession with all the money us blockheads are pumping into the economy
+E0-Artifact,590,sentiment140,0,1,0.2842865374268302,FP,negation_scope,for f k sake i did not know ye were on twitter for so long should of been following ye ages ago
+E0-Artifact,602,sentiment140,0,1,0.5508723949670224,FP,negation_scope,gooood day twitter it is like f and i am freeezing going to see if i can not take mom out for a late mother s day present
+E0-Artifact,617,sentiment140,0,1,-0.04959474030220856,FP,contrastive_clause,i know years is a big difference but i guess it does not really matter if he is not interested in conversation
+E0-Artifact,619,sentiment140,0,1,1.5018413431854711,FP,possible_sarcasm_or_irony,hihooo but i think i am gonna be on my granda s house haha til late so i will be here few minutes o
+E0-Artifact,652,sentiment140,0,1,2.970229508134132,FP,domain_or_context_nuance,us gamestop employees feed off of it when someone comes up to the door after we are closed and tries to open it we all seriously cheer
+E0-Artifact,653,sentiment140,0,1,1.8184213450422193,FP,domain_or_context_nuance,got bored on a saturday night and decided to mess around with the linux server you can listen in at
+E0-Artifact,673,sentiment140,0,1,0.8492119807888616,FP,domain_or_context_nuance,waiting for bus back home and the song that just came on is quot you drive me crazy quot by none other than the amazing britney spears
+E0-Artifact,683,sentiment140,0,1,0.6270334562257069,FP,possible_sarcasm_or_irony,jelloooooooooo twitter is still confusing s go plurk people hahahahaha
+E0-Artifact,686,sentiment140,0,1,1.9377567577869728,FP,domain_or_context_nuance,i think i will in a few days
+E0-Artifact,712,sentiment140,0,1,3.376097767339762,FP,domain_or_context_nuance,dumb tattoo starbucks mug just with starfucks instead
+E0-Artifact,717,sentiment140,0,1,0.21702690224526133,FP,domain_or_context_nuance,the evil robot is coming check out and see if you can find him love suzie
+E0-Artifact,738,sentiment140,0,1,0.7280306583588236,FP,domain_or_context_nuance,missing bgt peter and i got disposable bbq and heading down the banks of the don near grandholm mills fine
+E0-Artifact,744,sentiment140,0,1,1.310214037843865,FP,negation_scope,week in the no babysitter cos gran has gone to oz house hrs hol a day from work things going not too badly think boss disagrees
+E0-Artifact,794,sentiment140,0,1,2.7541424425487637,FP,domain_or_context_nuance,factory ng elmer s hihihi sorry corny baka si ate ruby alam
+E0-Artifact,831,sentiment140,0,1,1.192913113165978,FP,negation_scope,no parade tomorrow finally a day where i can wake up late and a hour flight in the evening
+E0-Artifact,856,sentiment140,0,1,3.463439969192706,FP,domain_or_context_nuance,musicindustry cssp u mean fragmented and ruled by gangsters
+E0-Artifact,885,sentiment140,0,1,2.0511496821037856,FP,contrastive_clause,i am not in chicago yet silly i leave friday but i do have long hair
+E0-Artifact,894,sentiment140,0,1,1.0173714238909846,FP,possible_sarcasm_or_irony,there is also quot gonna fill carts up to the brims quot random outbursts of song life s hidden pleasure thanks
+E0-Artifact,928,sentiment140,0,1,0.7753657133836589,FP,domain_or_context_nuance,keeping up with drunk girls is a lot harder then it looks got them all in bed safely
+E0-Artifact,940,sentiment140,0,1,2.780673748607569,FP,domain_or_context_nuance,i am a late bird mariusz you from poland past noon here still morning for me
+E0-Artifact,945,sentiment140,0,1,1.20377498010416,FP,contrastive_clause,im going to try to go to sleep even though im not tired blah goodnight people lt
+E0-Artifact,999,sentiment140,0,1,0.23746792718436893,FP,negation_scope,oh yummm i am definitely going to try both of those recipes i just can not get enough spinach lately
+E0-Artifact,1003,sentiment140,0,1,1.5076434334991518,FP,domain_or_context_nuance,just checkmated my sister with a rook just a rook fuck yes
+E0-Artifact,1049,sentiment140,0,1,-0.09690966908737209,FP,negation_scope,that is the other side of rochester we will not get that much on my side of the city we are east of rochester
+E0-Artifact,1109,sentiment140,0,1,0.35120700705659846,FP,domain_or_context_nuance,hope to catch you at a future tweetup there is one this friday i have been working with robert on his website for a few mos
+E0-Artifact,1110,sentiment140,0,1,0.6974266165200342,FP,domain_or_context_nuance,ugh wish i could help ya knock off some items from your list hope you sleep in tomorrow well at least til
+E0-Artifact,1118,sentiment140,0,1,0.6870176362724143,FP,domain_or_context_nuance,can you please look at issue again seems like it is closed
+E0-Artifact,1139,sentiment140,0,1,-0.07159251881131135,FP,negation_scope,i am over my tipsyness from playing water fall with my friends it was fun i did not get fully drunk i am predicting no hangover for me
+E0-Artifact,1146,sentiment140,0,1,1.3614640627860586,FP,negation_scope,damnit well i am running out the door then hope you guys do not mind i look like crap
+E0-Artifact,1198,sentiment140,0,1,0.9181649981351045,FP,negation_scope,pretty early sunday morning and bine and i wee almost ready to depart for a bike ride around franconian swiss weather looks not to bad
+E0-Artifact,1210,sentiment140,0,1,2.0555947694168744,FP,negation_scope,never she is lame
+E0-Artifact,1265,sentiment140,0,1,-0.10429509698196648,FP,domain_or_context_nuance,bball tourney st place exhausted and ate so much today dinner thrice
+E0-Artifact,1316,sentiment140,0,1,2.3782440341060758,FP,short_ambiguous_text,seriously do you ever work
+E0-Artifact,1323,sentiment140,0,1,0.3346439844857776,FP,domain_or_context_nuance,k done i will start figuring out what day mmm bbq ps you are coming then u can meet the alien
+E0-Artifact,1332,sentiment140,0,1,0.10171447622768004,FP,contrastive_clause,supposed to be meg but mozy is running the speed test shows meg guessing that is due to mozy
+E0-Artifact,1367,sentiment140,0,1,0.18323236499537998,FP,short_ambiguous_text,i lt the sequence
+E0-Artifact,1368,sentiment140,0,1,1.6916891651719894,FP,short_ambiguous_text,i say fuck boys anyway
+E0-Artifact,1371,sentiment140,0,1,4.4985642404842725,FP,contrastive_clause,i said sorry to my father at the yfc covenant it was hard to do but i did it
+E0-Artifact,1378,sentiment140,0,1,-0.1801862915544482,FP,domain_or_context_nuance,u ok clearly sounds u have trophy bandage wot s the damage
+E0-Artifact,1408,sentiment140,0,1,-0.050724697063513347,FP,domain_or_context_nuance,itunes terms amp conditions are a little too strict
+E0-Artifact,1423,sentiment140,0,1,0.4926440105019698,FP,domain_or_context_nuance,so i think i am going to call it a night quot twinkle twinkle little star how i wonder what you are quot on my way to sleepville
+E0-Artifact,1432,sentiment140,0,1,1.078968773745803,FP,domain_or_context_nuance,listening to third eye blind i wish i was into this when i was a kid
+E0-Artifact,1444,sentiment140,0,1,0.5110954574699804,FP,domain_or_context_nuance,got the wet dream vol mixtape on my blackberry listening to it at work
+E0-Artifact,1487,sentiment140,0,1,2.370361345707499,FP,negation_scope,hey your not boring at all amandapalmer live gt
+E0-Artifact,1495,sentiment140,0,1,1.0873738075182005,FP,contrastive_clause,if you are bored check out missed connections on craigslist i might ve already said this but it has been a long day
+E0-Artifact,1505,sentiment140,0,1,0.01940537568337186,FP,domain_or_context_nuance,was that where the weird metallic giggling sound came from
+E0-Artifact,1516,sentiment140,0,1,0.9728813098758635,FP,short_ambiguous_text,anything in pink
+E0-Artifact,1535,sentiment140,0,1,-0.18450663557211133,FP,domain_or_context_nuance,you are probably right o either way i will still have it as long as it tastes the same
+E0-Artifact,1536,sentiment140,0,1,1.1340366998063642,FP,negation_scope,nah that was just me trying to not be grumpy when a little kitten kept me up all night
+E0-Artifact,1578,sentiment140,0,1,0.40040861147973716,FP,negation_scope,i bet and nothing has to do with the dumb swede who passed the ball right to the foot on the danish player damnit
+E0-Artifact,1581,sentiment140,0,1,0.031845794556117246,FP,negation_scope,needless to say i did not stay to find cache
+E0-Artifact,1587,sentiment140,0,1,-0.019087484212177763,FP,domain_or_context_nuance,angela you should write a bio and tell everyone a little bit about yourself
+E0-Artifact,1589,sentiment140,0,1,2.9387920187690133,FP,domain_or_context_nuance,my bad i got on the phone and talked until i became tired now sleep
+E0-Artifact,1596,sentiment140,0,1,0.9784610760284671,FP,domain_or_context_nuance,maybe try tweetdeck it also has filter options if you are tired of a e and l n
+E0-Artifact,1598,sentiment140,0,1,0.6990523270823648,FP,domain_or_context_nuance,last day of school before the long weekend
+E0-Artifact,1612,sentiment140,0,1,0.7254684238393629,FP,possible_sarcasm_or_irony,not sure something about hin annoys me i think it is just a personal thing i am sure he works hard just not a fan
+E0-Artifact,1627,sentiment140,0,1,0.4209117028346203,FP,domain_or_context_nuance,so i have a new condo and i am missing calls i am thinking this bluetooth bracelet will fix it buzzes my wrist
+E0-Artifact,1634,sentiment140,0,1,1.2691230721572422,FP,domain_or_context_nuance,usually an hour on the tread yuck
+E0-Artifact,1639,sentiment140,0,1,-0.13879405354202734,FP,domain_or_context_nuance,dermot my wife is due any day please please ask keith when will be the day when child will be born
+E0-Artifact,1640,sentiment140,0,1,0.8064474051282744,FP,domain_or_context_nuance,you mean the one for nintendo wii do give some thoughts after you played it
+E0-Artifact,1645,sentiment140,0,1,0.2291040452892632,FP,domain_or_context_nuance,our media assignment is due tomorrow at the end of the lesson thought i would remind you
+E0-Artifact,1691,sentiment140,0,1,1.4641512743578373,FP,negation_scope,can not sleep any longer which is dumb dance recital today then prom
+E0-Artifact,1750,sentiment140,0,1,0.5011096361133891,FP,possible_sarcasm_or_irony,haha sucks for you
+E0-Artifact,1764,sentiment140,0,1,0.49786904720774827,FP,domain_or_context_nuance,i like to watch older video s of you i mean older video s that we made together
+E0-Artifact,1768,sentiment140,0,1,1.670848675032454,FP,negation_scope,quot come on swann you ugly bastard quot via did not realise proust could arouse such passion
+E0-Artifact,1809,sentiment140,0,1,2.47064472278697,FP,possible_sarcasm_or_irony,haha fucking hell i know ay shit son he is just making trouble we could take him
+E0-Artifact,1817,sentiment140,0,1,2.0989053258729804,FP,domain_or_context_nuance,its pm and im too late for the fences
+E0-Artifact,1840,sentiment140,0,1,1.2601567431628544,FP,domain_or_context_nuance,indeed and i can hardly contain myself
+E0-Artifact,1847,sentiment140,0,1,0.9332727336425937,FP,domain_or_context_nuance,omg u too yesss me to mad hype last season omg i cried every episode lmaoo smh
+E0-Artifact,1851,sentiment140,0,1,0.21146177582739822,FP,negation_scope,okay now i feel bad i am probably just jealous that i can not wear plaid shorts and play them off
+E0-Artifact,1952,sentiment140,0,1,0.13984214283774477,FP,possible_sarcasm_or_irony,such a chill sunday i need a sunday lay around be a hobo bum n watch movies all day buddy u down haha
+E0-Artifact,1957,sentiment140,0,1,1.1262445884714671,FP,contrastive_clause,i know that is why he has decided to pay it for me it is complicated but i came out on top and the bb is nt that bad
+E0-Artifact,1958,sentiment140,0,1,0.18323236499537998,FP,short_ambiguous_text,on the moor revising geog
+E0-Artifact,1965,sentiment140,0,1,1.3108590184961766,FP,possible_sarcasm_or_irony,ahahahahhaa fo sho duuddee any other recommendations
+E0-Artifact,2014,sentiment140,0,1,0.24896488170150044,FP,domain_or_context_nuance,animal idol favourite animals are cuppy and little golden
+E0-Artifact,2055,sentiment140,0,1,1.7466871314378063,FP,possible_sarcasm_or_irony,im up yeah i know jj is sick since yesterday and i want jubam for breakfast too hahahaha
+E0-Artifact,2086,sentiment140,0,1,-0.1028164426788909,FP,negation_scope,i will wirte you back this evening can not wait to see the trailer
+E0-Artifact,2099,sentiment140,0,1,0.994014734915116,FP,domain_or_context_nuance,i like that boom boom boom im so ur so and late
+E0-Artifact,2119,sentiment140,0,1,0.5349663108421521,FP,domain_or_context_nuance,who has a day long text conversation me
+E0-Artifact,2142,sentiment140,0,1,2.4650403663257263,FP,negation_scope,i am going out with fucked up university students hope i will get wasted and not hear their blurbs
+E0-Artifact,2147,sentiment140,0,1,0.7308113207409614,FP,domain_or_context_nuance,the matrot castle next to sam s club has been brought back to life as a working vineyard winery topeka is so odd
+E0-Artifact,2178,sentiment140,0,1,3.0781608056436403,FP,domain_or_context_nuance,some people are stupid pokes a ravenous lion see
+E0-Artifact,2183,sentiment140,0,1,4.4762819199418855,FP,short_ambiguous_text,who is down
+E0-Artifact,2207,sentiment140,0,1,0.8105142512891343,FP,domain_or_context_nuance,quot shaking my fucking head quot or quot so much fucking homework quot according to urban dictionary
+E0-Artifact,2209,sentiment140,0,1,1.8444702499455106,FP,domain_or_context_nuance,hmmmm might come i dunno cus i go on holiday on th july ill see
+E0-Artifact,2226,sentiment140,0,1,0.2860077130733252,FP,negation_scope,if the yaoi went away there would not be more of other manga just less yaoi
+E0-Artifact,2238,sentiment140,0,1,1.4788262180297378,FP,domain_or_context_nuance,i am beige duba dee duba dai according to at least what is your colour
+E0-Artifact,2257,sentiment140,0,1,0.37645359811231294,FP,domain_or_context_nuance,fun call me when u get back i think we are due for a ladies night
+E0-Artifact,2264,sentiment140,0,1,0.03588904552493233,FP,domain_or_context_nuance,wow that was a workout we went down flights of stairs up to see view from top down and up of which i beat the elevator
+E0-Artifact,2285,sentiment140,0,1,0.39496748738833354,FP,domain_or_context_nuance,its cold amp raining in melburn laying on tha couch watching tha hills waiting for neighbours to start amp for my daddy to bring me dinner
+E0-Artifact,2288,sentiment140,0,1,0.17833233715564623,FP,contrastive_clause,why thanku it is a bitter sweet bday hard to let go of your s but you do not want to relive them thanks again
+E0-Artifact,2292,sentiment140,0,1,0.10322779712113328,FP,domain_or_context_nuance,working all day today counting down the days for vacation
+E0-Artifact,2298,sentiment140,0,1,1.2533471053123308,FP,domain_or_context_nuance,so how badly is the redfm crew terrorizing the blackboard restaurant staff
+E0-Artifact,2307,sentiment140,0,1,3.4365760842538275,FP,domain_or_context_nuance,coming off of h of rest in monteray ca of which i spent at least sleeping n y and subsequent meetings tired me out
+E0-Artifact,2316,sentiment140,0,1,3.8461839959641058,FP,domain_or_context_nuance,sorry i mean tick eye roll
+E0-Artifact,2339,sentiment140,0,1,0.2823434107773075,FP,contrastive_clause,ah sorry about the spoiler but the fight is still worth watching cuz it is an action packed minutes
+E0-Artifact,2349,sentiment140,0,1,2.5130321490547836,FP,negation_scope,you hear tom has a cold he can not sing as high as always poor guy
+E0-Artifact,2356,sentiment140,0,1,-0.11787243387335011,FP,domain_or_context_nuance,the winner of a modern myth nada s secret ebook giveaway is please dm your email addy so i can send it
+E0-Artifact,2384,sentiment140,0,1,1.1749213143050417,FP,negation_scope,have you ever been like ooberly tired and were not able to fall asleep it sucks majorly so since im wide awake talk to me tweeps
+E0-Artifact,2387,sentiment140,0,1,1.225854987153362,FP,domain_or_context_nuance,on my way to sin city dsnt help that i just saw the hangover last nite hehehe evil laugh
+E0-Artifact,2409,sentiment140,0,1,0.024933420778919357,FP,domain_or_context_nuance,speaking about my lazy self i actually stayed up till the deadline to do the hw time for sleep
+E0-Artifact,2413,sentiment140,0,1,2.602495781187848,FP,domain_or_context_nuance,i still get my lefts and rights wrong
+E0-Artifact,2414,sentiment140,0,1,0.32935132759929986,FP,domain_or_context_nuance,had a lot of fun outside planting trees and bushes moving rocks weeding and being sick still
+E0-Artifact,2416,sentiment140,0,1,0.6174591415820456,FP,negation_scope,hey kendra ur new show starts here next week n i can not wait thou a bit weird coz girls of playboy mansion still screens
+E0-Artifact,2432,sentiment140,0,1,1.6929349408687033,FP,negation_scope,it is not pm everywhere oh well my dumb moment of the day ps i agree no one cooks like mommy
+E0-Artifact,2446,sentiment140,0,1,0.2724629112649122,FP,domain_or_context_nuance,trying to locate my monkey island series music on my computer then off to run errands for a bit
+E0-Artifact,2448,sentiment140,0,1,0.07670304316367438,FP,possible_sarcasm_or_irony,yeh course can understand that but being single does not always mean heartbreak can be a relief lol plus ppl shld focus on the
+E0-Artifact,2463,sentiment140,0,1,3.595118485622425,FP,negation_scope,never annoyed you are keeping me from going insane with bordem
+E0-Artifact,2484,sentiment140,0,1,3.2827949913620973,FP,domain_or_context_nuance,i think you overestimate their stupidity
+E0-Artifact,2493,sentiment140,0,1,1.7130135501729755,FP,domain_or_context_nuance,eating gohan japanese food go hard
+E0-Artifact,2574,sentiment140,0,1,0.08593892567547767,FP,domain_or_context_nuance,the secret to monday mornings is having a quot job quot that i love making music
+E0-Artifact,2612,sentiment140,0,1,0.28328425541670854,FP,domain_or_context_nuance,shin a device for finding furniture in the dark
+E0-Artifact,2653,sentiment140,0,1,0.30257518079467594,FP,domain_or_context_nuance,gonna get something to eat then long on rom
+E0-Artifact,2666,sentiment140,0,1,2.733658049685592,FP,short_ambiguous_text,arn t you tired
+E0-Artifact,2684,sentiment140,0,1,1.2742184614351284,FP,domain_or_context_nuance,is cooking chicken and will bake cupcakes after dinner
+E0-Artifact,2738,sentiment140,0,1,0.12607307721949845,FP,domain_or_context_nuance,okay i am totally late for a christening party bye for now
+E0-Artifact,2776,sentiment140,0,1,2.4219122053504174,FP,domain_or_context_nuance,essay writing how i hate it i had so much alfredo pasta and garlic bread today
+E0-Artifact,2793,sentiment140,0,1,1.1183041859466398,FP,domain_or_context_nuance,awww man what if we sneak on lets im bringing my baseball we will throw it at people give someone a bad head ache
+E0-Artifact,3,sentiment140,1,0,-1.5259950563950415,FN,domain_or_context_nuance,is that for private or public view when it is done this close to the last update i could imagine some less nice reviews
+E0-Artifact,4,sentiment140,1,0,-1.1772309682580864,FN,negated_positive_or_mixed,ct trip cancelled for now anyway not that bad i guess probably the best for now will see what next week holds
+E0-Artifact,6,sentiment140,1,0,-1.8186469796842808,FN,domain_or_context_nuance,have to buy a new water pump for my jeep
+E0-Artifact,8,sentiment140,1,0,-0.8951068418307687,FN,domain_or_context_nuance,i need my outlet like now
+E0-Artifact,11,sentiment140,1,0,-1.9979477648289978,FN,negation_scope,aww that is never any fun
+E0-Artifact,12,sentiment140,1,0,-1.0325365496267067,FN,short_ambiguous_text,my feet hurrt ouch
+E0-Artifact,13,sentiment140,1,0,-1.2477905689266557,FN,short_ambiguous_text,i miss my nba
+E0-Artifact,15,sentiment140,1,0,-0.5735179779565184,FN,domain_or_context_nuance,that sucks hope they go away really quickly
+E0-Artifact,20,sentiment140,1,0,-0.7706583608572847,FN,domain_or_context_nuance,whut when you shoulda said hi
+E0-Artifact,22,sentiment140,1,0,-1.4772797971207139,FN,domain_or_context_nuance,shared your smooshed glasses story with husband sometimes the only silver lining is the funny story we get from it
+E0-Artifact,23,sentiment140,1,0,-1.1078806957028196,FN,domain_or_context_nuance,headed out with the team to go get pizza noms for lunch it is birthday lunch time for our boss woot if only i could have a beer too
+E0-Artifact,26,sentiment140,1,0,-1.1482702029176977,FN,short_ambiguous_text,stranded at mary pickford
+E0-Artifact,29,sentiment140,1,0,-1.109312698754999,FN,short_ambiguous_text,i want a hug now
+E0-Artifact,31,sentiment140,1,0,-1.993227207065267,FN,possible_sarcasm_or_irony,the night young but everything is closed damn m istuff stay open til am n f l lets move lol
+E0-Artifact,38,sentiment140,1,0,-0.8190233553465815,FN,negation_scope,bruna has lost nothing of the party
+E0-Artifact,39,sentiment140,1,0,-1.5657116448187864,FN,domain_or_context_nuance,league club accrington stanley face a high court date on after being issued with a winding up order by hm revenue and customs
+E0-Artifact,41,sentiment140,1,0,-1.1482702029176977,FN,short_ambiguous_text,iknowrite
+E0-Artifact,45,sentiment140,1,0,-1.5512201224957254,FN,domain_or_context_nuance,i am so sad that most of my favorite zetas are graduating and going alum
+E0-Artifact,47,sentiment140,1,0,-0.7086237154126076,FN,negation_scope,why is my twitter account being so quiet does it not like me anymore
+E0-Artifact,49,sentiment140,1,0,-0.4624433927286836,FN,domain_or_context_nuance,grandfather is at hospital they found several artery blockages and he is being transferred to another hospital for surgery
+E0-Artifact,51,sentiment140,1,0,-2.7498719148761475,FN,domain_or_context_nuance,would love to wake up morrow at monday morning
+E0-Artifact,52,sentiment140,1,0,-3.162609658791033,FN,domain_or_context_nuance,a lot of gay brazilian boys here hah were gonna miss you marcelo you cute balerina you
+E0-Artifact,54,sentiment140,1,0,-0.497300278859766,FN,short_ambiguous_text,is suffering from sinus problems
+E0-Artifact,55,sentiment140,1,0,-2.0963533374512013,FN,domain_or_context_nuance,missing nathan and the bccg already and my best friends that tried to visit me heading back tomorrow afternoon
+E0-Artifact,60,sentiment140,1,0,-1.1296956098788606,FN,contrastive_clause,i did can not play it atm though got stuff to do
+E0-Artifact,62,sentiment140,1,0,-1.723612259164958,FN,negation_scope,i do not have any pepto
+E0-Artifact,74,sentiment140,1,0,-0.8328617956102677,FN,domain_or_context_nuance,i am tired i think i am becoming too old to go out
+E0-Artifact,76,sentiment140,1,0,-0.8930713950648632,FN,domain_or_context_nuance,on air in about minutes bcfm org uk fm until i still get the nerves
+E0-Artifact,80,sentiment140,1,0,-0.5607946496905121,FN,domain_or_context_nuance,aw the grillz in my background look like plaque
+E0-Artifact,81,sentiment140,1,0,-1.757823329171258,FN,negation_scope,wishing this old frozen coffee in may car was not old i am thirsty
+E0-Artifact,85,sentiment140,1,0,-0.7747616580520917,FN,negation_scope,smh my brother calling me to tell me to read tyrese s twitter about eminem getting borat s sack in his face he do not have a twitter
+E0-Artifact,87,sentiment140,1,0,-2.428627244112882,FN,domain_or_context_nuance,why do ppl ignore me esp when i need them most
+E0-Artifact,90,sentiment140,1,0,-0.37989789473545743,FN,domain_or_context_nuance,ending to bionic commando super big disappointment bioniccommando
+E0-Artifact,91,sentiment140,1,0,-1.4749141798365502,FN,domain_or_context_nuance,tryin my hardest wake up i def need some coffee
+E0-Artifact,92,sentiment140,1,0,-1.3915535885296255,FN,short_ambiguous_text,fed up of pain now
+E0-Artifact,99,sentiment140,1,0,-0.8796753764224015,FN,contrastive_clause,bedroom tvs messed up everyone looks like a simpson guess i finally got that hr simpsons channel but its the flashing
+E0-Artifact,101,sentiment140,1,0,-0.9413500896415617,FN,negation_scope,you did not answer me is yon kuma an unbearable comic
+E0-Artifact,103,sentiment140,1,0,-3.412427679661377,FN,negated_positive_or_mixed,not til late fall i am so jealousss ahh be safe and have the best time i will look you up when i get there xx
+E0-Artifact,105,sentiment140,1,0,-1.6392186442419399,FN,domain_or_context_nuance,i really struggled writing that card
+E0-Artifact,108,sentiment140,1,0,-2.520558520767427,FN,short_ambiguous_text,wants tickets
+E0-Artifact,111,sentiment140,1,0,-0.9887485402670586,FN,domain_or_context_nuance,is dreading another work week ahead
+E0-Artifact,119,sentiment140,1,0,-0.9463288678730681,FN,negation_scope,can not sleep and i meet with my trainer in the morning
+E0-Artifact,121,sentiment140,1,0,-0.7557826519095613,FN,negation_scope,just woke up not feeling it this sat morning
+E0-Artifact,122,sentiment140,1,0,-0.9013634478639796,FN,domain_or_context_nuance,will be on the bus to school soon
+E0-Artifact,130,sentiment140,1,0,-0.8523817625896734,FN,domain_or_context_nuance,oh i have to unpack my dvds
+E0-Artifact,131,sentiment140,1,0,-0.6406508047952391,FN,short_ambiguous_text,at home by myself
+E0-Artifact,133,sentiment140,1,0,-1.8854122368135657,FN,short_ambiguous_text,wanting have some fun
+E0-Artifact,136,sentiment140,1,0,-3.4947605206563157,FN,negated_positive_or_mixed,do not feel good ugh i wanna milk shake
+E0-Artifact,137,sentiment140,1,0,-1.1482702029176977,FN,domain_or_context_nuance,d o n y u ng s a c ng d i gh
+E0-Artifact,141,sentiment140,1,0,-3.114274365976823,FN,possible_sarcasm_or_irony,i miss my chubby little smurfffff lol
+E0-Artifact,144,sentiment140,1,0,-1.0566577231482601,FN,possible_sarcasm_or_irony,been to doctor s had blood taken lolz
+E0-Artifact,147,sentiment140,1,0,-5.324402212578719,FN,negated_positive_or_mixed,i would love to come but i will be months pregnant in october not wise to fly to uk from holland then i guess
+E0-Artifact,155,sentiment140,1,0,-1.003322443847489,FN,domain_or_context_nuance,gettin rid of invites in facebook about a to go
+E0-Artifact,158,sentiment140,1,0,-0.8674263754446887,FN,domain_or_context_nuance,once again registering for classes one of the ones i registered in has been canceled
+E0-Artifact,167,sentiment140,1,0,-0.8115964774466662,FN,negation_scope,i do not care if livin on a prayer no one in this bar is getting it from me
+E0-Artifact,168,sentiment140,1,0,-2.773943185157466,FN,domain_or_context_nuance,stitch in time saves got locked out of my own office sitting on the stairs waiting for help damn
+E0-Artifact,169,sentiment140,1,0,-1.231891423376208,FN,short_ambiguous_text,ouch i got a shot
+E0-Artifact,174,sentiment140,1,0,-1.6643891269139806,FN,domain_or_context_nuance,ok you are still jet lagged go get some sleep dude and for the record i was also supporting the windies
+E0-Artifact,175,sentiment140,1,0,-0.876753284009659,FN,negation_scope,im soo boredd without you
+E0-Artifact,176,sentiment140,1,0,-1.1484679563815277,FN,domain_or_context_nuance,sitting here board waiting for hubby to come home
+E0-Artifact,180,sentiment140,1,0,-0.7432853663941035,FN,domain_or_context_nuance,i think of her while listening to this
+E0-Artifact,182,sentiment140,1,0,-0.8441528237699297,FN,domain_or_context_nuance,ah coolio me too wish i got the brotherhood figure thing the americans got
+E0-Artifact,187,sentiment140,1,0,-1.476876937360277,FN,domain_or_context_nuance,mi hermano is settling into his new lifestyle away from us
+E0-Artifact,190,sentiment140,1,0,-1.0075376809995835,FN,negation_scope,i can not believe the update still has not been approved
+E0-Artifact,192,sentiment140,1,0,-0.6159702978384611,FN,negation_scope,our dining divas join us this morning and i am sad ssan boyle did not win bgt
+E0-Artifact,194,sentiment140,1,0,-0.8149493077840819,FN,negation_scope,can not go to your match
+E0-Artifact,195,sentiment140,1,0,-2.0860604504563636,FN,domain_or_context_nuance,we got rained out today we will be back every st saturday of the month full throttle customs
+E0-Artifact,196,sentiment140,1,0,-1.0521477375792518,FN,domain_or_context_nuance,rip david eddings read all of his books growing up
+E0-Artifact,197,sentiment140,1,0,-2.997697214597011,FN,negated_positive_or_mixed,happy mother s day my mum already left the house before i woke up so i could not give her a hug and tell her i love her
+E0-Artifact,198,sentiment140,1,0,-4.313764737276855,FN,domain_or_context_nuance,exactly more days including today before school starts
+E0-Artifact,199,sentiment140,1,0,-0.7857776952346409,FN,domain_or_context_nuance,my foot is killing me off to docs later so hope they can sort me out
+E0-Artifact,201,sentiment140,1,0,-4.194905923890616,FN,negated_positive_or_mixed,feeling glad i have a father to spoil today but also mmissing the best father in law in the world first one without him
+E0-Artifact,204,sentiment140,1,0,-1.5682029369691146,FN,domain_or_context_nuance,bed time the carpet is going to stink in the morning the wind is starting to pick up again
+E0-Artifact,206,sentiment140,1,0,-1.135344552140508,FN,short_ambiguous_text,only got a silver account
+E0-Artifact,208,sentiment140,1,0,-1.104009077612717,FN,domain_or_context_nuance,tired of reading the same all the day conflict of laws and more pages left let us go
+E0-Artifact,209,sentiment140,1,0,-1.973819957564971,FN,domain_or_context_nuance,ok i am sooo having baseball withdrawls today been weeks since i have been able to see my braves play
+E0-Artifact,212,sentiment140,1,0,-0.857796666644934,FN,domain_or_context_nuance,why does it look like it is going to rain
+E0-Artifact,219,sentiment140,1,0,-2.0466969695084325,FN,short_ambiguous_text,we live too far apart
+E0-Artifact,220,sentiment140,1,0,-1.6927381597102418,FN,domain_or_context_nuance,re ssvsut it was stuff like this that made me drift away from the diy comm in the first place such complexes and drama
+E0-Artifact,225,sentiment140,1,0,-1.1425147282747552,FN,domain_or_context_nuance,insomniiiaaaaaaaaaaaa need someone to cuddle amp rock me to sleep
+E0-Artifact,227,sentiment140,1,0,-0.7845044084775268,FN,domain_or_context_nuance,i gotta wait till friday to see them in the city
+E0-Artifact,232,sentiment140,1,0,-0.4888303200777745,FN,domain_or_context_nuance,ugh another humid cloudy day i swear the sun has come out a total of five times this summer
+E0-Artifact,234,sentiment140,1,0,-1.137638153488609,FN,domain_or_context_nuance,stayed the same let us stick to it
+E0-Artifact,237,sentiment140,1,0,-4.544461781117066,FN,negated_positive_or_mixed,he even do not dance today but we are going to dance tomorrow well i will need more good luck hehe luck luck luck good luck
+E0-Artifact,238,sentiment140,1,0,-1.0221760601600487,FN,negated_positive_or_mixed,not feeling so great a little summer cold happening right now
+E0-Artifact,239,sentiment140,1,0,-1.1482702029176977,FN,short_ambiguous_text,aww como to brazill alexx
+E0-Artifact,243,sentiment140,1,0,-1.076249099492507,FN,negation_scope,you can not c my face on my picture what is this
+E0-Artifact,246,sentiment140,1,0,-0.9843545361597781,FN,domain_or_context_nuance,of course hun like minxy i had to save the animated one as png or jpeg to get my avatar to upload
+E0-Artifact,249,sentiment140,1,0,-1.0774881707927708,FN,negation_scope,note to self do not do a massage when your back is hurting hhhmmm auch
+E0-Artifact,254,sentiment140,1,0,-0.8987141506667675,FN,short_ambiguous_text,times like a million
+E0-Artifact,258,sentiment140,1,0,-0.6737634758979161,FN,negation_scope,boo on possibly making someone not talk to me
+E0-Artifact,263,sentiment140,1,0,-0.9738419506134424,FN,negation_scope,has nothing to wear
+E0-Artifact,264,sentiment140,1,0,-1.2829315625596869,FN,negation_scope,bubbles pic does not come up
+E0-Artifact,266,sentiment140,1,0,-2.3787182840075767,FN,domain_or_context_nuance,hey from soccer player to player any good words of advice after being cut from the same competitive team after years
+E0-Artifact,270,sentiment140,1,0,-0.7060024731858996,FN,domain_or_context_nuance,better than showing up hours late i guess yuck
+E0-Artifact,271,sentiment140,1,0,-1.5306921698238294,FN,contrastive_clause,but nothing pops up it says internet explorer can not open
+E0-Artifact,272,sentiment140,1,0,-1.0068698886388123,FN,short_ambiguous_text,use seesmic desktop instead
+E0-Artifact,274,sentiment140,1,0,-0.8489912130125701,FN,negation_scope,i was not asked
+E0-Artifact,275,sentiment140,1,0,-1.1359678432913756,FN,short_ambiguous_text,my friend was fired
+E0-Artifact,276,sentiment140,1,0,-2.6194163936558734,FN,short_ambiguous_text,fine babe just ignore me
+E0-Artifact,277,sentiment140,1,0,-1.3116650339604212,FN,negation_scope,you do not miss me
+E0-Artifact,279,sentiment140,1,0,-1.667757597872976,FN,possible_sarcasm_or_irony,off to bed ruined my night haha
+E0-Artifact,283,sentiment140,1,0,-2.082221632479603,FN,domain_or_context_nuance,ya it is watched more quot insider quot commentary yesterday radio transcripts and makes zero sense i dunno raining
+E0-Artifact,285,sentiment140,1,0,-1.09878000835249,FN,domain_or_context_nuance,hanging out with david s family waiting for the end
+E0-Artifact,286,sentiment140,1,0,-0.5254648501293241,FN,domain_or_context_nuance,yeah i am figuring that out
+E0-Artifact,289,sentiment140,1,0,-0.484841810246031,FN,negation_scope,so scared about wednesdsay s exam i have literally never been so unprepared in my life
+E0-Artifact,291,sentiment140,1,0,-0.9081545726282443,FN,negation_scope,do not forget about meeee
+E0-Artifact,295,sentiment140,1,0,-1.0375708227788196,FN,domain_or_context_nuance,i need to sleep i want to sleep why do i have to mop the floor
+E0-Artifact,302,sentiment140,1,0,-3.2174837019276685,FN,negated_positive_or_mixed,my morning is not starting off well what a great saturday morning
+E0-Artifact,304,sentiment140,1,0,-0.8639089114828101,FN,possible_sarcasm_or_irony,i clicked the save changes button and it just did not save it hates me hahah
+E0-Artifact,305,sentiment140,1,0,-1.3671110100755666,FN,domain_or_context_nuance,laptop fell of the bed another power adapter ruined time to buy today
+E0-Artifact,307,sentiment140,1,0,-2.8763738002772112,FN,domain_or_context_nuance,am back at work on tuesday fly home monday
+E0-Artifact,308,sentiment140,1,0,-1.0643714990406699,FN,domain_or_context_nuance,nooooo italy what happend to the world cup
+E0-Artifact,313,sentiment140,1,0,-1.4299259655334144,FN,short_ambiguous_text,urgh doing maths homework
+E0-Artifact,316,sentiment140,1,0,-0.410818473502498,FN,negation_scope,lalalalala ive got chocolate and dr pepper to drink amp my boyf s mother will not let him come and stay with me in half term buggar
+E0-Artifact,317,sentiment140,1,0,-0.9244623861464802,FN,domain_or_context_nuance,must have been the chirping birds distracting me
+E0-Artifact,318,sentiment140,1,0,-1.0200846710944342,FN,contrastive_clause,thank you but that is a luxury right now how is your moving coming along
+E0-Artifact,325,sentiment140,1,0,-1.065718196870484,FN,domain_or_context_nuance,it is only a matter of time my gpa n i gotta do this all over again
+E0-Artifact,328,sentiment140,1,0,-0.3229540657670442,FN,negation_scope,rofl i did not seriously
+E0-Artifact,335,sentiment140,1,0,-1.1142311451732712,FN,short_ambiguous_text,misses his umekal
+E0-Artifact,337,sentiment140,1,0,-0.9545130404094546,FN,short_ambiguous_text,i want kisses too
+E0-Artifact,342,sentiment140,1,0,-3.1762420535806903,FN,negated_positive_or_mixed,great the outlets are not working on the train
+E0-Artifact,347,sentiment140,1,0,-1.2286234930604538,FN,contrastive_clause,working on it it was to support iran but can not get rid of it now
+E0-Artifact,355,sentiment140,1,0,-0.43084875361026365,FN,contrastive_clause,lmaooo mimi fired you not me but you have been kinda slackin tho
+E0-Artifact,358,sentiment140,1,0,-1.5827660053139816,FN,negation_scope,first weekend without any hockey excitement all we have now are the pirates
+E0-Artifact,360,sentiment140,1,0,-3.5822930623372846,FN,domain_or_context_nuance,just called up a couple of best buys and att stores in north charlotte and none have stock of the gs
+E0-Artifact,362,sentiment140,1,0,-0.5795530162496533,FN,domain_or_context_nuance,going for some pub grub and a beer later its back to work tom x
+E0-Artifact,364,sentiment140,1,0,-1.6580376602160294,FN,negation_scope,you on ff cuz no one noticed that i am there
+E0-Artifact,367,sentiment140,1,0,-2.4707444001087353,FN,domain_or_context_nuance,a macro photo taking with the iphone gs also really good twitpic ate my previous photo
+E0-Artifact,369,sentiment140,1,0,-0.7231286511198265,FN,possible_sarcasm_or_irony,i needa that ipod lol too bad i live miles away from london
+E0-Artifact,373,sentiment140,1,0,-4.386944447937362,FN,possible_sarcasm_or_irony,im done workkkkk thank god but i have no lady chill wit lol
+E0-Artifact,376,sentiment140,1,0,-4.6697148925687815,FN,domain_or_context_nuance,gonna check if there is anything good giving on tv i need major distractions right now
+E0-Artifact,379,sentiment140,1,0,-0.740180645882116,FN,domain_or_context_nuance,thinking of everyone involved with af hoping for some miraculous news fear of flying officially heightened
+E0-Artifact,384,sentiment140,1,0,-1.3035929228413528,FN,domain_or_context_nuance,going to be early another am shift tomorrow
+E0-Artifact,386,sentiment140,1,0,-1.1676961168138336,FN,domain_or_context_nuance,watching bb cairon got evicted badd times n
+E0-Artifact,391,sentiment140,1,0,-0.7749413302865797,FN,domain_or_context_nuance,i am disappointed in the cruise picture i really hope my picture this saturday is better
+E0-Artifact,392,sentiment140,1,0,-0.8874783809674189,FN,negation_scope,animal kingdom and the studios today without sam she is on her way home
+E0-Artifact,394,sentiment140,1,0,-0.9479334929787684,FN,negation_scope,aye it did my arms still hurt when i put on my shoes or backpack i still can not fully stretch bend my arms
+E0-Artifact,396,sentiment140,1,0,-0.8583569836329187,FN,domain_or_context_nuance,walking pooches some daft bat is firing a gun my babies are scared
+E0-Artifact,407,sentiment140,1,0,-0.24800083475643753,FN,negation_scope,windows is not as bad as some people made out its much better than vista gutted it is only a beta now tho ohwells
+E0-Artifact,408,sentiment140,1,0,-0.7945957018136247,FN,contrastive_clause,i want to play sims for a wee hour but i am scared it will turn in to hours hours it is so blooming addictive
+E0-Artifact,410,sentiment140,1,0,-0.8557488717220821,FN,domain_or_context_nuance,so i just got back from alex s fairwell party i will miss that weirdo
+E0-Artifact,411,sentiment140,1,0,-1.181919058257104,FN,domain_or_context_nuance,my shoulder pain is keeping from sleeping
+E0-Artifact,427,sentiment140,1,0,-2.74201656496699,FN,domain_or_context_nuance,i have my huge list and and iced mocha i am ready to go run errands it will be forever before i am home
+E0-Artifact,429,sentiment140,1,0,-2.4622910298087075,FN,negated_positive_or_mixed,yes i just posted it its not very good though
+E0-Artifact,432,sentiment140,1,0,-1.2389356247288723,FN,domain_or_context_nuance,misses her boy and its only been since last night
+E0-Artifact,434,sentiment140,1,0,-0.666308811069324,FN,negation_scope,nadal announced he is not playing wimbledon
+E0-Artifact,435,sentiment140,1,0,-6.585154563969365,FN,negation_scope,no more deathnote for me to watch
+E0-Artifact,437,sentiment140,1,0,-1.4522834755144904,FN,negation_scope,i am all alone there is nobody here beside me
+E0-Artifact,441,sentiment140,1,0,-0.970643368653965,FN,contrastive_clause,i would totally come but i am to far away are you coming colorado
+E1b,1,sentiment140,0,1,-0.15066751551567859,FP,negation_scope,at least they got spidey right in and not and iron man and hulk in both imho redo fantastic four please
+E1b,43,sentiment140,0,1,0.6711110433696121,FP,domain_or_context_nuance,the solstice technologies web demo will be up shortly to showcase our crazy programming skills
+E1b,73,sentiment140,0,1,0.5816699453703935,FP,domain_or_context_nuance,can you believe my room is still tidy and shiz and i am listening to boyz ii men can u believe i missed them this weekend fuck
+E1b,89,sentiment140,0,1,0.4337826721504927,FP,domain_or_context_nuance,bought robert kiyosaki s cashflow board game and is looking for people to play it with
+E1b,98,sentiment140,0,1,1.9137371581503273,FP,domain_or_context_nuance,guess who caught a cold in may june shit gt lt
+E1b,102,sentiment140,0,1,0.4701432952003368,FP,domain_or_context_nuance,youngest made banoffi pie as post exam therapy yesterday which makes life brighter all round
+E1b,109,sentiment140,0,1,0.20810654084911473,FP,short_ambiguous_text,restocking the pork rinds
+E1b,112,sentiment140,0,1,0.4107277852175655,FP,domain_or_context_nuance,finally cusat join other universities by postponing exams brother celebrating here
+E1b,115,sentiment140,0,1,-0.06377481309390765,FP,domain_or_context_nuance,new kittens in too two little ladies looking for their forever home once check is finished
+E1b,123,sentiment140,0,1,-0.20163971475536258,FP,possible_sarcasm_or_irony,bored there is nothing to do haha i think i will read
+E1b,125,sentiment140,0,1,1.1086571083489583,FP,domain_or_context_nuance,spent today at the boston aquarium meeting friends and seeing up in theaters just got home and tired
+E1b,128,sentiment140,0,1,0.39559125653865435,FP,domain_or_context_nuance,oh from my delicious bookmarks via facebook i am slow today
+E1b,138,sentiment140,0,1,0.6266046122824471,FP,domain_or_context_nuance,take me to cannes watch the video and tell other to watch
+E1b,145,sentiment140,0,1,0.5324667824577252,FP,negation_scope,excited for the twins game wednesday can not wait to see ou ou
+E1b,157,sentiment140,0,1,0.0032574514792136355,FP,domain_or_context_nuance,at least incubus did their website in an appropriate way or have they just bought a domain congratulations anyway
+E1b,159,sentiment140,0,1,0.10019112798795415,FP,domain_or_context_nuance,rise and shine give god the glory i used to hate to hear that early in the morning before church happy sunday yall
+E1b,200,sentiment140,0,1,0.14805789452315632,FP,negation_scope,yes i am go burn no no i am not amp im famous coz i fucked your boyfrannn a k a mattg d digitalimpregnation
+E1b,203,sentiment140,0,1,0.2972640240786186,FP,negation_scope,having a frankie valli remix kind of morning and chair dancing in the office mondays do not have to be bad
+E1b,218,sentiment140,0,1,0.10566918904808942,FP,contrastive_clause,says however hyperdrive mind lots of ideas so if i can remember them all i will write em down and hopefu
+E1b,226,sentiment140,0,1,2.368715260521518,FP,short_ambiguous_text,dude seriously heeeeeeeee
+E1b,293,sentiment140,0,1,1.7037636678095192,FP,domain_or_context_nuance,youre a boring talker g night
+E1b,351,sentiment140,0,1,0.5938446898250094,FP,negation_scope,well actually not even school were going to the beach swimming bowling amp crazy golf xx
+E1b,382,sentiment140,0,1,0.7055418015575023,FP,domain_or_context_nuance,just for a little while to get an impression of how twitter copy topify
+E1b,389,sentiment140,0,1,-0.09965613778544569,FP,domain_or_context_nuance,sitting eating ice cream whilst watching the comedy festival missing michelle
+E1b,405,sentiment140,0,1,1.8578609416469796,FP,domain_or_context_nuance,oz osbourne sues black sabbath over rights to name tony iommi feeling a little quot paranoid quot
+E1b,409,sentiment140,0,1,2.074147247959844,FP,contrastive_clause,i guard a house like i said bit dangerous maybe but nothing bad has not happend so and i do not like fighting at all d
+E1b,442,sentiment140,0,1,0.7165095429418018,FP,contrastive_clause,how was your abitur what marks did you got i got in phy and in sozi but i fucked up math with but still got
+E1b,447,sentiment140,0,1,-0.09189084284292126,FP,domain_or_context_nuance,so happy twitterific s bak i lead such a sad life ha
+E1b,473,sentiment140,0,1,0.1305406467387622,FP,domain_or_context_nuance,what a fine fine day gonna go see quot up quot today with the little kiddos little as in they are and
+E1b,479,sentiment140,0,1,1.6522493002729117,FP,domain_or_context_nuance,phillies game today phillie phanatic birthday
+E1b,484,sentiment140,0,1,0.27251204004684193,FP,domain_or_context_nuance,today i will attempt to be extremely productive and then tonight maybe i can relax a little here goes
+E1b,492,sentiment140,0,1,0.023441436634239032,FP,domain_or_context_nuance,chilling jim s w the boys
+E1b,575,sentiment140,0,1,0.26793511562022987,FP,negation_scope,i d donate my brain as long as i am definitely not still in there when they start poking at it
+E1b,577,sentiment140,0,1,0.6314927921995201,FP,negation_scope,i seriously do not know how there is a recession with all the money us blockheads are pumping into the economy
+E1b,590,sentiment140,0,1,0.17267884299374736,FP,negation_scope,for f k sake i did not know ye were on twitter for so long should of been following ye ages ago
+E1b,602,sentiment140,0,1,0.5250473836495906,FP,negation_scope,gooood day twitter it is like f and i am freeezing going to see if i can not take mom out for a late mother s day present
+E1b,617,sentiment140,0,1,0.1820552520080545,FP,contrastive_clause,i know years is a big difference but i guess it does not really matter if he is not interested in conversation
+E1b,619,sentiment140,0,1,1.25910099153784,FP,possible_sarcasm_or_irony,hihooo but i think i am gonna be on my granda s house haha til late so i will be here few minutes o
+E1b,652,sentiment140,0,1,2.394962207271253,FP,domain_or_context_nuance,us gamestop employees feed off of it when someone comes up to the door after we are closed and tries to open it we all seriously cheer
+E1b,653,sentiment140,0,1,1.0091014516857801,FP,domain_or_context_nuance,got bored on a saturday night and decided to mess around with the linux server you can listen in at
+E1b,673,sentiment140,0,1,0.49233972463675224,FP,domain_or_context_nuance,waiting for bus back home and the song that just came on is quot you drive me crazy quot by none other than the amazing britney spears
+E1b,683,sentiment140,0,1,0.2679287095542422,FP,possible_sarcasm_or_irony,jelloooooooooo twitter is still confusing s go plurk people hahahahaha
+E1b,686,sentiment140,0,1,1.5916162318908036,FP,domain_or_context_nuance,i think i will in a few days
+E1b,712,sentiment140,0,1,2.6460856563389523,FP,domain_or_context_nuance,dumb tattoo starbucks mug just with starfucks instead
+E1b,717,sentiment140,0,1,0.09989221683287619,FP,domain_or_context_nuance,the evil robot is coming check out and see if you can find him love suzie
+E1b,738,sentiment140,0,1,0.6986648514148786,FP,domain_or_context_nuance,missing bgt peter and i got disposable bbq and heading down the banks of the don near grandholm mills fine
+E1b,744,sentiment140,0,1,0.8560438602380145,FP,negation_scope,week in the no babysitter cos gran has gone to oz house hrs hol a day from work things going not too badly think boss disagrees
+E1b,794,sentiment140,0,1,2.280055274715548,FP,domain_or_context_nuance,factory ng elmer s hihihi sorry corny baka si ate ruby alam
+E1b,831,sentiment140,0,1,0.8595353909959926,FP,negation_scope,no parade tomorrow finally a day where i can wake up late and a hour flight in the evening
+E1b,856,sentiment140,0,1,2.813613081831016,FP,domain_or_context_nuance,musicindustry cssp u mean fragmented and ruled by gangsters
+E1b,885,sentiment140,0,1,1.2164169132095264,FP,contrastive_clause,i am not in chicago yet silly i leave friday but i do have long hair
+E1b,894,sentiment140,0,1,0.6766259262463934,FP,possible_sarcasm_or_irony,there is also quot gonna fill carts up to the brims quot random outbursts of song life s hidden pleasure thanks
+E1b,928,sentiment140,0,1,0.49214647740722395,FP,domain_or_context_nuance,keeping up with drunk girls is a lot harder then it looks got them all in bed safely
+E1b,940,sentiment140,0,1,2.09024656772287,FP,domain_or_context_nuance,i am a late bird mariusz you from poland past noon here still morning for me
+E1b,945,sentiment140,0,1,0.8490190128785584,FP,contrastive_clause,im going to try to go to sleep even though im not tired blah goodnight people lt
+E1b,999,sentiment140,0,1,0.09082115175894301,FP,negation_scope,oh yummm i am definitely going to try both of those recipes i just can not get enough spinach lately
+E1b,1003,sentiment140,0,1,1.1886758263686636,FP,domain_or_context_nuance,just checkmated my sister with a rook just a rook fuck yes
+E1b,1032,sentiment140,0,1,-0.053589672100911034,FP,domain_or_context_nuance,i am a die hard fender guy and i still think is awesome
+E1b,1049,sentiment140,0,1,-0.0865621023923453,FP,negation_scope,that is the other side of rochester we will not get that much on my side of the city we are east of rochester
+E1b,1109,sentiment140,0,1,0.027233357186579266,FP,domain_or_context_nuance,hope to catch you at a future tweetup there is one this friday i have been working with robert on his website for a few mos
+E1b,1110,sentiment140,0,1,0.3254715169910456,FP,domain_or_context_nuance,ugh wish i could help ya knock off some items from your list hope you sleep in tomorrow well at least til
+E1b,1118,sentiment140,0,1,0.15235145717177612,FP,domain_or_context_nuance,can you please look at issue again seems like it is closed
+E1b,1139,sentiment140,0,1,0.034261207773430113,FP,negation_scope,i am over my tipsyness from playing water fall with my friends it was fun i did not get fully drunk i am predicting no hangover for me
+E1b,1146,sentiment140,0,1,0.7000520567868476,FP,negation_scope,damnit well i am running out the door then hope you guys do not mind i look like crap
+E1b,1198,sentiment140,0,1,0.6796755853189458,FP,negation_scope,pretty early sunday morning and bine and i wee almost ready to depart for a bike ride around franconian swiss weather looks not to bad
+E1b,1210,sentiment140,0,1,0.7732145396007362,FP,negation_scope,never she is lame
+E1b,1316,sentiment140,0,1,1.7959207971616897,FP,short_ambiguous_text,seriously do you ever work
+E1b,1323,sentiment140,0,1,-0.037175930286825976,FP,domain_or_context_nuance,k done i will start figuring out what day mmm bbq ps you are coming then u can meet the alien
+E1b,1332,sentiment140,0,1,0.07253285318144842,FP,contrastive_clause,supposed to be meg but mozy is running the speed test shows meg guessing that is due to mozy
+E1b,1367,sentiment140,0,1,0.20810654084911473,FP,short_ambiguous_text,i lt the sequence
+E1b,1368,sentiment140,0,1,1.2282544364661834,FP,short_ambiguous_text,i say fuck boys anyway
+E1b,1371,sentiment140,0,1,3.729401993613977,FP,contrastive_clause,i said sorry to my father at the yfc covenant it was hard to do but i did it
+E1b,1408,sentiment140,0,1,0.1165027984060163,FP,domain_or_context_nuance,itunes terms amp conditions are a little too strict
+E1b,1423,sentiment140,0,1,0.3409266997957119,FP,domain_or_context_nuance,so i think i am going to call it a night quot twinkle twinkle little star how i wonder what you are quot on my way to sleepville
+E1b,1432,sentiment140,0,1,0.8253976026376886,FP,domain_or_context_nuance,listening to third eye blind i wish i was into this when i was a kid
+E1b,1444,sentiment140,0,1,0.1326472048283749,FP,domain_or_context_nuance,got the wet dream vol mixtape on my blackberry listening to it at work
+E1b,1487,sentiment140,0,1,0.8282791413769401,FP,negation_scope,hey your not boring at all amandapalmer live gt
+E1b,1495,sentiment140,0,1,0.4764992044678782,FP,contrastive_clause,if you are bored check out missed connections on craigslist i might ve already said this but it has been a long day
+E1b,1505,sentiment140,0,1,-0.12908030007435278,FP,domain_or_context_nuance,was that where the weird metallic giggling sound came from
+E1b,1516,sentiment140,0,1,0.6810580834704736,FP,short_ambiguous_text,anything in pink
+E1b,1535,sentiment140,0,1,-0.15572930095111037,FP,domain_or_context_nuance,you are probably right o either way i will still have it as long as it tastes the same
+E1b,1536,sentiment140,0,1,0.8753718334238625,FP,negation_scope,nah that was just me trying to not be grumpy when a little kitten kept me up all night
+E1b,1578,sentiment140,0,1,0.2926176320828511,FP,negation_scope,i bet and nothing has to do with the dumb swede who passed the ball right to the foot on the danish player damnit
+E1b,1581,sentiment140,0,1,-0.04921606450356253,FP,negation_scope,needless to say i did not stay to find cache
+E1b,1587,sentiment140,0,1,-0.06199035240638928,FP,domain_or_context_nuance,angela you should write a bio and tell everyone a little bit about yourself
+E1b,1589,sentiment140,0,1,2.286512073884223,FP,domain_or_context_nuance,my bad i got on the phone and talked until i became tired now sleep
+E1b,1596,sentiment140,0,1,0.8242242365223518,FP,domain_or_context_nuance,maybe try tweetdeck it also has filter options if you are tired of a e and l n
+E1b,1598,sentiment140,0,1,0.4204274028672741,FP,domain_or_context_nuance,last day of school before the long weekend
+E1b,1612,sentiment140,0,1,0.6802720161298366,FP,possible_sarcasm_or_irony,not sure something about hin annoys me i think it is just a personal thing i am sure he works hard just not a fan
+E1b,1627,sentiment140,0,1,0.36266684297401497,FP,domain_or_context_nuance,so i have a new condo and i am missing calls i am thinking this bluetooth bracelet will fix it buzzes my wrist
+E1b,1634,sentiment140,0,1,0.8730641731178261,FP,domain_or_context_nuance,usually an hour on the tread yuck
+E1b,1639,sentiment140,0,1,0.027234070341057404,FP,domain_or_context_nuance,dermot my wife is due any day please please ask keith when will be the day when child will be born
+E1b,1640,sentiment140,0,1,0.6286032786501741,FP,domain_or_context_nuance,you mean the one for nintendo wii do give some thoughts after you played it
+E1b,1645,sentiment140,0,1,0.38784183710946474,FP,domain_or_context_nuance,our media assignment is due tomorrow at the end of the lesson thought i would remind you
+E1b,1662,sentiment140,0,1,-0.21258493200946604,FP,possible_sarcasm_or_irony,ahahah rob hoffman is right tweeting in third person is the shit
+E1b,1691,sentiment140,0,1,1.0721766801384645,FP,negation_scope,can not sleep any longer which is dumb dance recital today then prom
+E1b,1750,sentiment140,0,1,0.12173793611484762,FP,possible_sarcasm_or_irony,haha sucks for you
+E1b,1764,sentiment140,0,1,0.21181676458259702,FP,domain_or_context_nuance,i like to watch older video s of you i mean older video s that we made together
+E1b,1768,sentiment140,0,1,0.8968888365351229,FP,negation_scope,quot come on swann you ugly bastard quot via did not realise proust could arouse such passion
+E1b,1809,sentiment140,0,1,1.887560386908004,FP,possible_sarcasm_or_irony,haha fucking hell i know ay shit son he is just making trouble we could take him
+E1b,1817,sentiment140,0,1,1.680145171818194,FP,domain_or_context_nuance,its pm and im too late for the fences
+E1b,1840,sentiment140,0,1,0.8018988823800128,FP,domain_or_context_nuance,indeed and i can hardly contain myself
+E1b,1847,sentiment140,0,1,0.6721609541852958,FP,domain_or_context_nuance,omg u too yesss me to mad hype last season omg i cried every episode lmaoo smh
+E1b,1851,sentiment140,0,1,0.28275261480057434,FP,negation_scope,okay now i feel bad i am probably just jealous that i can not wear plaid shorts and play them off
+E1b,1918,sentiment140,0,1,-0.07495105016175674,FP,domain_or_context_nuance,back in melb and on my way to the opening of spin that thing famous when dead gallery
+E1b,1921,sentiment140,0,1,-0.12173600405792784,FP,domain_or_context_nuance,bounced out of bed this morning ready for another long haul studying sesh what the hell has happened to me
+E1b,1952,sentiment140,0,1,0.07769957403274086,FP,possible_sarcasm_or_irony,such a chill sunday i need a sunday lay around be a hobo bum n watch movies all day buddy u down haha
+E1b,1957,sentiment140,0,1,0.49808902434533997,FP,contrastive_clause,i know that is why he has decided to pay it for me it is complicated but i came out on top and the bb is nt that bad
+E1b,1958,sentiment140,0,1,0.20810654084911473,FP,short_ambiguous_text,on the moor revising geog
+E1b,1965,sentiment140,0,1,1.1265696547176316,FP,possible_sarcasm_or_irony,ahahahahhaa fo sho duuddee any other recommendations
+E1b,2014,sentiment140,0,1,0.28999271312242336,FP,domain_or_context_nuance,animal idol favourite animals are cuppy and little golden
+E1b,2039,sentiment140,0,1,-0.20470427425143733,FP,domain_or_context_nuance,i did by lots and lots of cough drops it is helping a little
+E1b,2055,sentiment140,0,1,1.185864100061075,FP,possible_sarcasm_or_irony,im up yeah i know jj is sick since yesterday and i want jubam for breakfast too hahahaha
+E1b,2099,sentiment140,0,1,0.6737321736885085,FP,domain_or_context_nuance,i like that boom boom boom im so ur so and late
+E1b,2112,sentiment140,0,1,-0.023286688506112374,FP,negation_scope,maybe it is not charging because the outlets are funky due to the fact that there is intense thunder and lightning
+E1b,2119,sentiment140,0,1,-0.10694473399335658,FP,domain_or_context_nuance,who has a day long text conversation me
+E1b,2142,sentiment140,0,1,1.2067048629579191,FP,negation_scope,i am going out with fucked up university students hope i will get wasted and not hear their blurbs
+E1b,2147,sentiment140,0,1,0.3845190825578202,FP,domain_or_context_nuance,the matrot castle next to sam s club has been brought back to life as a working vineyard winery topeka is so odd
+E1b,2178,sentiment140,0,1,2.259026121867249,FP,domain_or_context_nuance,some people are stupid pokes a ravenous lion see
+E1b,2183,sentiment140,0,1,2.2440756165787197,FP,short_ambiguous_text,who is down
+E1b,2207,sentiment140,0,1,0.7462548856126869,FP,domain_or_context_nuance,quot shaking my fucking head quot or quot so much fucking homework quot according to urban dictionary
+E1b,2209,sentiment140,0,1,1.434985064933357,FP,domain_or_context_nuance,hmmmm might come i dunno cus i go on holiday on th july ill see
+E1b,2226,sentiment140,0,1,0.2350556417929086,FP,negation_scope,if the yaoi went away there would not be more of other manga just less yaoi
+E1b,2238,sentiment140,0,1,1.2861240037543986,FP,domain_or_context_nuance,i am beige duba dee duba dai according to at least what is your colour
+E1b,2257,sentiment140,0,1,0.31962946278172955,FP,domain_or_context_nuance,fun call me when u get back i think we are due for a ladies night
+E1b,2264,sentiment140,0,1,0.30095396944127173,FP,domain_or_context_nuance,wow that was a workout we went down flights of stairs up to see view from top down and up of which i beat the elevator
+E1b,2285,sentiment140,0,1,0.10930048198131215,FP,domain_or_context_nuance,its cold amp raining in melburn laying on tha couch watching tha hills waiting for neighbours to start amp for my daddy to bring me dinner
+E1b,2288,sentiment140,0,1,0.3852488042710873,FP,contrastive_clause,why thanku it is a bitter sweet bday hard to let go of your s but you do not want to relive them thanks again
+E1b,2292,sentiment140,0,1,0.17689375458478462,FP,domain_or_context_nuance,working all day today counting down the days for vacation
+E1b,2298,sentiment140,0,1,0.9661643385725527,FP,domain_or_context_nuance,so how badly is the redfm crew terrorizing the blackboard restaurant staff
+E1b,2307,sentiment140,0,1,2.7682149776257443,FP,domain_or_context_nuance,coming off of h of rest in monteray ca of which i spent at least sleeping n y and subsequent meetings tired me out
+E1b,2316,sentiment140,0,1,3.103308281019414,FP,domain_or_context_nuance,sorry i mean tick eye roll
+E1b,2339,sentiment140,0,1,0.08591710497137495,FP,contrastive_clause,ah sorry about the spoiler but the fight is still worth watching cuz it is an action packed minutes
+E1b,2349,sentiment140,0,1,1.8683548736534954,FP,negation_scope,you hear tom has a cold he can not sing as high as always poor guy
+E1b,2356,sentiment140,0,1,-0.04142762754350837,FP,domain_or_context_nuance,the winner of a modern myth nada s secret ebook giveaway is please dm your email addy so i can send it
+E1b,2384,sentiment140,0,1,1.718271857637359,FP,negation_scope,have you ever been like ooberly tired and were not able to fall asleep it sucks majorly so since im wide awake talk to me tweeps
+E1b,2387,sentiment140,0,1,0.738542724174301,FP,domain_or_context_nuance,on my way to sin city dsnt help that i just saw the hangover last nite hehehe evil laugh
+E1b,2409,sentiment140,0,1,-0.02664136671465467,FP,domain_or_context_nuance,speaking about my lazy self i actually stayed up till the deadline to do the hw time for sleep
+E1b,2413,sentiment140,0,1,2.201024995652112,FP,domain_or_context_nuance,i still get my lefts and rights wrong
+E1b,2414,sentiment140,0,1,0.3503369107768981,FP,domain_or_context_nuance,had a lot of fun outside planting trees and bushes moving rocks weeding and being sick still
+E1b,2416,sentiment140,0,1,0.14600156926733776,FP,negation_scope,hey kendra ur new show starts here next week n i can not wait thou a bit weird coz girls of playboy mansion still screens
+E1b,2432,sentiment140,0,1,0.9251111317064538,FP,negation_scope,it is not pm everywhere oh well my dumb moment of the day ps i agree no one cooks like mommy
+E1b,2446,sentiment140,0,1,0.10029015133903108,FP,domain_or_context_nuance,trying to locate my monkey island series music on my computer then off to run errands for a bit
+E1b,2448,sentiment140,0,1,0.016843395449434473,FP,possible_sarcasm_or_irony,yeh course can understand that but being single does not always mean heartbreak can be a relief lol plus ppl shld focus on the
+E1b,2463,sentiment140,0,1,2.3913521116614875,FP,negation_scope,never annoyed you are keeping me from going insane with bordem
+E1b,2484,sentiment140,0,1,2.3898024256415957,FP,domain_or_context_nuance,i think you overestimate their stupidity
+E1b,2493,sentiment140,0,1,1.4518090315483767,FP,domain_or_context_nuance,eating gohan japanese food go hard
+E1b,2574,sentiment140,0,1,0.048650896623716244,FP,domain_or_context_nuance,the secret to monday mornings is having a quot job quot that i love making music
+E1b,2612,sentiment140,0,1,0.3017400630750835,FP,domain_or_context_nuance,shin a device for finding furniture in the dark
+E1b,2653,sentiment140,0,1,0.14114372709942935,FP,domain_or_context_nuance,gonna get something to eat then long on rom
+E1b,3,sentiment140,1,0,-1.0530672779456565,FN,domain_or_context_nuance,is that for private or public view when it is done this close to the last update i could imagine some less nice reviews
+E1b,4,sentiment140,1,0,-1.138122891545259,FN,negated_positive_or_mixed,ct trip cancelled for now anyway not that bad i guess probably the best for now will see what next week holds
+E1b,6,sentiment140,1,0,-1.3597440305522122,FN,domain_or_context_nuance,have to buy a new water pump for my jeep
+E1b,8,sentiment140,1,0,-0.8185337846764285,FN,domain_or_context_nuance,i need my outlet like now
+E1b,11,sentiment140,1,0,-1.8608933924082165,FN,negation_scope,aww that is never any fun
+E1b,12,sentiment140,1,0,-1.0195270729057238,FN,short_ambiguous_text,my feet hurrt ouch
+E1b,13,sentiment140,1,0,-1.0793372547755815,FN,short_ambiguous_text,i miss my nba
+E1b,15,sentiment140,1,0,-0.6197620449762458,FN,domain_or_context_nuance,that sucks hope they go away really quickly
+E1b,20,sentiment140,1,0,-0.6790205214808859,FN,domain_or_context_nuance,whut when you shoulda said hi
+E1b,22,sentiment140,1,0,-1.3474155747475645,FN,domain_or_context_nuance,shared your smooshed glasses story with husband sometimes the only silver lining is the funny story we get from it
+E1b,23,sentiment140,1,0,-0.9904462016152098,FN,domain_or_context_nuance,headed out with the team to go get pizza noms for lunch it is birthday lunch time for our boss woot if only i could have a beer too
+E1b,26,sentiment140,1,0,-1.0148235041000895,FN,short_ambiguous_text,stranded at mary pickford
+E1b,29,sentiment140,1,0,-0.9812013841229711,FN,short_ambiguous_text,i want a hug now
+E1b,31,sentiment140,1,0,-1.360438113225937,FN,possible_sarcasm_or_irony,the night young but everything is closed damn m istuff stay open til am n f l lets move lol
+E1b,38,sentiment140,1,0,-0.58054025076015,FN,negation_scope,bruna has lost nothing of the party
+E1b,39,sentiment140,1,0,-1.1712165741609555,FN,domain_or_context_nuance,league club accrington stanley face a high court date on after being issued with a winding up order by hm revenue and customs
+E1b,41,sentiment140,1,0,-1.0148235041000895,FN,short_ambiguous_text,iknowrite
+E1b,45,sentiment140,1,0,-1.0296026582482787,FN,domain_or_context_nuance,i am so sad that most of my favorite zetas are graduating and going alum
+E1b,47,sentiment140,1,0,-0.5896649667387348,FN,negation_scope,why is my twitter account being so quiet does it not like me anymore
+E1b,49,sentiment140,1,0,-0.6339193507621781,FN,domain_or_context_nuance,grandfather is at hospital they found several artery blockages and he is being transferred to another hospital for surgery
+E1b,51,sentiment140,1,0,-2.2373130045359195,FN,domain_or_context_nuance,would love to wake up morrow at monday morning
+E1b,52,sentiment140,1,0,-2.2752850103372397,FN,domain_or_context_nuance,a lot of gay brazilian boys here hah were gonna miss you marcelo you cute balerina you
+E1b,54,sentiment140,1,0,-0.5198899482204369,FN,short_ambiguous_text,is suffering from sinus problems
+E1b,55,sentiment140,1,0,-1.5020623000819606,FN,domain_or_context_nuance,missing nathan and the bccg already and my best friends that tried to visit me heading back tomorrow afternoon
+E1b,60,sentiment140,1,0,-0.8835907794067859,FN,contrastive_clause,i did can not play it atm though got stuff to do
+E1b,62,sentiment140,1,0,-0.7972582688284693,FN,negation_scope,i do not have any pepto
+E1b,74,sentiment140,1,0,-0.56091657126632,FN,domain_or_context_nuance,i am tired i think i am becoming too old to go out
+E1b,76,sentiment140,1,0,-0.6069780198950825,FN,domain_or_context_nuance,on air in about minutes bcfm org uk fm until i still get the nerves
+E1b,80,sentiment140,1,0,-0.48047956454415797,FN,domain_or_context_nuance,aw the grillz in my background look like plaque
+E1b,81,sentiment140,1,0,-1.3067298776551122,FN,negation_scope,wishing this old frozen coffee in may car was not old i am thirsty
+E1b,85,sentiment140,1,0,-0.8027010713943559,FN,negation_scope,smh my brother calling me to tell me to read tyrese s twitter about eminem getting borat s sack in his face he do not have a twitter
+E1b,87,sentiment140,1,0,-1.9872318496571075,FN,domain_or_context_nuance,why do ppl ignore me esp when i need them most
+E1b,90,sentiment140,1,0,-0.5896196545625231,FN,domain_or_context_nuance,ending to bionic commando super big disappointment bioniccommando
+E1b,91,sentiment140,1,0,-1.1771298948439104,FN,domain_or_context_nuance,tryin my hardest wake up i def need some coffee
+E1b,92,sentiment140,1,0,-1.1872487658127087,FN,short_ambiguous_text,fed up of pain now
+E1b,99,sentiment140,1,0,-0.7464007038267346,FN,contrastive_clause,bedroom tvs messed up everyone looks like a simpson guess i finally got that hr simpsons channel but its the flashing
+E1b,101,sentiment140,1,0,-0.7202643761045164,FN,negation_scope,you did not answer me is yon kuma an unbearable comic
+E1b,103,sentiment140,1,0,-2.306842733189664,FN,negated_positive_or_mixed,not til late fall i am so jealousss ahh be safe and have the best time i will look you up when i get there xx
+E1b,105,sentiment140,1,0,-1.4498909245095364,FN,domain_or_context_nuance,i really struggled writing that card
+E1b,108,sentiment140,1,0,-1.9874129753573477,FN,short_ambiguous_text,wants tickets
+E1b,111,sentiment140,1,0,-1.0246464015486267,FN,domain_or_context_nuance,is dreading another work week ahead
+E1b,119,sentiment140,1,0,-0.9022685891221165,FN,negation_scope,can not sleep and i meet with my trainer in the morning
+E1b,121,sentiment140,1,0,-0.6375924808843707,FN,negation_scope,just woke up not feeling it this sat morning
+E1b,122,sentiment140,1,0,-0.8576890561711416,FN,domain_or_context_nuance,will be on the bus to school soon
+E1b,130,sentiment140,1,0,-0.7364732312372642,FN,domain_or_context_nuance,oh i have to unpack my dvds
+E1b,131,sentiment140,1,0,-0.6534032582753599,FN,short_ambiguous_text,at home by myself
+E1b,133,sentiment140,1,0,-1.4956497541588907,FN,short_ambiguous_text,wanting have some fun
+E1b,136,sentiment140,1,0,-2.3545014155684023,FN,negated_positive_or_mixed,do not feel good ugh i wanna milk shake
+E1b,137,sentiment140,1,0,-1.0148235041000895,FN,domain_or_context_nuance,d o n y u ng s a c ng d i gh
+E1b,141,sentiment140,1,0,-2.2472255345787078,FN,possible_sarcasm_or_irony,i miss my chubby little smurfffff lol
+E1b,144,sentiment140,1,0,-1.162238436030794,FN,possible_sarcasm_or_irony,been to doctor s had blood taken lolz
+E1b,147,sentiment140,1,0,-4.341067122344409,FN,negated_positive_or_mixed,i would love to come but i will be months pregnant in october not wise to fly to uk from holland then i guess
+E1b,155,sentiment140,1,0,-0.8960390778595875,FN,domain_or_context_nuance,gettin rid of invites in facebook about a to go
+E1b,158,sentiment140,1,0,-0.7696422246757375,FN,domain_or_context_nuance,once again registering for classes one of the ones i registered in has been canceled
+E1b,167,sentiment140,1,0,-0.7199317649243986,FN,negation_scope,i do not care if livin on a prayer no one in this bar is getting it from me
+E1b,168,sentiment140,1,0,-2.260192957672497,FN,domain_or_context_nuance,stitch in time saves got locked out of my own office sitting on the stairs waiting for help damn
+E1b,169,sentiment140,1,0,-0.9884826076767831,FN,short_ambiguous_text,ouch i got a shot
+E1b,174,sentiment140,1,0,-1.0435653560762332,FN,domain_or_context_nuance,ok you are still jet lagged go get some sleep dude and for the record i was also supporting the windies
+E1b,175,sentiment140,1,0,-0.6841210142966507,FN,negation_scope,im soo boredd without you
+E1b,176,sentiment140,1,0,-1.1886374015560481,FN,domain_or_context_nuance,sitting here board waiting for hubby to come home
+E1b,180,sentiment140,1,0,-0.8194800337195149,FN,domain_or_context_nuance,i think of her while listening to this
+E1b,182,sentiment140,1,0,-0.8290794957642508,FN,domain_or_context_nuance,ah coolio me too wish i got the brotherhood figure thing the americans got
+E1b,187,sentiment140,1,0,-1.0836333141559842,FN,domain_or_context_nuance,mi hermano is settling into his new lifestyle away from us
+E1b,190,sentiment140,1,0,-1.0301522813383062,FN,negation_scope,i can not believe the update still has not been approved
+E1b,194,sentiment140,1,0,-0.6306018311953474,FN,negation_scope,can not go to your match
+E1b,195,sentiment140,1,0,-1.7587814966548447,FN,domain_or_context_nuance,we got rained out today we will be back every st saturday of the month full throttle customs
+E1b,196,sentiment140,1,0,-1.0841683162610478,FN,domain_or_context_nuance,rip david eddings read all of his books growing up
+E1b,197,sentiment140,1,0,-2.242573961345934,FN,negated_positive_or_mixed,happy mother s day my mum already left the house before i woke up so i could not give her a hug and tell her i love her
+E1b,198,sentiment140,1,0,-3.484725098331678,FN,domain_or_context_nuance,exactly more days including today before school starts
+E1b,199,sentiment140,1,0,-0.8232927520513952,FN,domain_or_context_nuance,my foot is killing me off to docs later so hope they can sort me out
+E1b,201,sentiment140,1,0,-3.1825490365437243,FN,negated_positive_or_mixed,feeling glad i have a father to spoil today but also mmissing the best father in law in the world first one without him
+E1b,204,sentiment140,1,0,-1.1592900232750807,FN,domain_or_context_nuance,bed time the carpet is going to stink in the morning the wind is starting to pick up again
+E1b,206,sentiment140,1,0,-0.965319881156665,FN,short_ambiguous_text,only got a silver account
+E1b,208,sentiment140,1,0,-0.8576704699484302,FN,domain_or_context_nuance,tired of reading the same all the day conflict of laws and more pages left let us go
+E1b,209,sentiment140,1,0,-1.6232567302342407,FN,domain_or_context_nuance,ok i am sooo having baseball withdrawls today been weeks since i have been able to see my braves play
+E1b,212,sentiment140,1,0,-0.7889539887447737,FN,domain_or_context_nuance,why does it look like it is going to rain
+E1b,219,sentiment140,1,0,-1.603727898729479,FN,short_ambiguous_text,we live too far apart
+E1b,220,sentiment140,1,0,-1.2243337978710438,FN,domain_or_context_nuance,re ssvsut it was stuff like this that made me drift away from the diy comm in the first place such complexes and drama
+E1b,225,sentiment140,1,0,-0.969419035919637,FN,domain_or_context_nuance,insomniiiaaaaaaaaaaaa need someone to cuddle amp rock me to sleep
+E1b,227,sentiment140,1,0,-0.7709130718844321,FN,domain_or_context_nuance,i gotta wait till friday to see them in the city
+E1b,232,sentiment140,1,0,-0.4300884814708482,FN,domain_or_context_nuance,ugh another humid cloudy day i swear the sun has come out a total of five times this summer
+E1b,234,sentiment140,1,0,-0.8450925966105576,FN,domain_or_context_nuance,stayed the same let us stick to it
+E1b,237,sentiment140,1,0,-3.467877597901189,FN,negated_positive_or_mixed,he even do not dance today but we are going to dance tomorrow well i will need more good luck hehe luck luck luck good luck
+E1b,238,sentiment140,1,0,-0.8947057410484615,FN,negated_positive_or_mixed,not feeling so great a little summer cold happening right now
+E1b,239,sentiment140,1,0,-1.0148235041000895,FN,short_ambiguous_text,aww como to brazill alexx
+E1b,243,sentiment140,1,0,-0.9255055799685735,FN,negation_scope,you can not c my face on my picture what is this
+E1b,246,sentiment140,1,0,-0.8579466809883954,FN,domain_or_context_nuance,of course hun like minxy i had to save the animated one as png or jpeg to get my avatar to upload
+E1b,249,sentiment140,1,0,-0.7222875622439976,FN,negation_scope,note to self do not do a massage when your back is hurting hhhmmm auch
+E1b,254,sentiment140,1,0,-0.8684764344395041,FN,short_ambiguous_text,times like a million
+E1b,258,sentiment140,1,0,-0.6034028785847635,FN,negation_scope,boo on possibly making someone not talk to me
+E1b,263,sentiment140,1,0,-0.9365056453448897,FN,negation_scope,has nothing to wear
+E1b,264,sentiment140,1,0,-0.9929667212556537,FN,negation_scope,bubbles pic does not come up
+E1b,266,sentiment140,1,0,-1.9828932668026449,FN,domain_or_context_nuance,hey from soccer player to player any good words of advice after being cut from the same competitive team after years
+E1b,270,sentiment140,1,0,-0.7025117847006859,FN,domain_or_context_nuance,better than showing up hours late i guess yuck
+E1b,271,sentiment140,1,0,-1.1918009570079051,FN,contrastive_clause,but nothing pops up it says internet explorer can not open
+E1b,272,sentiment140,1,0,-0.9403051891290248,FN,short_ambiguous_text,use seesmic desktop instead
+E1b,274,sentiment140,1,0,-0.7850445750734744,FN,negation_scope,i was not asked
+E1b,275,sentiment140,1,0,-0.9565555730407622,FN,short_ambiguous_text,my friend was fired
+E1b,276,sentiment140,1,0,-1.9694829306876402,FN,short_ambiguous_text,fine babe just ignore me
+E1b,277,sentiment140,1,0,-1.0942323221290233,FN,negation_scope,you do not miss me
+E1b,279,sentiment140,1,0,-1.410956026839932,FN,possible_sarcasm_or_irony,off to bed ruined my night haha
+E1b,283,sentiment140,1,0,-1.6534173694332108,FN,domain_or_context_nuance,ya it is watched more quot insider quot commentary yesterday radio transcripts and makes zero sense i dunno raining
+E1b,285,sentiment140,1,0,-1.0655903948694876,FN,domain_or_context_nuance,hanging out with david s family waiting for the end
+E1b,286,sentiment140,1,0,-0.4527791076316401,FN,domain_or_context_nuance,yeah i am figuring that out
+E1b,287,sentiment140,1,0,-0.33718222950514076,FN,negation_scope,hungrygowhere app not available for ipod touch
+E1b,289,sentiment140,1,0,-0.43104601246600116,FN,negation_scope,so scared about wednesdsay s exam i have literally never been so unprepared in my life
+E1b,291,sentiment140,1,0,-0.9927124978836548,FN,negation_scope,do not forget about meeee
+E1b,295,sentiment140,1,0,-0.9375411623232615,FN,domain_or_context_nuance,i need to sleep i want to sleep why do i have to mop the floor
+E1b,302,sentiment140,1,0,-2.5103601204603194,FN,negated_positive_or_mixed,my morning is not starting off well what a great saturday morning
+E1b,304,sentiment140,1,0,-0.4730855580505592,FN,possible_sarcasm_or_irony,i clicked the save changes button and it just did not save it hates me hahah
+E1b,305,sentiment140,1,0,-1.1088094331131286,FN,domain_or_context_nuance,laptop fell of the bed another power adapter ruined time to buy today
+E1b,307,sentiment140,1,0,-2.3385456347471996,FN,domain_or_context_nuance,am back at work on tuesday fly home monday
+E1b,308,sentiment140,1,0,-1.0420695779074114,FN,domain_or_context_nuance,nooooo italy what happend to the world cup
+E1b,313,sentiment140,1,0,-1.3770493811403557,FN,short_ambiguous_text,urgh doing maths homework
+E1b,316,sentiment140,1,0,-0.23857786627838318,FN,negation_scope,lalalalala ive got chocolate and dr pepper to drink amp my boyf s mother will not let him come and stay with me in half term buggar
+E1b,317,sentiment140,1,0,-0.8959942082434992,FN,domain_or_context_nuance,must have been the chirping birds distracting me
+E1b,318,sentiment140,1,0,-1.0770222861515433,FN,contrastive_clause,thank you but that is a luxury right now how is your moving coming along
+E1b,325,sentiment140,1,0,-0.980800849035758,FN,domain_or_context_nuance,it is only a matter of time my gpa n i gotta do this all over again
+E1b,335,sentiment140,1,0,-0.88119208959555,FN,short_ambiguous_text,misses his umekal
+E1b,337,sentiment140,1,0,-0.8796991428387537,FN,short_ambiguous_text,i want kisses too
+E1b,342,sentiment140,1,0,-2.334675309766854,FN,negated_positive_or_mixed,great the outlets are not working on the train
+E1b,347,sentiment140,1,0,-0.8824118473459921,FN,contrastive_clause,working on it it was to support iran but can not get rid of it now
+E1b,355,sentiment140,1,0,-0.4016707361249231,FN,contrastive_clause,lmaooo mimi fired you not me but you have been kinda slackin tho
+E1b,358,sentiment140,1,0,-1.3193049371064158,FN,negation_scope,first weekend without any hockey excitement all we have now are the pirates
+E1b,360,sentiment140,1,0,-2.6893235393504815,FN,domain_or_context_nuance,just called up a couple of best buys and att stores in north charlotte and none have stock of the gs
+E1b,362,sentiment140,1,0,-0.4474033425342957,FN,domain_or_context_nuance,going for some pub grub and a beer later its back to work tom x
+E1b,364,sentiment140,1,0,-1.2734517759380757,FN,negation_scope,you on ff cuz no one noticed that i am there
+E1b,367,sentiment140,1,0,-1.7981708696753964,FN,domain_or_context_nuance,a macro photo taking with the iphone gs also really good twitpic ate my previous photo
+E1b,369,sentiment140,1,0,-0.45358343232845255,FN,possible_sarcasm_or_irony,i needa that ipod lol too bad i live miles away from london
+E1b,373,sentiment140,1,0,-3.3294812039138053,FN,possible_sarcasm_or_irony,im done workkkkk thank god but i have no lady chill wit lol
+E1b,376,sentiment140,1,0,-3.5946297018095783,FN,domain_or_context_nuance,gonna check if there is anything good giving on tv i need major distractions right now
+E1b,379,sentiment140,1,0,-0.5907902576708604,FN,domain_or_context_nuance,thinking of everyone involved with af hoping for some miraculous news fear of flying officially heightened
+E1b,384,sentiment140,1,0,-0.9914436383159797,FN,domain_or_context_nuance,going to be early another am shift tomorrow
+E1b,386,sentiment140,1,0,-1.109664777522846,FN,domain_or_context_nuance,watching bb cairon got evicted badd times n
+E1b,391,sentiment140,1,0,-0.6249017247805827,FN,domain_or_context_nuance,i am disappointed in the cruise picture i really hope my picture this saturday is better
+E1b,392,sentiment140,1,0,-1.034584306979899,FN,negation_scope,animal kingdom and the studios today without sam she is on her way home
+E1b,394,sentiment140,1,0,-0.8742089640501316,FN,negation_scope,aye it did my arms still hurt when i put on my shoes or backpack i still can not fully stretch bend my arms
+E1b,396,sentiment140,1,0,-0.8052915105594576,FN,domain_or_context_nuance,walking pooches some daft bat is firing a gun my babies are scared
+E1b,407,sentiment140,1,0,-0.25841308577220024,FN,negation_scope,windows is not as bad as some people made out its much better than vista gutted it is only a beta now tho ohwells
+E1b,408,sentiment140,1,0,-0.9387026985273452,FN,contrastive_clause,i want to play sims for a wee hour but i am scared it will turn in to hours hours it is so blooming addictive
+E1b,410,sentiment140,1,0,-0.7636910268427424,FN,domain_or_context_nuance,so i just got back from alex s fairwell party i will miss that weirdo
+E1b,411,sentiment140,1,0,-1.0235352296900329,FN,domain_or_context_nuance,my shoulder pain is keeping from sleeping
+E1b,422,sentiment140,1,0,-0.22479292088112746,FN,negation_scope,omg how i miss wawa runs at random hours living at ru there is not a wawa in sight here lucky you
+E1b,427,sentiment140,1,0,-2.208481092159877,FN,domain_or_context_nuance,i have my huge list and and iced mocha i am ready to go run errands it will be forever before i am home
+E1b,429,sentiment140,1,0,-2.033528414141995,FN,negated_positive_or_mixed,yes i just posted it its not very good though
+E1b,432,sentiment140,1,0,-0.9579369487411326,FN,domain_or_context_nuance,misses her boy and its only been since last night
+E1b,434,sentiment140,1,0,-0.6403096435597088,FN,negation_scope,nadal announced he is not playing wimbledon
+E1b,435,sentiment140,1,0,-5.27890110811294,FN,negation_scope,no more deathnote for me to watch
+E1b,437,sentiment140,1,0,-1.3620075640705729,FN,negation_scope,i am all alone there is nobody here beside me
+E1b,441,sentiment140,1,0,-0.8957203434396888,FN,contrastive_clause,i would totally come but i am to far away are you coming colorado
+E3,2,sentiment140,0,1,-0.11620973102348908,FP,domain_or_context_nuance,off to some more work gotta catch up
+E3,10,sentiment140,0,1,0.3618072658722702,FP,domain_or_context_nuance,i got to love those mini s too bad i have got myself a good laptop already
+E3,35,sentiment140,0,1,-0.11377402378273704,FP,contrastive_clause,not to say going to extreme is not times the route to get to that place in middle but real deal is trusting quot inner voice quot in each moment
+E3,43,sentiment140,0,1,0.04254355007683841,FP,domain_or_context_nuance,the solstice technologies web demo will be up shortly to showcase our crazy programming skills
+E3,50,sentiment140,0,1,-0.1327123825734674,FP,possible_sarcasm_or_irony,lol i need new pjs i think in dag mode at the moment
+E3,71,sentiment140,0,1,0.22637753428818974,FP,domain_or_context_nuance,anybody else who really likes the way it smells outside when it has been raining
+E3,73,sentiment140,0,1,1.033893376267981,FP,domain_or_context_nuance,can you believe my room is still tidy and shiz and i am listening to boyz ii men can u believe i missed them this weekend fuck
+E3,89,sentiment140,0,1,0.17036499191016186,FP,domain_or_context_nuance,bought robert kiyosaki s cashflow board game and is looking for people to play it with
+E3,98,sentiment140,0,1,0.9286518415328917,FP,domain_or_context_nuance,guess who caught a cold in may june shit gt lt
+E3,102,sentiment140,0,1,0.3363140836396965,FP,domain_or_context_nuance,youngest made banoffi pie as post exam therapy yesterday which makes life brighter all round
+E3,104,sentiment140,0,1,-0.02798311325618852,FP,negation_scope,double seat double seat got to find a double seat no we need to be near a door apparently
+E3,106,sentiment140,0,1,0.030090049540003383,FP,contrastive_clause,aww that is actually really cute how do u do it though u gotta have all the bois chasin after u
+E3,109,sentiment140,0,1,-0.18113408885708526,FP,short_ambiguous_text,restocking the pork rinds
+E3,112,sentiment140,0,1,0.7001935975422411,FP,domain_or_context_nuance,finally cusat join other universities by postponing exams brother celebrating here
+E3,123,sentiment140,0,1,0.3150613551656447,FP,possible_sarcasm_or_irony,bored there is nothing to do haha i think i will read
+E3,125,sentiment140,0,1,0.5292619901543956,FP,domain_or_context_nuance,spent today at the boston aquarium meeting friends and seeing up in theaters just got home and tired
+E3,128,sentiment140,0,1,0.40484699283431724,FP,domain_or_context_nuance,oh from my delicious bookmarks via facebook i am slow today
+E3,129,sentiment140,0,1,0.41781869269320215,FP,domain_or_context_nuance,oh im so back busted pc just got fixed weehoo
+E3,138,sentiment140,0,1,0.65316444601348,FP,domain_or_context_nuance,take me to cannes watch the video and tell other to watch
+E3,151,sentiment140,0,1,-0.08947678732586228,FP,domain_or_context_nuance,wow just now got back from italo s house they will probably think twice about inviting me over again
+E3,154,sentiment140,0,1,0.5838794305783896,FP,negated_positive_or_mixed,sweet good shit i was about to head back down to chicago but i prob will not go until tomorrow have a good show
+E3,184,sentiment140,0,1,0.3713790671807755,FP,domain_or_context_nuance,back in days like this i want to be by the sea
+E3,200,sentiment140,0,1,0.4703722758750757,FP,negation_scope,yes i am go burn no no i am not amp im famous coz i fucked your boyfrannn a k a mattg d digitalimpregnation
+E3,203,sentiment140,0,1,0.9656847686486278,FP,negation_scope,having a frankie valli remix kind of morning and chair dancing in the office mondays do not have to be bad
+E3,205,sentiment140,0,1,0.5939873393714956,FP,domain_or_context_nuance,miss you guys are you party hoppin
+E3,217,sentiment140,0,1,0.42244901549362357,FP,domain_or_context_nuance,lil wayne and duet i really need it to happen
+E3,226,sentiment140,0,1,1.3724103169097652,FP,short_ambiguous_text,dude seriously heeeeeeeee
+E3,241,sentiment140,0,1,-0.0909929184359708,FP,negation_scope,also just hope grannys know how to go to the speed limit of ohio not mph lower this is roller coaster state be fast zoom zoom
+E3,242,sentiment140,0,1,0.08400162371385966,FP,domain_or_context_nuance,i wish u motivation amp inspiration sis
+E3,245,sentiment140,0,1,0.00019718923331446536,FP,possible_sarcasm_or_irony,lol whats up the homie rob o said he sent some info on me
+E3,267,sentiment140,0,1,-0.1901166179328888,FP,domain_or_context_nuance,better so hot than freezing snow
+E3,268,sentiment140,0,1,0.5107655850899477,FP,negation_scope,she is a lucky girl tho can not say i am not jealous
+E3,269,sentiment140,0,1,-0.11283505527995563,FP,domain_or_context_nuance,massage monday just told my wife that now she expects me to give her a massage thanks looking to friday tho
+E3,273,sentiment140,0,1,0.20796689037600657,FP,possible_sarcasm_or_irony,i am blowing my ears out with rock music trying to keep myself awake i am actually sleepy enough to fall asleep on my keyboard haha
+E3,281,sentiment140,0,1,0.07613219654921899,FP,possible_sarcasm_or_irony,i would not know lol i stay with my babygirls i barely ever go out anymore
+E3,288,sentiment140,0,1,-0.1119898514215163,FP,domain_or_context_nuance,i will just keep wishing and dreaming
+E3,292,sentiment140,0,1,0.46347087459108605,FP,contrastive_clause,had egg and soldiers will make me ill later but damn it was good now for cappuccino
+E3,293,sentiment140,0,1,0.9143591760883212,FP,domain_or_context_nuance,youre a boring talker g night
+E3,296,sentiment140,0,1,0.06551302538855608,FP,contrastive_clause,i was but not near a pc
+E3,298,sentiment140,0,1,0.3904602132770336,FP,short_ambiguous_text,how to get a job
+E3,300,sentiment140,0,1,-0.07647704498849128,FP,domain_or_context_nuance,going to korea on the th choo choo choolbal
+E3,303,sentiment140,0,1,0.20874100472749324,FP,domain_or_context_nuance,gps tracked the last leg of my journey home the other night so accurate to the train tracks
+E3,312,sentiment140,0,1,1.2244334711720626,FP,possible_sarcasm_or_irony,if so then sick lol but my myspace computer is being homo so its not showing up for a while lol
+E3,329,sentiment140,0,1,-0.04556369835943541,FP,contrastive_clause,yes guy i stayed up to watch my man tom hanks last night he was brilliant as always but now i am really kinda tired
+E3,341,sentiment140,0,1,-0.052169088022606,FP,domain_or_context_nuance,anyy weekends u guys go home let me kno cuzz im coming with kkkkkkkkkkkkkkkbye
+E3,343,sentiment140,0,1,-0.052310277488259005,FP,negated_positive_or_mixed,i did not had enough sleep bangag i hope monday will make me feel happy and kilig again
+E3,351,sentiment140,0,1,0.0785628642583982,FP,negation_scope,well actually not even school were going to the beach swimming bowling amp crazy golf xx
+E3,354,sentiment140,0,1,-0.10617044007669396,FP,domain_or_context_nuance,yes we do i have dogs and cats
+E3,389,sentiment140,0,1,0.04498625948363,FP,domain_or_context_nuance,sitting eating ice cream whilst watching the comedy festival missing michelle
+E3,404,sentiment140,0,1,-0.13136202694960253,FP,negation_scope,main reason for not getting another dog
+E3,405,sentiment140,0,1,0.57002066003879,FP,domain_or_context_nuance,oz osbourne sues black sabbath over rights to name tony iommi feeling a little quot paranoid quot
+E3,409,sentiment140,0,1,1.3599042829188732,FP,contrastive_clause,i guard a house like i said bit dangerous maybe but nothing bad has not happend so and i do not like fighting at all d
+E3,440,sentiment140,0,1,0.6735467438018623,FP,domain_or_context_nuance,you are so lucky i wish i could go to the beeach well have fun
+E3,442,sentiment140,0,1,0.7323113956427192,FP,contrastive_clause,how was your abitur what marks did you got i got in phy and in sozi but i fucked up math with but still got
+E3,446,sentiment140,0,1,0.17838340852937096,FP,domain_or_context_nuance,he is written i have robert langdon is only in of them da vinci code angels amp demons a amp d is the only fiction
+E3,447,sentiment140,0,1,0.010588045359444687,FP,domain_or_context_nuance,so happy twitterific s bak i lead such a sad life ha
+E3,450,sentiment140,0,1,0.2745455198571489,FP,domain_or_context_nuance,i am begining to think hes a bit of a legend and im a dog person really
+E3,456,sentiment140,0,1,0.5228930758646033,FP,domain_or_context_nuance,finally has my mac back i missed you
+E3,474,sentiment140,0,1,-0.04309372092619679,FP,negation_scope,wooo ima see if i can find a torrent if not i will stream it online soo yeaaaaaah i did not know u were into anime o
+E3,479,sentiment140,0,1,-0.13628722811586136,FP,domain_or_context_nuance,phillies game today phillie phanatic birthday
+E3,504,sentiment140,0,1,0.6361654006022526,FP,contrastive_clause,i need to be working but its too nice outside
+E3,509,sentiment140,0,1,-0.17307587254444756,FP,domain_or_context_nuance,i should start backing up my list of whom i am following i have built up that list over years
+E3,514,sentiment140,0,1,0.34670786574560664,FP,domain_or_context_nuance,i wish i was the guy recording your stretch video
+E3,534,sentiment140,0,1,0.47778745842007386,FP,domain_or_context_nuance,soooo excitedd to go to chicago on sundaay
+E3,547,sentiment140,0,1,-0.17124266098825613,FP,domain_or_context_nuance,i lathered rinsed and repeated it was needed
+E3,577,sentiment140,0,1,0.8744458912121604,FP,negation_scope,i seriously do not know how there is a recession with all the money us blockheads are pumping into the economy
+E3,580,sentiment140,0,1,-0.07668693481388045,FP,domain_or_context_nuance,so i was trying to be discreet as possible and then we took the pic and i got hugs from trent ilan and jmj eeekk
+E3,590,sentiment140,0,1,0.769024100935922,FP,negation_scope,for f k sake i did not know ye were on twitter for so long should of been following ye ages ago
+E3,602,sentiment140,0,1,0.2870294859412992,FP,negation_scope,gooood day twitter it is like f and i am freeezing going to see if i can not take mom out for a late mother s day present
+E3,616,sentiment140,0,1,-0.17006471650798993,FP,domain_or_context_nuance,i was born in carmel in ca at a hospital called chomp
+E3,617,sentiment140,0,1,0.978091947181277,FP,contrastive_clause,i know years is a big difference but i guess it does not really matter if he is not interested in conversation
+E3,619,sentiment140,0,1,1.2940088709511446,FP,possible_sarcasm_or_irony,hihooo but i think i am gonna be on my granda s house haha til late so i will be here few minutes o
+E3,626,sentiment140,0,1,0.12004437519323019,FP,negation_scope,sitting around the corner and nothing to do with
+E3,631,sentiment140,0,1,-0.0853953295000277,FP,domain_or_context_nuance,awww you rock so damn hard m super grin action going on over here
+E3,650,sentiment140,0,1,0.2983665691090319,FP,negation_scope,blimey predictive text is a bugger is not it
+E3,652,sentiment140,0,1,1.6711262606910002,FP,domain_or_context_nuance,us gamestop employees feed off of it when someone comes up to the door after we are closed and tries to open it we all seriously cheer
+E3,653,sentiment140,0,1,0.8286853419379887,FP,domain_or_context_nuance,got bored on a saturday night and decided to mess around with the linux server you can listen in at
+E3,666,sentiment140,0,1,0.269290878182187,FP,domain_or_context_nuance,uf women s softball team is going to the college world series finals theyre now in the season go gators
+E3,668,sentiment140,0,1,0.543096625688102,FP,negation_scope,ok i am done ppl i will not reply to anymore bball digs its taken up my entire day so far let me get back to fashion and beauty
+E3,673,sentiment140,0,1,0.08220154798394907,FP,domain_or_context_nuance,waiting for bus back home and the song that just came on is quot you drive me crazy quot by none other than the amazing britney spears
+E3,679,sentiment140,0,1,0.3339473360772576,FP,short_ambiguous_text,is bbqing yummers
+E3,682,sentiment140,0,1,0.1709039774436446,FP,negation_scope,ohhhhhh i see well they probs will not come up on it yeah i am in the gym tooxxxxx
+E3,683,sentiment140,0,1,0.1810483952577815,FP,possible_sarcasm_or_irony,jelloooooooooo twitter is still confusing s go plurk people hahahahaha
+E3,696,sentiment140,0,1,1.0668892796135292,FP,domain_or_context_nuance,i wish fula had a nikab too
+E3,699,sentiment140,0,1,0.05104716336663029,FP,short_ambiguous_text,help me fix it rob
+E3,702,sentiment140,0,1,0.27827324237434115,FP,domain_or_context_nuance,naw gordon ramsay was so cute on the show compared to usual that is
+E3,712,sentiment140,0,1,1.5372698988191356,FP,domain_or_context_nuance,dumb tattoo starbucks mug just with starfucks instead
+E3,717,sentiment140,0,1,0.08414185373723104,FP,domain_or_context_nuance,the evil robot is coming check out and see if you can find him love suzie
+E3,721,sentiment140,0,1,-0.04935551191575227,FP,contrastive_clause,tomorrow fun going to class to get help on the final mix of a song then prov to cover a shift sleep for now though night everyone
+E3,738,sentiment140,0,1,0.316740324567367,FP,domain_or_context_nuance,missing bgt peter and i got disposable bbq and heading down the banks of the don near grandholm mills fine
+E3,744,sentiment140,0,1,1.2835682946034979,FP,negation_scope,week in the no babysitter cos gran has gone to oz house hrs hol a day from work things going not too badly think boss disagrees
+E3,753,sentiment140,0,1,0.08480263150654832,FP,domain_or_context_nuance,is busy at work in roaring amsterdam may you all have fruitful conversations on twitter
+E3,781,sentiment140,0,1,0.45122454658798716,FP,negation_scope,on my couch eating a sunkist orange in my sweats watching beetlejuice and not at all wishing i was out evrybody have fun a sway th
+E3,794,sentiment140,0,1,1.2808170840392747,FP,domain_or_context_nuance,factory ng elmer s hihihi sorry corny baka si ate ruby alam
+E3,807,sentiment140,0,1,-0.09925277317127379,FP,domain_or_context_nuance,suddenly i have become slave assistant
+E3,810,sentiment140,0,1,-0.15894934728481225,FP,contrastive_clause,setting off for the middle east now c hours total travelling time but get to see my daddy
+E3,814,sentiment140,0,1,-0.168859537919972,FP,negation_scope,can not fall asleep once again thank god i have the day off tomorrow
+E3,818,sentiment140,0,1,0.6005508546568481,FP,domain_or_context_nuance,st night in my new queen size bed all alone at that who is coming to sleep with me
+E3,821,sentiment140,0,1,0.5393190680181739,FP,domain_or_context_nuance,i want to live in this so much
+E3,831,sentiment140,0,1,0.5847964343602456,FP,negation_scope,no parade tomorrow finally a day where i can wake up late and a hour flight in the evening
+E3,841,sentiment140,0,1,0.7102276254377089,FP,possible_sarcasm_or_irony,lol ahh wish we d drove past the g car mani bant vid shoot thursday pass thru if u free
+E3,848,sentiment140,0,1,0.4311486157868558,FP,possible_sarcasm_or_irony,okay im going to upload it now if i can figure it out haha stuffy weather sucks i hope it is not stuffy until wednesday
+E3,852,sentiment140,0,1,0.34676548075164604,FP,domain_or_context_nuance,everyone around me is hitting the gym is there some kind of intangible message hidden in this
+E3,856,sentiment140,0,1,1.2819971913721457,FP,domain_or_context_nuance,musicindustry cssp u mean fragmented and ruled by gangsters
+E3,867,sentiment140,0,1,0.06292427812390133,FP,possible_sarcasm_or_irony,so what your saying is i am not cool lol but i have beer
+E3,885,sentiment140,0,1,1.4919592621642395,FP,contrastive_clause,i am not in chicago yet silly i leave friday but i do have long hair
+E3,890,sentiment140,0,1,0.3596330779013641,FP,possible_sarcasm_or_irony,and you wasted time counting my characters good thing they did not add up to the truth zomg inside job lolzors tlot
+E3,894,sentiment140,0,1,-0.047522454480209086,FP,possible_sarcasm_or_irony,there is also quot gonna fill carts up to the brims quot random outbursts of song life s hidden pleasure thanks
+E3,902,sentiment140,0,1,0.27001783842569016,FP,domain_or_context_nuance,rlfans gaz hock vickil my mom he won me
+E3,912,sentiment140,0,1,0.21089399450339064,FP,negated_positive_or_mixed,i will tell you the title though is not got nothing on me i love it when words just come to you
+E3,914,sentiment140,0,1,0.06797239810549482,FP,domain_or_context_nuance,ok guys it has been a loooong day i am out until tuesday enjoy the weekend new pink hair tomorrow
+E3,928,sentiment140,0,1,0.026491951944488945,FP,domain_or_context_nuance,keeping up with drunk girls is a lot harder then it looks got them all in bed safely
+E3,929,sentiment140,0,1,0.48820434859596085,FP,domain_or_context_nuance,must be a pretty sucky gym ill kick your ass just as soon as im better from this surgery thing eh
+E3,935,sentiment140,0,1,0.05504030080313416,FP,domain_or_context_nuance,awww now thats just plain adorable
+E3,940,sentiment140,0,1,1.1059374323757498,FP,domain_or_context_nuance,i am a late bird mariusz you from poland past noon here still morning for me
+E3,945,sentiment140,0,1,0.19539188033367993,FP,contrastive_clause,im going to try to go to sleep even though im not tired blah goodnight people lt
+E3,958,sentiment140,0,1,0.11598313463896448,FP,domain_or_context_nuance,i have to go to bed getting up early to go to the gym and then its girls day
+E3,999,sentiment140,0,1,-0.11892732383315419,FP,negation_scope,oh yummm i am definitely going to try both of those recipes i just can not get enough spinach lately
+E3,1000,sentiment140,0,1,0.32826608761508047,FP,contrastive_clause,are you trying to put on a wet t shirt contest but did you throw it in the wash before it sets in and drys
+E3,1003,sentiment140,0,1,0.806562605598834,FP,domain_or_context_nuance,just checkmated my sister with a rook just a rook fuck yes
+E3,1014,sentiment140,0,1,0.6188601096775073,FP,short_ambiguous_text,ipod died so g night
+E3,1021,sentiment140,0,1,-0.09418080426225206,FP,domain_or_context_nuance,hello i hope that you have a great day i have a lot of homework to do please come to cancun mexico for vacations
+E3,1023,sentiment140,0,1,0.3823161065520355,FP,domain_or_context_nuance,aaa pardon e sept ne july uuuuf da i feel your pain veche stiskam palci
+E3,1026,sentiment140,0,1,0.11723793155865558,FP,contrastive_clause,that sucks i like traveling for gigs though i have always wanted to go wakestock seems fun i hope you have a good time
+E3,1032,sentiment140,0,1,0.47179170763683875,FP,domain_or_context_nuance,i am a die hard fender guy and i still think is awesome
+E3,1045,sentiment140,0,1,-0.10271200293036764,FP,domain_or_context_nuance,looks like it is gonna be a sunny weekend
+E3,1049,sentiment140,0,1,0.21438563150748124,FP,negation_scope,that is the other side of rochester we will not get that much on my side of the city we are east of rochester
+E3,1074,sentiment140,0,1,0.6094812063762964,FP,negation_scope,thai websites are not supposed to rank by their own name
+E3,1102,sentiment140,0,1,0.1352579472135843,FP,contrastive_clause,mmm that could come in handy i think i need to get my carrier out of the garage first but a cyno would be handy
+E3,1110,sentiment140,0,1,0.3539313117725331,FP,domain_or_context_nuance,ugh wish i could help ya knock off some items from your list hope you sleep in tomorrow well at least til
+E3,1118,sentiment140,0,1,0.14334772294246145,FP,domain_or_context_nuance,can you please look at issue again seems like it is closed
+E3,1136,sentiment140,0,1,0.35595800681931733,FP,domain_or_context_nuance,well my lovelies time to leave this castle of knowledge premium of science to be back to the mundane city crowded tourists spots
+E3,1139,sentiment140,0,1,1.0460446821071636,FP,negation_scope,i am over my tipsyness from playing water fall with my friends it was fun i did not get fully drunk i am predicting no hangover for me
+E3,1146,sentiment140,0,1,0.6379029539495724,FP,negation_scope,damnit well i am running out the door then hope you guys do not mind i look like crap
+E3,1148,sentiment140,0,1,0.5868103850458186,FP,domain_or_context_nuance,i forgot too and it just popped into my head had to share
+E3,1153,sentiment140,0,1,0.6137977749123082,FP,negation_scope,fabulous night last night wish it never had to end
+E3,1185,sentiment140,0,1,-0.14481642960442598,FP,domain_or_context_nuance,pre has double the processing power too
+E3,1186,sentiment140,0,1,0.12691961618199643,FP,contrastive_clause,almost done packing but i am leaving the rest until tomorrow i am going to watch cars
+E3,1199,sentiment140,0,1,-0.15980699443287838,FP,domain_or_context_nuance,i need to party soooon only more days til london
+E3,1204,sentiment140,0,1,0.19648241450887227,FP,domain_or_context_nuance,just had real player installed onto my computer now i can finally listen to bbc radio at work
+E3,1210,sentiment140,0,1,0.7278222024847538,FP,negation_scope,never she is lame
+E3,1215,sentiment140,0,1,-0.16687953911129405,FP,negation_scope,never got my hsm picture pictures up on the book of faces check em out
+E3,1242,sentiment140,0,1,0.023380923443864998,FP,negation_scope,not prevent help people keep in touch cuz then everyone knows what everyone else is doing so it is like we are still in touch
+E3,1250,sentiment140,0,1,0.3550233862588623,FP,domain_or_context_nuance,i thought about the physical mixtrade group all the time today i want to join with someone
+E3,1256,sentiment140,0,1,-0.0010596812448983028,FP,negation_scope,finished with half of cooking short break and will go on i wish i were rich and had staff to do the chores not likely
+E3,1263,sentiment140,0,1,0.47806673646218223,FP,negation_scope,installed a twitter app on my ipod touch playin with it because i can not sleep
+E3,1265,sentiment140,0,1,0.31047920660766626,FP,domain_or_context_nuance,bball tourney st place exhausted and ate so much today dinner thrice
+E3,1270,sentiment140,0,1,0.01457496566616956,FP,domain_or_context_nuance,trying to figure out what to do today will probably write some letters and listen to the pcd all day
+E3,1277,sentiment140,0,1,-0.14531228759019232,FP,negation_scope,not that those last things are in any way related
+E3,1281,sentiment140,0,1,-0.17090890343659937,FP,domain_or_context_nuance,project natal i so want to get an xbox now
+E3,4,sentiment140,1,0,-1.261353825326615,FN,negated_positive_or_mixed,ct trip cancelled for now anyway not that bad i guess probably the best for now will see what next week holds
+E3,7,sentiment140,1,0,-0.4898452098616445,FN,short_ambiguous_text,pnhs baseball game then graduation
+E3,20,sentiment140,1,0,-0.3394383377372667,FN,domain_or_context_nuance,whut when you shoulda said hi
+E3,22,sentiment140,1,0,-1.1938586075272029,FN,domain_or_context_nuance,shared your smooshed glasses story with husband sometimes the only silver lining is the funny story we get from it
+E3,38,sentiment140,1,0,-0.2259980202941287,FN,negation_scope,bruna has lost nothing of the party
+E3,39,sentiment140,1,0,-0.7372642407136174,FN,domain_or_context_nuance,league club accrington stanley face a high court date on after being issued with a winding up order by hm revenue and customs
+E3,41,sentiment140,1,0,-0.6902064061133732,FN,short_ambiguous_text,iknowrite
+E3,87,sentiment140,1,0,-0.6191552661102183,FN,domain_or_context_nuance,why do ppl ignore me esp when i need them most
+E3,103,sentiment140,1,0,-1.0438575447251424,FN,negated_positive_or_mixed,not til late fall i am so jealousss ahh be safe and have the best time i will look you up when i get there xx
+E3,105,sentiment140,1,0,-0.4382834483321729,FN,domain_or_context_nuance,i really struggled writing that card
+E3,108,sentiment140,1,0,-0.5688791669666656,FN,short_ambiguous_text,wants tickets
+E3,119,sentiment140,1,0,-0.32266759630162933,FN,negation_scope,can not sleep and i meet with my trainer in the morning
+E3,132,sentiment140,1,0,-0.7377904240318736,FN,domain_or_context_nuance,i bet andy thinks i am a crazy loser
+E3,133,sentiment140,1,0,-0.7821778850408293,FN,short_ambiguous_text,wanting have some fun
+E3,144,sentiment140,1,0,-0.362284847588322,FN,possible_sarcasm_or_irony,been to doctor s had blood taken lolz
+E3,147,sentiment140,1,0,-0.9502248068289656,FN,negated_positive_or_mixed,i would love to come but i will be months pregnant in october not wise to fly to uk from holland then i guess
+E3,155,sentiment140,1,0,-0.274061016509948,FN,domain_or_context_nuance,gettin rid of invites in facebook about a to go
+E3,161,sentiment140,1,0,-0.7479416643439403,FN,possible_sarcasm_or_irony,haha touch screensare so hard to type on
+E3,174,sentiment140,1,0,-1.0253695070058022,FN,domain_or_context_nuance,ok you are still jet lagged go get some sleep dude and for the record i was also supporting the windies
+E3,180,sentiment140,1,0,-0.8020931510758408,FN,domain_or_context_nuance,i think of her while listening to this
+E3,187,sentiment140,1,0,-0.5671218108025355,FN,domain_or_context_nuance,mi hermano is settling into his new lifestyle away from us
+E3,197,sentiment140,1,0,-0.3007563083431264,FN,negated_positive_or_mixed,happy mother s day my mum already left the house before i woke up so i could not give her a hug and tell her i love her
+E3,198,sentiment140,1,0,-0.42902080654102753,FN,domain_or_context_nuance,exactly more days including today before school starts
+E3,201,sentiment140,1,0,-1.3964938437517451,FN,negated_positive_or_mixed,feeling glad i have a father to spoil today but also mmissing the best father in law in the world first one without him
+E3,208,sentiment140,1,0,-0.573956723218747,FN,domain_or_context_nuance,tired of reading the same all the day conflict of laws and more pages left let us go
+E3,220,sentiment140,1,0,-0.7986637447592773,FN,domain_or_context_nuance,re ssvsut it was stuff like this that made me drift away from the diy comm in the first place such complexes and drama
+E3,234,sentiment140,1,0,-1.114391963328443,FN,domain_or_context_nuance,stayed the same let us stick to it
+E3,237,sentiment140,1,0,-1.1227007284030268,FN,negated_positive_or_mixed,he even do not dance today but we are going to dance tomorrow well i will need more good luck hehe luck luck luck good luck
+E3,254,sentiment140,1,0,-1.1646186598673527,FN,short_ambiguous_text,times like a million
+E3,266,sentiment140,1,0,-0.90083866452973,FN,domain_or_context_nuance,hey from soccer player to player any good words of advice after being cut from the same competitive team after years
+E3,272,sentiment140,1,0,-0.7780900974090857,FN,short_ambiguous_text,use seesmic desktop instead
+E3,274,sentiment140,1,0,-0.545966022293202,FN,negation_scope,i was not asked
+E3,276,sentiment140,1,0,-0.8932468750669922,FN,short_ambiguous_text,fine babe just ignore me
+E3,277,sentiment140,1,0,-0.7934702399372708,FN,negation_scope,you do not miss me
+E3,283,sentiment140,1,0,-0.19183296178329295,FN,domain_or_context_nuance,ya it is watched more quot insider quot commentary yesterday radio transcripts and makes zero sense i dunno raining
+E3,285,sentiment140,1,0,-0.7230085824885242,FN,domain_or_context_nuance,hanging out with david s family waiting for the end
+E3,286,sentiment140,1,0,-0.6930495109472988,FN,domain_or_context_nuance,yeah i am figuring that out
+E3,291,sentiment140,1,0,-0.771469108569369,FN,negation_scope,do not forget about meeee
+E3,302,sentiment140,1,0,-0.5403993783910398,FN,negated_positive_or_mixed,my morning is not starting off well what a great saturday morning
+E3,306,sentiment140,1,0,-0.7869916374989223,FN,contrastive_clause,working but at least it is at a sex toy store
+E3,307,sentiment140,1,0,-0.4121758039703829,FN,domain_or_context_nuance,am back at work on tuesday fly home monday
+E3,317,sentiment140,1,0,-0.5132943192026016,FN,domain_or_context_nuance,must have been the chirping birds distracting me
+E3,318,sentiment140,1,0,-0.4549842717674639,FN,contrastive_clause,thank you but that is a luxury right now how is your moving coming along
+E3,337,sentiment140,1,0,-0.19661865835109998,FN,short_ambiguous_text,i want kisses too
+E3,342,sentiment140,1,0,-0.4553938281848231,FN,negated_positive_or_mixed,great the outlets are not working on the train
+E3,358,sentiment140,1,0,-0.886213181661875,FN,negation_scope,first weekend without any hockey excitement all we have now are the pirates
+E3,364,sentiment140,1,0,-0.32341377114910075,FN,negation_scope,you on ff cuz no one noticed that i am there
+E3,373,sentiment140,1,0,-0.6581933598113094,FN,possible_sarcasm_or_irony,im done workkkkk thank god but i have no lady chill wit lol
+E3,376,sentiment140,1,0,-1.3546299264193618,FN,domain_or_context_nuance,gonna check if there is anything good giving on tv i need major distractions right now
+E3,379,sentiment140,1,0,-0.48616534732713534,FN,domain_or_context_nuance,thinking of everyone involved with af hoping for some miraculous news fear of flying officially heightened
+E3,392,sentiment140,1,0,-0.4690565490149992,FN,negation_scope,animal kingdom and the studios today without sam she is on her way home
+E3,396,sentiment140,1,0,-0.2946700681766074,FN,domain_or_context_nuance,walking pooches some daft bat is firing a gun my babies are scared
+E3,427,sentiment140,1,0,-0.5865239749999444,FN,domain_or_context_nuance,i have my huge list and and iced mocha i am ready to go run errands it will be forever before i am home
+E3,448,sentiment140,1,0,-0.25171105865085774,FN,domain_or_context_nuance,almost done with all the futurama episodes now i have to wait for the brilliant new season in
+E3,451,sentiment140,1,0,-1.1450932263716678,FN,domain_or_context_nuance,i felt the very same way this morning
+E3,460,sentiment140,1,0,-0.41758479573916196,FN,negation_scope,no work getting bored
+E3,461,sentiment140,1,0,-0.3362299706945415,FN,contrastive_clause,thanks but i am the last person in america w o facebook
+E3,463,sentiment140,1,0,-1.0490608823414531,FN,domain_or_context_nuance,i forget about you twitter i do
+E3,468,sentiment140,1,0,-0.25856556489041765,FN,domain_or_context_nuance,glad you like it too i just miss her doing comedy
+E3,470,sentiment140,1,0,-0.2751268083872188,FN,domain_or_context_nuance,we are going to be in san fran until the th
+E3,476,sentiment140,1,0,-0.6699976400900586,FN,domain_or_context_nuance,ber happy now that pauls home was only one weekend so god knows how i am gonna be when he is away for months
+E3,488,sentiment140,1,0,-0.1997865144573711,FN,domain_or_context_nuance,im sitting on the floor filled with enthusiasm i was being sarcastic uh oh i have got the sat s on th th may
+E3,494,sentiment140,1,0,-0.5965267711396542,FN,contrastive_clause,is at home watching videos on youtube it is all good school tomorrow though
+E3,517,sentiment140,1,0,-1.7955799764629603,FN,domain_or_context_nuance,wanted seith rogan and james franco to win best fight rob pattinson looks good thought
+E3,521,sentiment140,1,0,-0.3561841246584999,FN,domain_or_context_nuance,yeah i been thinking about that alot
+E3,530,sentiment140,1,0,-0.19398382236698208,FN,domain_or_context_nuance,i had a few beautiful days with my fianc marc now it is time to pack my bags need to go on a medical care rehab for rheumatoid arthritis
+E3,541,sentiment140,1,0,-0.2689876173113367,FN,domain_or_context_nuance,i think i am on my rd popsicle pain pain go awayyyy watching royal pains usa s new summer show love it
+E3,553,sentiment140,1,0,-0.6466051480846615,FN,domain_or_context_nuance,nataliee i love you and still have your bday gift i must see you soon
+E3,554,sentiment140,1,0,-0.3256579660261406,FN,domain_or_context_nuance,my mommy says i twitter too much
+E3,571,sentiment140,1,0,-0.5388102066260273,FN,domain_or_context_nuance,your new camera makes you look great goooood lip colour is that the its so bright on me scared to wear it
+E3,573,sentiment140,1,0,-0.19521994520553515,FN,contrastive_clause,that is what i thought too but it is def changing image size amp ratios
+E3,578,sentiment140,1,0,-0.19959837679716108,FN,contrastive_clause,finally getting some sleep been up for over hours ugh good times though
+E3,584,sentiment140,1,0,-0.689118883003708,FN,negation_scope,almost done work for the day can not wait to crawl into bed the coffee kicked in and then wore off within minutes
+E3,603,sentiment140,1,0,-0.29980929168791726,FN,negation_scope,you should not leave rio today
+E3,648,sentiment140,1,0,-0.8499463631117186,FN,possible_sarcasm_or_irony,out in gordon walks to party haha i wish
+E3,651,sentiment140,1,0,-0.9552464666294227,FN,domain_or_context_nuance,for those doing the top someone tumblr the rules i completely forgot them aha
+E3,660,sentiment140,1,0,-2.2825416193140837,FN,domain_or_context_nuance,thanks bree good to know a scottish accent is more important to you than me
+E3,669,sentiment140,1,0,-1.1232236782631997,FN,domain_or_context_nuance,is completely out of bookshelf real estate
+E3,676,sentiment140,1,0,-0.7977468533746689,FN,contrastive_clause,he is not like that ok he is but he is intelligent too and funny
+E3,681,sentiment140,1,0,-0.5261669654298677,FN,short_ambiguous_text,in what way
+E3,703,sentiment140,1,0,-1.0904844628489812,FN,domain_or_context_nuance,good morning i am glad you made it thru yest amp the results r good its nice be put out for it i was amp peed on them
+E3,707,sentiment140,1,0,-0.2630929682988201,FN,domain_or_context_nuance,i start up fm as usual play a day and a message comes up saying my best player has joined barcelona
+E3,725,sentiment140,1,0,-1.0997900876771607,FN,domain_or_context_nuance,of course this would be a lot better for me if i could actually eat ice cream these days
+E3,728,sentiment140,1,0,-0.4006563941573962,FN,domain_or_context_nuance,standing at wtc ground zero in nyc
+E3,745,sentiment140,1,0,-0.6902064061133732,FN,short_ambiguous_text,gutting
+E3,748,sentiment140,1,0,-0.7447498219737257,FN,short_ambiguous_text,be quiet
+E3,765,sentiment140,1,0,-0.6715188472314416,FN,domain_or_context_nuance,just woke up from a nap waiting for best friend to come home from working out dinner then back to dewitt
+E3,772,sentiment140,1,0,-0.37173273685044694,FN,contrastive_clause,also aggravating to know they can make oldschool vkei in parody but we struggle to try
+E3,782,sentiment140,1,0,-0.8552884307372364,FN,possible_sarcasm_or_irony,bullcraap i could be a possible feat on your songs amp you can not speak your friend makes an effort lol
+E3,791,sentiment140,1,0,-0.23594310783592348,FN,short_ambiguous_text,well i am outta ideas
+E3,806,sentiment140,1,0,-0.33148963731693754,FN,domain_or_context_nuance,screw you i have gone to bed to sulk
+E3,811,sentiment140,1,0,-1.417002158784022,FN,possible_sarcasm_or_irony,yeah for sure but at some point say at build time you will have to generate that xml so that wave picks it up
+E3,817,sentiment140,1,0,-0.6251930214311281,FN,negated_positive_or_mixed,well mmmm yes today i am happy but i need to study not is a problem buut
+E3,826,sentiment140,1,0,-0.3592622463325703,FN,domain_or_context_nuance,reading up on mexican marketing company for illustration in magazine and it is sunny outside
+E3,834,sentiment140,1,0,-0.28435452339386597,FN,domain_or_context_nuance,nearly hours later i am actually going to bed now p s i am screwed
+E3,837,sentiment140,1,0,-0.3314550435899898,FN,short_ambiguous_text,naw milo he was famous
+E3,850,sentiment140,1,0,-0.950390711214004,FN,domain_or_context_nuance,i just hope i could hang out with you someday kina
+E3,869,sentiment140,1,0,-0.6566048707763051,FN,short_ambiguous_text,am i a twitter whore
+E3,871,sentiment140,1,0,-1.7472952184577302,FN,negated_positive_or_mixed,without houston it is home all the people i love the most are here
+E3,878,sentiment140,1,0,-0.7775467723240438,FN,domain_or_context_nuance,who is that girl singin on rick ross valley of death she sound like old mary
+E3,898,sentiment140,1,0,-1.051166176238298,FN,domain_or_context_nuance,is on twitter woot woot day off today was great back to the grind tomoz
+E3,915,sentiment140,1,0,-0.7885186322947825,FN,domain_or_context_nuance,those lucky bitches they get to see you all
+E3,923,sentiment140,1,0,-0.24966828540366193,FN,domain_or_context_nuance,days amp exams left i can do it i hope
+E3,926,sentiment140,1,0,-0.3309954525810635,FN,domain_or_context_nuance,ive had heart pains for two days straight uhg why
+E3,946,sentiment140,1,0,-1.7594331578371507,FN,short_ambiguous_text,leaving stage best concert ever
+E3,972,sentiment140,1,0,-0.2949154974136619,FN,short_ambiguous_text,shelly got a ticket
+E3,986,sentiment140,1,0,-0.47792616138965993,FN,contrastive_clause,i have to do lot of works but where i can start it xd
+E3,988,sentiment140,1,0,-0.22571597578326258,FN,domain_or_context_nuance,ambienteer server problems ongoing i think a new host is required wordpress has been hacked repeatedly by cn domains fixing asap
+E3,1011,sentiment140,1,0,-0.5132942686900211,FN,domain_or_context_nuance,take a we are all wondering
+E3,1048,sentiment140,1,0,-0.5354236370990464,FN,domain_or_context_nuance,g night twitter world off to do some graduation goodbye gift buying tomorrow
+E3,1067,sentiment140,1,0,-0.8073303295894364,FN,domain_or_context_nuance,awwww that is like amost suicide worthy
+E3,1084,sentiment140,1,0,-0.26487076716542446,FN,domain_or_context_nuance,still in my jammies chillaxin watchinn shipwrecked the letters from home always make me cryy
+E3,1087,sentiment140,1,0,-0.7334330288702826,FN,short_ambiguous_text,and the music was unpluged
+E3,1099,sentiment140,1,0,-0.8929594265303464,FN,possible_sarcasm_or_irony,do not cryyyy think about other stuff like how happy you will make people be we are the one s who should cry i am sure i will cry
+E3,1106,sentiment140,1,0,-0.4082759796632287,FN,domain_or_context_nuance,seems like the end of project
+E3,1108,sentiment140,1,0,-1.2644885965458645,FN,domain_or_context_nuance,try to have a good day
+E3,1116,sentiment140,1,0,-0.41458083752672314,FN,domain_or_context_nuance,i sang at church this morning and due to some excedrine i took earlier in the day i shook the whole time
+E3,1154,sentiment140,1,0,-0.4534089431932755,FN,negation_scope,blarg yeah not by choice
+E3,1165,sentiment140,1,0,-0.36574587962342575,FN,domain_or_context_nuance,going to sleep even tho i know that some people are lucky enough to watch the mtv video music awards
+E3,1166,sentiment140,1,0,-0.2519281589692458,FN,domain_or_context_nuance,i realized that i was cooking something now its charred charred food anyone
+E3,1168,sentiment140,1,0,-0.8703228819193948,FN,short_ambiguous_text,plz i want fun ranch
+E3,1179,sentiment140,1,0,-0.29708858917099656,FN,negation_scope,took me a while to figure out you were not talking about a cmsbootcamp oh dear
+E3,1187,sentiment140,1,0,-0.31172970342557427,FN,domain_or_context_nuance,my cousin ask me if i have a problem because im so quiet daw
+E3,1201,sentiment140,1,0,-0.3413434407932435,FN,negation_scope,you answered it and i could not hear you well enough
+E3,1205,sentiment140,1,0,-0.43036967229412254,FN,negation_scope,get me an iphone too while you are there i can not afford one
+E3,1219,sentiment140,1,0,-0.6010036425008669,FN,domain_or_context_nuance,i was totally thinking about you when i brought that up
+E3,1225,sentiment140,1,0,-0.7188899299789476,FN,domain_or_context_nuance,thanks to cab made my train whew on to work
+E3,1231,sentiment140,1,0,-0.9639691922289741,FN,domain_or_context_nuance,seeing your movie and the theatre funked it up
+E3,1258,sentiment140,1,0,-1.0350842081189509,FN,contrastive_clause,oww no but i would like to tell something about germany i bet is very cool there
+E3,1259,sentiment140,1,0,-0.5335284902551695,FN,domain_or_context_nuance,they wanted eight bucks for one at this faire
+E3,1269,sentiment140,1,0,-0.6991131569023689,FN,contrastive_clause,pak agreed send those named in mumbai attacks india but they catch amp let go on certain quot evidence quot what will home amp mea do just cry
+E3,1273,sentiment140,1,0,-0.351246531647288,FN,negation_scope,and nothing
+E3,1275,sentiment140,1,0,-0.21586045130574416,FN,domain_or_context_nuance,cheese can be such a bitch on the belly owie
+E3,1300,sentiment140,1,0,-0.2848896180553202,FN,short_ambiguous_text,hurricane season on south beach
+E3,1301,sentiment140,1,0,-0.8040755678912219,FN,short_ambiguous_text,or maybe seeing me
+E3,1335,sentiment140,1,0,-0.3122978751961965,FN,possible_sarcasm_or_irony,stinky lol im cranky tonight i know
+E3,1346,sentiment140,1,0,-0.4841314242751961,FN,domain_or_context_nuance,aww with a name like that i was expecting more
+E3,1348,sentiment140,1,0,-0.3765590475825843,FN,domain_or_context_nuance,you may want to keep both helis in case you are fixing one and waiting on parts
+E3,1365,sentiment140,1,0,-0.45179474060481084,FN,domain_or_context_nuance,i was voted out of the leadership role last week and put on suspension after my quot san diego whale vagina quot incident
+E3,1387,sentiment140,1,0,-0.9463523774055043,FN,contrastive_clause,not yet amp i also been very slack and not replied to your email yet either will def have a look as it sounds cool thx for link
+E3,1391,sentiment140,1,0,-0.942461276305878,FN,domain_or_context_nuance,i miss my favorite kitty i need a better phone to tweet from sendcancelmoneynow ps thx for the follow friday lt
+E3,1394,sentiment140,1,0,-0.3742237011041373,FN,domain_or_context_nuance,dc metro train collision on the red line one fatality thus far
+E3,1395,sentiment140,1,0,-0.34204370081551816,FN,negation_scope,is it just me or is life getting more n more happening towards d end of ma deg and i can not participate in the happenings
+E3,1398,sentiment140,1,0,-0.4816276448354721,FN,domain_or_context_nuance,i would love some lg m right about now
+E3,1400,sentiment140,1,0,-0.7474415228573967,FN,short_ambiguous_text,sundays is kind off boring
+E3,1401,sentiment140,1,0,-0.8208486406546933,FN,domain_or_context_nuance,grand prize is a quot us quot apple store gift certificate check the quotes else i did it myself
+E3,1424,sentiment140,1,0,-0.360173072496016,FN,domain_or_context_nuance,how was work last night anyway
+E3,1429,sentiment140,1,0,-0.2720109999073676,FN,domain_or_context_nuance,as i think about the reality of leaving my job and going into something new and unknown i am nervous and all i have done is write my resume
+E3,1430,sentiment140,1,0,-0.4644695529313882,FN,contrastive_clause,the people of iran mousavi would ve won with over of the votes if it had been a fair election but they cheated
+E3,1431,sentiment140,1,0,-0.31558281313302716,FN,domain_or_context_nuance,right i clicked on that ish quick waaaay too much goin on too many mics open i want those secs of my life back
+E5b,2,sentiment140,0,1,-0.11620973102348908,FP,domain_or_context_nuance,off to some more work gotta catch up
+E5b,10,sentiment140,0,1,0.3618072658722702,FP,domain_or_context_nuance,i got to love those mini s too bad i have got myself a good laptop already
+E5b,35,sentiment140,0,1,-0.11377402378273704,FP,contrastive_clause,not to say going to extreme is not times the route to get to that place in middle but real deal is trusting quot inner voice quot in each moment
+E5b,43,sentiment140,0,1,0.04254355007683841,FP,domain_or_context_nuance,the solstice technologies web demo will be up shortly to showcase our crazy programming skills
+E5b,50,sentiment140,0,1,-0.1327123825734674,FP,possible_sarcasm_or_irony,lol i need new pjs i think in dag mode at the moment
+E5b,70,sentiment140,0,1,-0.37283360582586267,FP,domain_or_context_nuance,on a better note brian lifted my spirits and pulled me out on the dance floor what a sweetheart
+E5b,71,sentiment140,0,1,0.22637753428818974,FP,domain_or_context_nuance,anybody else who really likes the way it smells outside when it has been raining
+E5b,73,sentiment140,0,1,1.033893376267981,FP,domain_or_context_nuance,can you believe my room is still tidy and shiz and i am listening to boyz ii men can u believe i missed them this weekend fuck
+E5b,89,sentiment140,0,1,0.17036499191016186,FP,domain_or_context_nuance,bought robert kiyosaki s cashflow board game and is looking for people to play it with
+E5b,93,sentiment140,0,1,-0.40569005298064076,FP,short_ambiguous_text,will be volunteering tomorrow
+E5b,95,sentiment140,0,1,-0.389625280817108,FP,negation_scope,just walked in on my bro in the bath massaging his shoulders with shampoo quot stop wasting shampoo quot quot no no it says head and shoulders quot
+E5b,98,sentiment140,0,1,0.9286518415328917,FP,domain_or_context_nuance,guess who caught a cold in may june shit gt lt
+E5b,102,sentiment140,0,1,0.3363140836396965,FP,domain_or_context_nuance,youngest made banoffi pie as post exam therapy yesterday which makes life brighter all round
+E5b,104,sentiment140,0,1,-0.02798311325618852,FP,negation_scope,double seat double seat got to find a double seat no we need to be near a door apparently
+E5b,106,sentiment140,0,1,0.030090049540003383,FP,contrastive_clause,aww that is actually really cute how do u do it though u gotta have all the bois chasin after u
+E5b,109,sentiment140,0,1,-0.18113408885708526,FP,short_ambiguous_text,restocking the pork rinds
+E5b,112,sentiment140,0,1,0.7001935975422411,FP,domain_or_context_nuance,finally cusat join other universities by postponing exams brother celebrating here
+E5b,115,sentiment140,0,1,-0.2920522406553862,FP,domain_or_context_nuance,new kittens in too two little ladies looking for their forever home once check is finished
+E5b,123,sentiment140,0,1,0.3150613551656447,FP,possible_sarcasm_or_irony,bored there is nothing to do haha i think i will read
+E5b,125,sentiment140,0,1,0.5292619901543956,FP,domain_or_context_nuance,spent today at the boston aquarium meeting friends and seeing up in theaters just got home and tired
+E5b,126,sentiment140,0,1,-0.20087462934967715,FP,domain_or_context_nuance,i believe in spreading god s word and one of those words for me is jif
+E5b,128,sentiment140,0,1,0.40484699283431724,FP,domain_or_context_nuance,oh from my delicious bookmarks via facebook i am slow today
+E5b,129,sentiment140,0,1,0.41781869269320215,FP,domain_or_context_nuance,oh im so back busted pc just got fixed weehoo
+E5b,138,sentiment140,0,1,0.65316444601348,FP,domain_or_context_nuance,take me to cannes watch the video and tell other to watch
+E5b,151,sentiment140,0,1,-0.08947678732586228,FP,domain_or_context_nuance,wow just now got back from italo s house they will probably think twice about inviting me over again
+E5b,154,sentiment140,0,1,0.5838794305783896,FP,negated_positive_or_mixed,sweet good shit i was about to head back down to chicago but i prob will not go until tomorrow have a good show
+E5b,159,sentiment140,0,1,-0.3008826711168674,FP,domain_or_context_nuance,rise and shine give god the glory i used to hate to hear that early in the morning before church happy sunday yall
+E5b,163,sentiment140,0,1,-0.3874331864709817,FP,possible_sarcasm_or_irony,haha it is defo sold out we reserve tiks for our friends and family
+E5b,184,sentiment140,0,1,0.3713790671807755,FP,domain_or_context_nuance,back in days like this i want to be by the sea
+E5b,188,sentiment140,0,1,-0.3334963470724517,FP,negation_scope,he said quot like you can not walk well because of the baby quot jeez
+E5b,200,sentiment140,0,1,0.4703722758750757,FP,negation_scope,yes i am go burn no no i am not amp im famous coz i fucked your boyfrannn a k a mattg d digitalimpregnation
+E5b,202,sentiment140,0,1,-0.38922828073988625,FP,negation_scope,im not buggin out u did something to my sis i been live all night its okay i still heart u anyways dork
+E5b,203,sentiment140,0,1,0.9656847686486278,FP,negation_scope,having a frankie valli remix kind of morning and chair dancing in the office mondays do not have to be bad
+E5b,205,sentiment140,0,1,0.5939873393714956,FP,domain_or_context_nuance,miss you guys are you party hoppin
+E5b,214,sentiment140,0,1,-0.37547707486421655,FP,domain_or_context_nuance,eating hot chips that i bought home from work mmm chicken salt
+E5b,217,sentiment140,0,1,0.42244901549362357,FP,domain_or_context_nuance,lil wayne and duet i really need it to happen
+E5b,218,sentiment140,0,1,-0.23206313889440816,FP,contrastive_clause,says however hyperdrive mind lots of ideas so if i can remember them all i will write em down and hopefu
+E5b,226,sentiment140,0,1,1.3724103169097652,FP,short_ambiguous_text,dude seriously heeeeeeeee
+E5b,241,sentiment140,0,1,-0.0909929184359708,FP,negation_scope,also just hope grannys know how to go to the speed limit of ohio not mph lower this is roller coaster state be fast zoom zoom
+E5b,242,sentiment140,0,1,0.08400162371385966,FP,domain_or_context_nuance,i wish u motivation amp inspiration sis
+E5b,245,sentiment140,0,1,0.00019718923331446536,FP,possible_sarcasm_or_irony,lol whats up the homie rob o said he sent some info on me
+E5b,250,sentiment140,0,1,-0.3684917918857504,FP,domain_or_context_nuance,i am going now had such a good week so far bye twitterland x
+E5b,260,sentiment140,0,1,-0.335373334967599,FP,domain_or_context_nuance,is up hope its another scorcher
+E5b,261,sentiment140,0,1,-0.36025366231265216,FP,domain_or_context_nuance,japan echo an interactive journal of informed opinion is the boss there
+E5b,267,sentiment140,0,1,-0.1901166179328888,FP,domain_or_context_nuance,better so hot than freezing snow
+E5b,268,sentiment140,0,1,0.5107655850899477,FP,negation_scope,she is a lucky girl tho can not say i am not jealous
+E5b,269,sentiment140,0,1,-0.11283505527995563,FP,domain_or_context_nuance,massage monday just told my wife that now she expects me to give her a massage thanks looking to friday tho
+E5b,273,sentiment140,0,1,0.20796689037600657,FP,possible_sarcasm_or_irony,i am blowing my ears out with rock music trying to keep myself awake i am actually sleepy enough to fall asleep on my keyboard haha
+E5b,281,sentiment140,0,1,0.07613219654921899,FP,possible_sarcasm_or_irony,i would not know lol i stay with my babygirls i barely ever go out anymore
+E5b,288,sentiment140,0,1,-0.1119898514215163,FP,domain_or_context_nuance,i will just keep wishing and dreaming
+E5b,292,sentiment140,0,1,0.46347087459108605,FP,contrastive_clause,had egg and soldiers will make me ill later but damn it was good now for cappuccino
+E5b,293,sentiment140,0,1,0.9143591760883212,FP,domain_or_context_nuance,youre a boring talker g night
+E5b,296,sentiment140,0,1,0.06551302538855608,FP,contrastive_clause,i was but not near a pc
+E5b,298,sentiment140,0,1,0.3904602132770336,FP,short_ambiguous_text,how to get a job
+E5b,300,sentiment140,0,1,-0.07647704498849128,FP,domain_or_context_nuance,going to korea on the th choo choo choolbal
+E5b,303,sentiment140,0,1,0.20874100472749324,FP,domain_or_context_nuance,gps tracked the last leg of my journey home the other night so accurate to the train tracks
+E5b,311,sentiment140,0,1,-0.3715536332797954,FP,domain_or_context_nuance,hey must be late for you hope your slide into tuesday is a good one
+E5b,312,sentiment140,0,1,1.2244334711720626,FP,possible_sarcasm_or_irony,if so then sick lol but my myspace computer is being homo so its not showing up for a while lol
+E5b,329,sentiment140,0,1,-0.04556369835943541,FP,contrastive_clause,yes guy i stayed up to watch my man tom hanks last night he was brilliant as always but now i am really kinda tired
+E5b,341,sentiment140,0,1,-0.052169088022606,FP,domain_or_context_nuance,anyy weekends u guys go home let me kno cuzz im coming with kkkkkkkkkkkkkkkbye
+E5b,343,sentiment140,0,1,-0.052310277488259005,FP,negated_positive_or_mixed,i did not had enough sleep bangag i hope monday will make me feel happy and kilig again
+E5b,351,sentiment140,0,1,0.0785628642583982,FP,negation_scope,well actually not even school were going to the beach swimming bowling amp crazy golf xx
+E5b,354,sentiment140,0,1,-0.10617044007669396,FP,domain_or_context_nuance,yes we do i have dogs and cats
+E5b,370,sentiment140,0,1,-0.2803506358573484,FP,negated_positive_or_mixed,had an awesome day today sooo happy to see my uncle again can not wait to see my friends tomorrow but not looking forward to school
+E5b,377,sentiment140,0,1,-0.32873674358750904,FP,contrastive_clause,i did not win the jet ski yesterday but i was this close it was fun
+E5b,383,sentiment140,0,1,-0.2504985488032542,FP,domain_or_context_nuance,this is a decent hour its am here ohyeswedid
+E5b,389,sentiment140,0,1,0.04498625948363,FP,domain_or_context_nuance,sitting eating ice cream whilst watching the comedy festival missing michelle
+E5b,404,sentiment140,0,1,-0.13136202694960253,FP,negation_scope,main reason for not getting another dog
+E5b,405,sentiment140,0,1,0.57002066003879,FP,domain_or_context_nuance,oz osbourne sues black sabbath over rights to name tony iommi feeling a little quot paranoid quot
+E5b,409,sentiment140,0,1,1.3599042829188732,FP,contrastive_clause,i guard a house like i said bit dangerous maybe but nothing bad has not happend so and i do not like fighting at all d
+E5b,415,sentiment140,0,1,-0.36021677294420007,FP,possible_sarcasm_or_irony,haha i do it all the time and do not feel nada every click gives me liberation
+E5b,418,sentiment140,0,1,-0.3654504313272006,FP,possible_sarcasm_or_irony,not a morning person lol ahhhh nastey weather so much for going out yum chinese nyt
+E5b,440,sentiment140,0,1,0.6735467438018623,FP,domain_or_context_nuance,you are so lucky i wish i could go to the beeach well have fun
+E5b,442,sentiment140,0,1,0.7323113956427192,FP,contrastive_clause,how was your abitur what marks did you got i got in phy and in sozi but i fucked up math with but still got
+E5b,446,sentiment140,0,1,0.17838340852937096,FP,domain_or_context_nuance,he is written i have robert langdon is only in of them da vinci code angels amp demons a amp d is the only fiction
+E5b,447,sentiment140,0,1,0.010588045359444687,FP,domain_or_context_nuance,so happy twitterific s bak i lead such a sad life ha
+E5b,450,sentiment140,0,1,0.2745455198571489,FP,domain_or_context_nuance,i am begining to think hes a bit of a legend and im a dog person really
+E5b,456,sentiment140,0,1,0.5228930758646033,FP,domain_or_context_nuance,finally has my mac back i missed you
+E5b,457,sentiment140,0,1,-0.27942347850994853,FP,domain_or_context_nuance,is at bar having a diddy
+E5b,474,sentiment140,0,1,-0.04309372092619679,FP,negation_scope,wooo ima see if i can find a torrent if not i will stream it online soo yeaaaaaah i did not know u were into anime o
+E5b,479,sentiment140,0,1,-0.13628722811586136,FP,domain_or_context_nuance,phillies game today phillie phanatic birthday
+E5b,481,sentiment140,0,1,-0.255685877703653,FP,domain_or_context_nuance,send suggestion to finance minister of nepal babu ram battarai at his gmail bhattaraibaburam at gmail com
+E5b,501,sentiment140,0,1,-0.3168098004188795,FP,domain_or_context_nuance,just finished a text art lp using leaves
+E5b,504,sentiment140,0,1,0.6361654006022526,FP,contrastive_clause,i need to be working but its too nice outside
+E5b,505,sentiment140,0,1,-0.3841631234488086,FP,domain_or_context_nuance,ahhh i feel so so so fresh
+E5b,509,sentiment140,0,1,-0.17307587254444756,FP,domain_or_context_nuance,i should start backing up my list of whom i am following i have built up that list over years
+E5b,514,sentiment140,0,1,0.34670786574560664,FP,domain_or_context_nuance,i wish i was the guy recording your stretch video
+E5b,519,sentiment140,0,1,-0.29149600636086526,FP,domain_or_context_nuance,hmmm well maybe i should feed her soon then
+E5b,534,sentiment140,0,1,0.47778745842007386,FP,domain_or_context_nuance,soooo excitedd to go to chicago on sundaay
+E5b,539,sentiment140,0,1,-0.30436409070196535,FP,domain_or_context_nuance,quot design milkshake de shtroumpf quot c est assez a
+E5b,547,sentiment140,0,1,-0.17124266098825613,FP,domain_or_context_nuance,i lathered rinsed and repeated it was needed
+E5b,560,sentiment140,0,1,-0.33518772031785615,FP,domain_or_context_nuance,i am into it what else
+E5b,563,sentiment140,0,1,-0.2565046692031626,FP,domain_or_context_nuance,hehe i used to work in hobbycraft so i know that feeling at least your job relates to what you love doing
+E5b,570,sentiment140,0,1,-0.39506275412055963,FP,domain_or_context_nuance,oooooh i just found out the best news of all i get to eat cake i am in doggie heaven mmmm can taste the cream now
+E5b,577,sentiment140,0,1,0.8744458912121604,FP,negation_scope,i seriously do not know how there is a recession with all the money us blockheads are pumping into the economy
+E5b,580,sentiment140,0,1,-0.07668693481388045,FP,domain_or_context_nuance,so i was trying to be discreet as possible and then we took the pic and i got hugs from trent ilan and jmj eeekk
+E5b,590,sentiment140,0,1,0.769024100935922,FP,negation_scope,for f k sake i did not know ye were on twitter for so long should of been following ye ages ago
+E5b,602,sentiment140,0,1,0.2870294859412992,FP,negation_scope,gooood day twitter it is like f and i am freeezing going to see if i can not take mom out for a late mother s day present
+E5b,616,sentiment140,0,1,-0.17006471650798993,FP,domain_or_context_nuance,i was born in carmel in ca at a hospital called chomp
+E5b,617,sentiment140,0,1,0.978091947181277,FP,contrastive_clause,i know years is a big difference but i guess it does not really matter if he is not interested in conversation
+E5b,618,sentiment140,0,1,-0.3858948594891943,FP,domain_or_context_nuance,hanging with my best friend giving each other makeovers and watching camp rock
+E5b,619,sentiment140,0,1,1.2940088709511446,FP,possible_sarcasm_or_irony,hihooo but i think i am gonna be on my granda s house haha til late so i will be here few minutes o
+E5b,626,sentiment140,0,1,0.12004437519323019,FP,negation_scope,sitting around the corner and nothing to do with
+E5b,630,sentiment140,0,1,-0.23348095681386938,FP,short_ambiguous_text,get it on t rex
+E5b,631,sentiment140,0,1,-0.0853953295000277,FP,domain_or_context_nuance,awww you rock so damn hard m super grin action going on over here
+E5b,650,sentiment140,0,1,0.2983665691090319,FP,negation_scope,blimey predictive text is a bugger is not it
+E5b,652,sentiment140,0,1,1.6711262606910002,FP,domain_or_context_nuance,us gamestop employees feed off of it when someone comes up to the door after we are closed and tries to open it we all seriously cheer
+E5b,653,sentiment140,0,1,0.8286853419379887,FP,domain_or_context_nuance,got bored on a saturday night and decided to mess around with the linux server you can listen in at
+E5b,664,sentiment140,0,1,-0.27559519140750854,FP,possible_sarcasm_or_irony,whatever you choose i am sure it will be great just promise no malaguena carmen or swan lake haha im sick of those
+E5b,666,sentiment140,0,1,0.269290878182187,FP,domain_or_context_nuance,uf women s softball team is going to the college world series finals theyre now in the season go gators
+E5b,668,sentiment140,0,1,0.543096625688102,FP,negation_scope,ok i am done ppl i will not reply to anymore bball digs its taken up my entire day so far let me get back to fashion and beauty
+E5b,673,sentiment140,0,1,0.08220154798394907,FP,domain_or_context_nuance,waiting for bus back home and the song that just came on is quot you drive me crazy quot by none other than the amazing britney spears
+E5b,679,sentiment140,0,1,0.3339473360772576,FP,short_ambiguous_text,is bbqing yummers
+E5b,682,sentiment140,0,1,0.1709039774436446,FP,negation_scope,ohhhhhh i see well they probs will not come up on it yeah i am in the gym tooxxxxx
+E5b,683,sentiment140,0,1,0.1810483952577815,FP,possible_sarcasm_or_irony,jelloooooooooo twitter is still confusing s go plurk people hahahahaha
+E5b,688,sentiment140,0,1,-0.2774761951491902,FP,domain_or_context_nuance,is trippin out kikilp is out with me and im definitely loving it aww i missed her hehe
+E5b,696,sentiment140,0,1,1.0668892796135292,FP,domain_or_context_nuance,i wish fula had a nikab too
+E5b,699,sentiment140,0,1,0.05104716336663029,FP,short_ambiguous_text,help me fix it rob
+E5b,702,sentiment140,0,1,0.27827324237434115,FP,domain_or_context_nuance,naw gordon ramsay was so cute on the show compared to usual that is
+E5b,705,sentiment140,0,1,-0.25765521598216024,FP,contrastive_clause,yeah i remember mines the th we had this conversation how we were exactly days apart but your like what years older
+E5b,709,sentiment140,0,1,-0.32506357035442324,FP,domain_or_context_nuance,breaking news e unu pe casa presei care vrea sa se arunce si nu sunt eu
+E5b,712,sentiment140,0,1,1.5372698988191356,FP,domain_or_context_nuance,dumb tattoo starbucks mug just with starfucks instead
+E5b,713,sentiment140,0,1,-0.32822523168139894,FP,domain_or_context_nuance,on the bus on the way home excited for tmr s party
+E5b,717,sentiment140,0,1,0.08414185373723104,FP,domain_or_context_nuance,the evil robot is coming check out and see if you can find him love suzie
+E5b,721,sentiment140,0,1,-0.04935551191575227,FP,contrastive_clause,tomorrow fun going to class to get help on the final mix of a song then prov to cover a shift sleep for now though night everyone
+E5b,738,sentiment140,0,1,0.316740324567367,FP,domain_or_context_nuance,missing bgt peter and i got disposable bbq and heading down the banks of the don near grandholm mills fine
+E5b,741,sentiment140,0,1,-0.3641477644900216,FP,domain_or_context_nuance,oh gosh what a night off to bed
+E5b,744,sentiment140,0,1,1.2835682946034979,FP,negation_scope,week in the no babysitter cos gran has gone to oz house hrs hol a day from work things going not too badly think boss disagrees
+E5b,753,sentiment140,0,1,0.08480263150654832,FP,domain_or_context_nuance,is busy at work in roaring amsterdam may you all have fruitful conversations on twitter
+E5b,781,sentiment140,0,1,0.45122454658798716,FP,negation_scope,on my couch eating a sunkist orange in my sweats watching beetlejuice and not at all wishing i was out evrybody have fun a sway th
+E5b,794,sentiment140,0,1,1.2808170840392747,FP,domain_or_context_nuance,factory ng elmer s hihihi sorry corny baka si ate ruby alam
+E5b,807,sentiment140,0,1,-0.09925277317127379,FP,domain_or_context_nuance,suddenly i have become slave assistant
+E5b,810,sentiment140,0,1,-0.15894934728481225,FP,contrastive_clause,setting off for the middle east now c hours total travelling time but get to see my daddy
+E5b,814,sentiment140,0,1,-0.168859537919972,FP,negation_scope,can not fall asleep once again thank god i have the day off tomorrow
+E5b,818,sentiment140,0,1,0.6005508546568481,FP,domain_or_context_nuance,st night in my new queen size bed all alone at that who is coming to sleep with me
+E5b,820,sentiment140,0,1,-0.4073166317763933,FP,contrastive_clause,glad to help i want to use them but i really need to hire someone to format images since i am all thumbs with technology
+E5b,821,sentiment140,0,1,0.5393190680181739,FP,domain_or_context_nuance,i want to live in this so much
+E5b,822,sentiment140,0,1,-0.26180369674240206,FP,domain_or_context_nuance,there is already one that does that it is called characters when you get my iphone you can download it
+E5b,831,sentiment140,0,1,0.5847964343602456,FP,negation_scope,no parade tomorrow finally a day where i can wake up late and a hour flight in the evening
+E5b,841,sentiment140,0,1,0.7102276254377089,FP,possible_sarcasm_or_irony,lol ahh wish we d drove past the g car mani bant vid shoot thursday pass thru if u free
+E5b,848,sentiment140,0,1,0.4311486157868558,FP,possible_sarcasm_or_irony,okay im going to upload it now if i can figure it out haha stuffy weather sucks i hope it is not stuffy until wednesday
+E5b,852,sentiment140,0,1,0.34676548075164604,FP,domain_or_context_nuance,everyone around me is hitting the gym is there some kind of intangible message hidden in this
+E5b,854,sentiment140,0,1,-0.27876424238524616,FP,domain_or_context_nuance,just said final farewells to my partners in crime ln nbl waiting for their visit soon
+E5b,856,sentiment140,0,1,1.2819971913721457,FP,domain_or_context_nuance,musicindustry cssp u mean fragmented and ruled by gangsters
+E5b,862,sentiment140,0,1,-0.31162682505250316,FP,domain_or_context_nuance,these d glasses are awesome they make everything so dark tinted
+E5b,865,sentiment140,0,1,-0.19886243058340353,FP,contrastive_clause,i think both s related to size depend on structures and system hard to relay in tweet but worth blogging good questions this am
+E5b,867,sentiment140,0,1,0.06292427812390133,FP,possible_sarcasm_or_irony,so what your saying is i am not cool lol but i have beer
+E5b,879,sentiment140,0,1,-0.275804608636216,FP,domain_or_context_nuance,how many times does a man have to tweet quot goodnight quot b he finally goes to sleep that was my fifth or sixth time now it is like a game
+E5b,885,sentiment140,0,1,1.4919592621642395,FP,contrastive_clause,i am not in chicago yet silly i leave friday but i do have long hair
+E5b,890,sentiment140,0,1,0.3596330779013641,FP,possible_sarcasm_or_irony,and you wasted time counting my characters good thing they did not add up to the truth zomg inside job lolzors tlot
+E5b,4,sentiment140,1,0,-1.261353825326615,FN,negated_positive_or_mixed,ct trip cancelled for now anyway not that bad i guess probably the best for now will see what next week holds
+E5b,7,sentiment140,1,0,-0.4898452098616445,FN,short_ambiguous_text,pnhs baseball game then graduation
+E5b,22,sentiment140,1,0,-1.1938586075272029,FN,domain_or_context_nuance,shared your smooshed glasses story with husband sometimes the only silver lining is the funny story we get from it
+E5b,39,sentiment140,1,0,-0.7372642407136174,FN,domain_or_context_nuance,league club accrington stanley face a high court date on after being issued with a winding up order by hm revenue and customs
+E5b,41,sentiment140,1,0,-0.6902064061133732,FN,short_ambiguous_text,iknowrite
+E5b,87,sentiment140,1,0,-0.6191552661102183,FN,domain_or_context_nuance,why do ppl ignore me esp when i need them most
+E5b,103,sentiment140,1,0,-1.0438575447251424,FN,negated_positive_or_mixed,not til late fall i am so jealousss ahh be safe and have the best time i will look you up when i get there xx
+E5b,105,sentiment140,1,0,-0.4382834483321729,FN,domain_or_context_nuance,i really struggled writing that card
+E5b,108,sentiment140,1,0,-0.5688791669666656,FN,short_ambiguous_text,wants tickets
+E5b,132,sentiment140,1,0,-0.7377904240318736,FN,domain_or_context_nuance,i bet andy thinks i am a crazy loser
+E5b,133,sentiment140,1,0,-0.7821778850408293,FN,short_ambiguous_text,wanting have some fun
+E5b,147,sentiment140,1,0,-0.9502248068289656,FN,negated_positive_or_mixed,i would love to come but i will be months pregnant in october not wise to fly to uk from holland then i guess
+E5b,161,sentiment140,1,0,-0.7479416643439403,FN,possible_sarcasm_or_irony,haha touch screensare so hard to type on
+E5b,174,sentiment140,1,0,-1.0253695070058022,FN,domain_or_context_nuance,ok you are still jet lagged go get some sleep dude and for the record i was also supporting the windies
+E5b,180,sentiment140,1,0,-0.8020931510758408,FN,domain_or_context_nuance,i think of her while listening to this
+E5b,187,sentiment140,1,0,-0.5671218108025355,FN,domain_or_context_nuance,mi hermano is settling into his new lifestyle away from us
+E5b,198,sentiment140,1,0,-0.42902080654102753,FN,domain_or_context_nuance,exactly more days including today before school starts
+E5b,201,sentiment140,1,0,-1.3964938437517451,FN,negated_positive_or_mixed,feeling glad i have a father to spoil today but also mmissing the best father in law in the world first one without him
+E5b,208,sentiment140,1,0,-0.573956723218747,FN,domain_or_context_nuance,tired of reading the same all the day conflict of laws and more pages left let us go
+E5b,220,sentiment140,1,0,-0.7986637447592773,FN,domain_or_context_nuance,re ssvsut it was stuff like this that made me drift away from the diy comm in the first place such complexes and drama
+E5b,234,sentiment140,1,0,-1.114391963328443,FN,domain_or_context_nuance,stayed the same let us stick to it
+E5b,237,sentiment140,1,0,-1.1227007284030268,FN,negated_positive_or_mixed,he even do not dance today but we are going to dance tomorrow well i will need more good luck hehe luck luck luck good luck
+E5b,254,sentiment140,1,0,-1.1646186598673527,FN,short_ambiguous_text,times like a million
+E5b,266,sentiment140,1,0,-0.90083866452973,FN,domain_or_context_nuance,hey from soccer player to player any good words of advice after being cut from the same competitive team after years
+E5b,272,sentiment140,1,0,-0.7780900974090857,FN,short_ambiguous_text,use seesmic desktop instead
+E5b,274,sentiment140,1,0,-0.545966022293202,FN,negation_scope,i was not asked
+E5b,276,sentiment140,1,0,-0.8932468750669922,FN,short_ambiguous_text,fine babe just ignore me
+E5b,277,sentiment140,1,0,-0.7934702399372708,FN,negation_scope,you do not miss me
+E5b,285,sentiment140,1,0,-0.7230085824885242,FN,domain_or_context_nuance,hanging out with david s family waiting for the end
+E5b,286,sentiment140,1,0,-0.6930495109472988,FN,domain_or_context_nuance,yeah i am figuring that out
+E5b,291,sentiment140,1,0,-0.771469108569369,FN,negation_scope,do not forget about meeee
+E5b,302,sentiment140,1,0,-0.5403993783910398,FN,negated_positive_or_mixed,my morning is not starting off well what a great saturday morning
+E5b,306,sentiment140,1,0,-0.7869916374989223,FN,contrastive_clause,working but at least it is at a sex toy store
+E5b,317,sentiment140,1,0,-0.5132943192026016,FN,domain_or_context_nuance,must have been the chirping birds distracting me
+E5b,318,sentiment140,1,0,-0.4549842717674639,FN,contrastive_clause,thank you but that is a luxury right now how is your moving coming along
+E5b,342,sentiment140,1,0,-0.4553938281848231,FN,negated_positive_or_mixed,great the outlets are not working on the train
+E5b,358,sentiment140,1,0,-0.886213181661875,FN,negation_scope,first weekend without any hockey excitement all we have now are the pirates
+E5b,373,sentiment140,1,0,-0.6581933598113094,FN,possible_sarcasm_or_irony,im done workkkkk thank god but i have no lady chill wit lol
+E5b,376,sentiment140,1,0,-1.3546299264193618,FN,domain_or_context_nuance,gonna check if there is anything good giving on tv i need major distractions right now
+E5b,379,sentiment140,1,0,-0.48616534732713534,FN,domain_or_context_nuance,thinking of everyone involved with af hoping for some miraculous news fear of flying officially heightened
+E5b,392,sentiment140,1,0,-0.4690565490149992,FN,negation_scope,animal kingdom and the studios today without sam she is on her way home
+E5b,427,sentiment140,1,0,-0.5865239749999444,FN,domain_or_context_nuance,i have my huge list and and iced mocha i am ready to go run errands it will be forever before i am home
+E5b,451,sentiment140,1,0,-1.1450932263716678,FN,domain_or_context_nuance,i felt the very same way this morning
+E5b,460,sentiment140,1,0,-0.41758479573916196,FN,negation_scope,no work getting bored
+E5b,463,sentiment140,1,0,-1.0490608823414531,FN,domain_or_context_nuance,i forget about you twitter i do
+E5b,476,sentiment140,1,0,-0.6699976400900586,FN,domain_or_context_nuance,ber happy now that pauls home was only one weekend so god knows how i am gonna be when he is away for months
+E5b,494,sentiment140,1,0,-0.5965267711396542,FN,contrastive_clause,is at home watching videos on youtube it is all good school tomorrow though
+E5b,517,sentiment140,1,0,-1.7955799764629603,FN,domain_or_context_nuance,wanted seith rogan and james franco to win best fight rob pattinson looks good thought
+E5b,553,sentiment140,1,0,-0.6466051480846615,FN,domain_or_context_nuance,nataliee i love you and still have your bday gift i must see you soon
+E5b,571,sentiment140,1,0,-0.5388102066260273,FN,domain_or_context_nuance,your new camera makes you look great goooood lip colour is that the its so bright on me scared to wear it
+E5b,584,sentiment140,1,0,-0.689118883003708,FN,negation_scope,almost done work for the day can not wait to crawl into bed the coffee kicked in and then wore off within minutes
+E5b,648,sentiment140,1,0,-0.8499463631117186,FN,possible_sarcasm_or_irony,out in gordon walks to party haha i wish
+E5b,651,sentiment140,1,0,-0.9552464666294227,FN,domain_or_context_nuance,for those doing the top someone tumblr the rules i completely forgot them aha
+E5b,660,sentiment140,1,0,-2.2825416193140837,FN,domain_or_context_nuance,thanks bree good to know a scottish accent is more important to you than me
+E5b,669,sentiment140,1,0,-1.1232236782631997,FN,domain_or_context_nuance,is completely out of bookshelf real estate
+E5b,676,sentiment140,1,0,-0.7977468533746689,FN,contrastive_clause,he is not like that ok he is but he is intelligent too and funny
+E5b,681,sentiment140,1,0,-0.5261669654298677,FN,short_ambiguous_text,in what way
+E5b,703,sentiment140,1,0,-1.0904844628489812,FN,domain_or_context_nuance,good morning i am glad you made it thru yest amp the results r good its nice be put out for it i was amp peed on them
+E5b,725,sentiment140,1,0,-1.0997900876771607,FN,domain_or_context_nuance,of course this would be a lot better for me if i could actually eat ice cream these days
+E5b,745,sentiment140,1,0,-0.6902064061133732,FN,short_ambiguous_text,gutting
+E5b,748,sentiment140,1,0,-0.7447498219737257,FN,short_ambiguous_text,be quiet
+E5b,765,sentiment140,1,0,-0.6715188472314416,FN,domain_or_context_nuance,just woke up from a nap waiting for best friend to come home from working out dinner then back to dewitt
+E5b,782,sentiment140,1,0,-0.8552884307372364,FN,possible_sarcasm_or_irony,bullcraap i could be a possible feat on your songs amp you can not speak your friend makes an effort lol
+E5b,811,sentiment140,1,0,-1.417002158784022,FN,possible_sarcasm_or_irony,yeah for sure but at some point say at build time you will have to generate that xml so that wave picks it up
+E5b,817,sentiment140,1,0,-0.6251930214311281,FN,negated_positive_or_mixed,well mmmm yes today i am happy but i need to study not is a problem buut
+E5b,850,sentiment140,1,0,-0.950390711214004,FN,domain_or_context_nuance,i just hope i could hang out with you someday kina
+E5b,869,sentiment140,1,0,-0.6566048707763051,FN,short_ambiguous_text,am i a twitter whore
+E5b,871,sentiment140,1,0,-1.7472952184577302,FN,negated_positive_or_mixed,without houston it is home all the people i love the most are here
+E5b,878,sentiment140,1,0,-0.7775467723240438,FN,domain_or_context_nuance,who is that girl singin on rick ross valley of death she sound like old mary
+E5b,898,sentiment140,1,0,-1.051166176238298,FN,domain_or_context_nuance,is on twitter woot woot day off today was great back to the grind tomoz
+E5b,915,sentiment140,1,0,-0.7885186322947825,FN,domain_or_context_nuance,those lucky bitches they get to see you all
+E5b,946,sentiment140,1,0,-1.7594331578371507,FN,short_ambiguous_text,leaving stage best concert ever
+E5b,986,sentiment140,1,0,-0.47792616138965993,FN,contrastive_clause,i have to do lot of works but where i can start it xd
+E5b,1011,sentiment140,1,0,-0.5132942686900211,FN,domain_or_context_nuance,take a we are all wondering
+E5b,1048,sentiment140,1,0,-0.5354236370990464,FN,domain_or_context_nuance,g night twitter world off to do some graduation goodbye gift buying tomorrow
+E5b,1067,sentiment140,1,0,-0.8073303295894364,FN,domain_or_context_nuance,awwww that is like amost suicide worthy
+E5b,1087,sentiment140,1,0,-0.7334330288702826,FN,short_ambiguous_text,and the music was unpluged
+E5b,1099,sentiment140,1,0,-0.8929594265303464,FN,possible_sarcasm_or_irony,do not cryyyy think about other stuff like how happy you will make people be we are the one s who should cry i am sure i will cry
+E5b,1108,sentiment140,1,0,-1.2644885965458645,FN,domain_or_context_nuance,try to have a good day
+E5b,1116,sentiment140,1,0,-0.41458083752672314,FN,domain_or_context_nuance,i sang at church this morning and due to some excedrine i took earlier in the day i shook the whole time
+E5b,1154,sentiment140,1,0,-0.4534089431932755,FN,negation_scope,blarg yeah not by choice
+E5b,1168,sentiment140,1,0,-0.8703228819193948,FN,short_ambiguous_text,plz i want fun ranch
+E5b,1205,sentiment140,1,0,-0.43036967229412254,FN,negation_scope,get me an iphone too while you are there i can not afford one
+E5b,1219,sentiment140,1,0,-0.6010036425008669,FN,domain_or_context_nuance,i was totally thinking about you when i brought that up
+E5b,1225,sentiment140,1,0,-0.7188899299789476,FN,domain_or_context_nuance,thanks to cab made my train whew on to work
+E5b,1231,sentiment140,1,0,-0.9639691922289741,FN,domain_or_context_nuance,seeing your movie and the theatre funked it up
+E5b,1258,sentiment140,1,0,-1.0350842081189509,FN,contrastive_clause,oww no but i would like to tell something about germany i bet is very cool there
+E5b,1259,sentiment140,1,0,-0.5335284902551695,FN,domain_or_context_nuance,they wanted eight bucks for one at this faire
+E5b,1269,sentiment140,1,0,-0.6991131569023689,FN,contrastive_clause,pak agreed send those named in mumbai attacks india but they catch amp let go on certain quot evidence quot what will home amp mea do just cry
+E5b,1301,sentiment140,1,0,-0.8040755678912219,FN,short_ambiguous_text,or maybe seeing me
+E5b,1346,sentiment140,1,0,-0.4841314242751961,FN,domain_or_context_nuance,aww with a name like that i was expecting more
+E5b,1365,sentiment140,1,0,-0.45179474060481084,FN,domain_or_context_nuance,i was voted out of the leadership role last week and put on suspension after my quot san diego whale vagina quot incident
+E5b,1387,sentiment140,1,0,-0.9463523774055043,FN,contrastive_clause,not yet amp i also been very slack and not replied to your email yet either will def have a look as it sounds cool thx for link
+E5b,1391,sentiment140,1,0,-0.942461276305878,FN,domain_or_context_nuance,i miss my favorite kitty i need a better phone to tweet from sendcancelmoneynow ps thx for the follow friday lt
+E5b,1398,sentiment140,1,0,-0.4816276448354721,FN,domain_or_context_nuance,i would love some lg m right about now
+E5b,1400,sentiment140,1,0,-0.7474415228573967,FN,short_ambiguous_text,sundays is kind off boring
+E5b,1401,sentiment140,1,0,-0.8208486406546933,FN,domain_or_context_nuance,grand prize is a quot us quot apple store gift certificate check the quotes else i did it myself
+E5b,1430,sentiment140,1,0,-0.4644695529313882,FN,contrastive_clause,the people of iran mousavi would ve won with over of the votes if it had been a fair election but they cheated
+E5b,1439,sentiment140,1,0,-0.5366469614365448,FN,domain_or_context_nuance,yeah basically after every week end i did that as soon as i went home
+E5b,1441,sentiment140,1,0,-0.8285636002474226,FN,domain_or_context_nuance,a teacher who is known for making people re do their paperwork just gave me an excellent evaluation of mine win now back to studying
+E5b,1451,sentiment140,1,0,-1.4569144107577265,FN,possible_sarcasm_or_irony,lmfao well i will keep quiet as what i say nxt mite b classed as flirting haha lol
+E5b,1458,sentiment140,1,0,-0.8024943194620482,FN,domain_or_context_nuance,yeah i really should go now i wish u a great evening and a good night with a lot of sweet dreams my cheeky cowboy
+E5b,1466,sentiment140,1,0,-0.7686887026742516,FN,negation_scope,neither does shem
+E5b,1492,sentiment140,1,0,-0.6241033035398988,FN,domain_or_context_nuance,and once again the rain has returned
+E5b,1497,sentiment140,1,0,-0.5486110486695843,FN,domain_or_context_nuance,y all are so sweet wish i can give y all an exclusive footage of my work going to bed love y all and god bless
+E5b,1508,sentiment140,1,0,-0.6554550827105962,FN,domain_or_context_nuance,spent the day installing drivers playing with legos and eating vietnamese food today s to do list about done
+E5b,1515,sentiment140,1,0,-0.5315460506738727,FN,domain_or_context_nuance,um um ummmmmm i wanna find somewhere in the city and do it tomorrow xd
+E5b,1520,sentiment140,1,0,-1.8673956547639576,FN,possible_sarcasm_or_irony,nuttin jus chillin at home lol wats good wit u
+E5b,1559,sentiment140,1,0,-0.6902064061133732,FN,short_ambiguous_text,ouchhhh
+E5b,1569,sentiment140,1,0,-0.6866727475337757,FN,short_ambiguous_text,what conan the barbarian
+E5b,1585,sentiment140,1,0,-2.2927428533647616,FN,domain_or_context_nuance,i had a fairly good birthday thanks tomorrow should be fun another graduation party oh and spanish project blehhh
+E5b,1599,sentiment140,1,0,-0.5714775099422369,FN,negated_positive_or_mixed,hmm no screenshots no anything well either way i personally vote for habari as i use it myself plus the devs are great
+E5b,1618,sentiment140,1,0,-0.6338519102743069,FN,domain_or_context_nuance,i have a hangover on the plus side i finished a new tune last night for the next album ronnie cross find the stars in your life
+E5b,1619,sentiment140,1,0,-0.9049576214946604,FN,domain_or_context_nuance,going to mom s for a mother s day brunch was really hoping for better weather
+E5b,1626,sentiment140,1,0,-1.2020288585650205,FN,negated_positive_or_mixed,i do not work efficiently these days so happy that i can tweet
+E5b,1631,sentiment140,1,0,-1.4199277231168483,FN,domain_or_context_nuance,i know like a lot more
+E5b,1710,sentiment140,1,0,-0.6316471738849774,FN,domain_or_context_nuance,hy katy gosh are you the real one katy perry hixhix i hope so
+E5b,1718,sentiment140,1,0,-0.6969401536777327,FN,domain_or_context_nuance,date night went well i miss this him can october come any slower
+E5b,1720,sentiment140,1,0,-0.4150405832591447,FN,domain_or_context_nuance,chatting with my sister who is so feeling blue
+E5b,1744,sentiment140,1,0,-0.4787775415798454,FN,domain_or_context_nuance,people always plan stuff when i have nights out planned
+E5b,1753,sentiment140,1,0,-0.794707350658378,FN,domain_or_context_nuance,and now has moved out too officially the last remaining original roommate of
+E5b,1755,sentiment140,1,0,-0.6096796682664098,FN,short_ambiguous_text,weekend full of classes
+E5b,1759,sentiment140,1,0,-0.44745678115785426,FN,domain_or_context_nuance,am i getting a bonus check i hope so
+E5b,1792,sentiment140,1,0,-1.5890532184036408,FN,domain_or_context_nuance,go rubens providing the entertainment maxout f
+E5b,1795,sentiment140,1,0,-0.8395300903317506,FN,possible_sarcasm_or_irony,tonight was kick ass tomorrow will be kick ass after i get through work haha thank god it is summer
+E5b,1837,sentiment140,1,0,-0.4728244006675046,FN,short_ambiguous_text,how can fb
+E5b,1876,sentiment140,1,0,-0.42669534164252687,FN,domain_or_context_nuance,well im certainly off to a quot good quot start just found a big splat of a toothpaste stain on my sweater gonna be one of those days
+E5b,1895,sentiment140,1,0,-0.7095483428255195,FN,negation_scope,whyy does not anybody answer their dammn phones
+E5b,1903,sentiment140,1,0,-1.5650618475751457,FN,contrastive_clause,yep but i am going better now
+E5b,1908,sentiment140,1,0,-0.5629874848576972,FN,possible_sarcasm_or_irony,ha ha lol careers sucks weres jordan eek
+E5b,1941,sentiment140,1,0,-0.5030581137806938,FN,domain_or_context_nuance,thanks to my state of mind last night and marisa i still smell like a parfume bath
+E5b,1943,sentiment140,1,0,-0.7872246364675908,FN,domain_or_context_nuance,slept a little yay train in a few hours x
+E5b,1961,sentiment140,1,0,-0.4738291901808225,FN,domain_or_context_nuance,there is chatting w his peeps i e anyone i will stay here by the bike flyingpig
+E5b,1968,sentiment140,1,0,-0.5819125402880626,FN,domain_or_context_nuance,i hate snakes and i live out in the country sort of so we have our fair share
+E5b,1974,sentiment140,1,0,-0.5020914281576668,FN,domain_or_context_nuance,eminem yeah thats what im doing right now get it haa
+E5b,1990,sentiment140,1,0,-0.7236641854843492,FN,short_ambiguous_text,come over and get some
+E5b,1995,sentiment140,1,0,-0.8098736062247773,FN,possible_sarcasm_or_irony,that sure does was it someone in your actual class or in just in the program
+E5b,2050,sentiment140,1,0,-0.5189777123592709,FN,domain_or_context_nuance,ahh the joy and misery of eating chocolates
+E5b,2059,sentiment140,1,0,-0.5313289356733518,FN,negation_scope,was upset with me because i did not pass it either
+E5b,2089,sentiment140,1,0,-0.6318889991158658,FN,negation_scope,i am not cut out for super loud live music
+E5b,2100,sentiment140,1,0,-1.3388271472209088,FN,negated_positive_or_mixed,ewwwwwwww i can not even speak on that right now amp tha lil nigga love that big beefy mufugg
+E5b,2102,sentiment140,1,0,-0.4688029418986571,FN,domain_or_context_nuance,joe quot daddy quot stevenson takes it maybe i will get a shot fighting him someday doubt it
+E5b,2125,sentiment140,1,0,-0.9362659215917337,FN,domain_or_context_nuance,hey i am now part of twitter y all won
+E5b,2132,sentiment140,1,0,-1.4672541006992201,FN,domain_or_context_nuance,i am much the same with more mag perhaps we all read junk food for the brain on occasion
+E5b,2134,sentiment140,1,0,-1.6926636606169563,FN,domain_or_context_nuance,late night sushi and reverse happy hour q what more could a barbie ask for a her barbie bff
+E5b,2140,sentiment140,1,0,-0.970316025398825,FN,domain_or_context_nuance,bnp win a seat in europe
+E5b,2148,sentiment140,1,0,-0.5188997198825221,FN,short_ambiguous_text,what causes the frustration buddy
+E5b,2149,sentiment140,1,0,-0.4751349722136907,FN,domain_or_context_nuance,you are so racist when are you coming back
+E5b,2150,sentiment140,1,0,-0.6359163227425032,FN,short_ambiguous_text,moodcrash laters
+E5b,2155,sentiment140,1,0,-0.6347580370464566,FN,domain_or_context_nuance,what unconfortable situations i always find myself in it is a jacobs ish situation

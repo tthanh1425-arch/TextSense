@@ -1,9 +1,0 @@
-ẢNH MINH CHỨNG CẦN BỔ SUNG TRƯỚC KHI NỘP
-
-1. Giao diện trang chủ và dự đoán một bình luận tiếng Anh.
-2. Tải một tệp CSV hoặc Excel .xlsx, chọn cột nội dung và chạy phân tích.
-3. Dashboard sau khi phân tích tệp: số dòng, tỷ lệ hai nhãn, độ dài văn bản và từ ngữ thường gặp.
-4. Xem chi tiết một bình luận và kết quả từng phần (nếu có nhiều sắc thái).
-5. Tệp CSV/Excel kết quả sau khi tải xuống.
-
-Ảnh phải chụp từ ứng dụng TextSense chạy thực tế trên máy. Không dùng hình minh họa thay cho bằng chứng chức năng.

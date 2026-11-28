@@ -1,745 +1,830 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="TextSense — Hệ thống phân tích cảm xúc và nhận diện nội dung tiêu cực trên Twitter/Reddit.">
-<title>TextSense — Hiểu sắc thái bình luận</title>
-<link rel="icon" type="image/png" href="media/textsense-bird-logo.png" sizes="128x128">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261126v1300">
-<script src="csv_viewer.js?v=20261118v316" defer></script>
-<script src="app.js?v=20261125v600" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="TextSense — Hệ thống phân tích cảm xúc và nhận diện nội dung tiêu cực trên mạng xã hội.">
+  <title>TextSense — Hiểu sắc thái bình luận</title>
+  <link rel="icon" type="image/png" href="media/textsense-bird-logo.png" sizes="128x128">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261126v1920">
+  <script src="csv_viewer.js?v=20261118v316" defer></script>
+  <script src="app.js?v=20261126v1400" defer></script>
 </head>
+
 <body>
-<a class="skip" href="#phan-tich">Đến phần phân tích</a>
+  <a class="skip" href="#phan-tich">Đến phần phân tích</a>
 
-<header class="site-header">
-  <div class="masthead shell">
-    <a class="brand" href="#trang-chu" aria-label="TextSense, trang chủ">
-      <img class="mark" src="media/textsense-bird-logo.png" width="34" height="34" alt="Logo TextSense">
-      <span>TextSense</span>
-    </a>
-    <nav class="main-nav" aria-label="Điều hướng chính">
-      <a href="#trang-chu" data-nav="trang-chu" aria-current="location">Trang chủ</a>
-      <a href="#phan-tich" data-nav="phan-tich">Phân tích cảm xúc</a>
-      <a href="#hang-loat" data-nav="hang-loat">Phân tích hàng loạt</a>
-      <a href="#thong-ke" data-nav="thong-ke">Thống kê</a>
-      <a href="#thong-tin-mo-hinh" data-nav="thong-tin-mo-hinh">Mô hình</a>
-    </nav>
-    <div class="header-health">
-      <span id="model-state" class="status-indicator" role="status" title="Trạng thái hệ thống">
-        <span class="status-dot"></span>
-        <span id="model-state-text">Đang kiểm tra</span>
-      </span>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- TRANG CHỦ -->
-  <section id="trang-chu" class="section-home" aria-labelledby="hero-title">
-    <div class="shell hero-layout">
-      <div class="hero-copy">
-        <span class="brand-tag">Phân tích cảm xúc và phát hiện nội dung tiêu cực</span>
-        <h1 id="hero-title">Hiểu sắc thái bình luận</h1>
-        <p class="hero-lead">
-          Phân loại từng bình luận và khám phá xu hướng chung từ dữ liệu mạng xã hội Twitter &amp; Reddit.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="#phan-tich" data-goto="phan-tich">Bắt đầu phân tích <span aria-hidden="true">→</span></a>
-          <a class="button secondary" href="#hang-loat" data-goto="hang-loat">Phân tích hàng loạt</a>
+  <header class="site-header">
+    <div class="masthead shell">
+      <a class="brand" href="#trang-chu" aria-label="TextSense, trang chủ">
+        <img class="mark" src="media/textsense-bird-logo.png" width="34" height="34" alt="Logo TextSense">
+        <span>TextSense</span>
+      </a>
+      <nav class="main-nav" aria-label="Điều hướng chính">
+        <a href="#trang-chu" data-nav="trang-chu" aria-current="location">Trang chủ</a>
+        <a href="#phan-tich" data-nav="phan-tich">Phân tích văn bản</a>
+        <a href="#hang-loat" data-nav="hang-loat">Phân tích tệp dữ liệu</a>
+        <a href="#thong-ke" data-nav="thong-ke">Thống kê</a>
+        <a href="#thong-tin-mo-hinh" data-nav="thong-tin-mo-hinh">Mô hình</a>
+      </nav>
+      <div class="header-health">
+        <button id="auth-open-btn" class="button primary header-auth-btn" type="button">Đăng nhập</button>
+        <div id="auth-user-box" class="auth-user-box" hidden>
+          <span id="auth-user-name" class="auth-user-name"></span>
+          <button id="auth-logout-btn" class="text-button" type="button">Đăng xuất</button>
         </div>
       </div>
-
-      <figure class="hero-art">
-        <img src="media/hero-bird-feathers.webp" alt="Mascot chim xanh TextSense" width="320" height="390" fetchpriority="high">
-      </figure>
     </div>
+  </header>
 
-    <!-- Quy trình 3 bước & 2 nhãn -->
-    <div class="shell home-grid-blocks">
-      <div class="steps-row">
-        <article class="step-item">
-          <span class="step-label-pill">Bước 1</span>
-          <h3>Nhập dữ liệu</h3>
-          <p>Dán một bình luận tiếng Anh hoặc tải lên tệp CSV / Excel (.xlsx).</p>
-        </article>
-        <article class="step-item">
-          <span class="step-label-pill">Bước 2</span>
-          <h3>Phân tích</h3>
-          <p>Tiền xử lý đồng nhất và phân loại bằng mô hình TF-IDF + LinearSVC.</p>
-        </article>
-        <article class="step-item">
-          <span class="step-label-pill">Bước 3</span>
-          <h3>Xem kết quả</h3>
-          <p>Theo dõi nhãn phân loại, thống kê trực quan và lưu lịch sử SQL Server.</p>
-        </article>
-      </div>
-      <div class="labels-row">
-        <article class="label-box label-neg">
-          <span class="badge badge-neg">Nhãn 1</span>
-          <h3>Có nội dung tiêu cực</h3>
-          <p>Bình luận mang sắc thái tiêu cực, thất vọng, bức xúc, chỉ trích hoặc phản đối.</p>
-        </article>
-        <article class="label-box label-nonneg">
-          <span class="badge badge-nonneg">Nhãn 0</span>
-          <h3>Không phát hiện nội dung tiêu cực</h3>
-          <p>Bao gồm cả nội dung tích cực và nội dung trung tính.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- PHÂN TÍCH CẢM XÚC -->
-  <section id="phan-tich" class="section-block shell" aria-labelledby="section-analyze-title">
-    <div class="section-heading">
-      <div>
-        <h2 id="section-analyze-title">Phân tích cảm xúc</h2>
-        <p class="section-subtitle">Kiểm thử bình luận tiếng Anh đơn lẻ, tra cứu lịch sử và theo dõi báo cáo kết quả sai.</p>
-      </div>
-      <div class="sub-tabs" role="tablist" aria-label="Chức năng phân tích cảm xúc">
-        <button id="subtab-single" type="button" role="tab" aria-selected="true" aria-controls="panel-single">Phân tích bình luận</button>
-        <button id="subtab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history">Lịch sử phân tích</button>
-        <button id="subtab-feedback" type="button" role="tab" aria-selected="false" aria-controls="panel-feedback">Báo cáo sai</button>
-      </div>
-    </div>
-
-    <!-- Tab 1: Phân tích bình luận -->
-    <div id="panel-single" role="tabpanel" aria-labelledby="subtab-single">
-      <div id="workspace" class="workspace" data-state="idle">
-        <div class="panel surface">
-          <section id="entry" aria-labelledby="analysis-title">
-            <h3 id="analysis-title">Nhập nội dung bình luận</h3>
-            <p class="intro">Hỗ trợ tiếng Anh, tối đa 2.000 ký tự.</p>
-            <form id="comment-form">
-              <div class="label-row">
-                <label for="comment">Bình luận cần phân tích</label>
-                <span id="count" aria-hidden="true">0 / 2.000 ký tự</span>
-              </div>
-              <textarea id="comment" rows="5" placeholder="Dán nội dung bình luận tiếng Anh vào đây…" aria-describedby="text-limit input-error" autocomplete="off"></textarea>
-              <p id="text-limit" class="sr-only">Tối đa 2.000 ký tự cho mỗi bình luận.</p>
-              <p id="input-error" class="error" role="alert" hidden></p>
-              <div id="failure" class="failure" role="alert" hidden>
-                <h4 id="failure-title"></h4>
-                <p id="failure-detail"></p>
-              </div>
-              <p id="progress-message" class="sr-only" role="status"></p>
-              <div class="actions">
-                <button id="submit" class="button primary" type="submit" disabled>Phân tích <span aria-hidden="true">→</span></button>
-                <button id="retry" class="button primary" type="button" hidden>Thử lại <span aria-hidden="true">→</span></button>
-                <button id="clear" class="text-button" type="button" hidden>Xóa nội dung</button>
-              </div>
-            </form>
-          </section>
-
-          <section id="result" class="result" aria-labelledby="result-title" hidden>
-            <div class="result-top-bar">
-              <button id="back-input" class="text-button back" type="button">← Nhập bình luận mới</button>
-              <button id="back-batch" class="text-button back" type="button" hidden>← Quay lại phân tích hàng loạt</button>
-              <span id="result-timestamp" class="result-timestamp"></span>
-            </div>
-
-            <div class="result-banner" id="result-banner">
-              <span class="result-label" id="result-label">Kết quả phân loại</span>
-              <h3 id="result-title" tabindex="-1"></h3>
-              <p id="result-detail" class="intro"></p>
-              <p id="result-sentence-summary" class="result-sentence-summary" hidden></p>
-            </div>
-
-            <p id="history-warning" class="history-warning" role="status" hidden>
-              Đã phân loại, nhưng chưa lưu được lịch sử vào SQL Server. Hãy kiểm tra kết nối.
-            </p>
-
-            <div class="excerpt">
-              <h4>Nội dung đã phân tích</h4>
-              <blockquote id="result-quote"></blockquote>
-            </div>
-
-            <details id="sentence-breakdown" class="sentence-breakdown" open hidden>
-              <summary class="sentence-breakdown-heading">
-                <div>
-                  <h4 id="sentence-breakdown-title">Phân tích từng câu / vế</h4>
-                  <p id="sentence-breakdown-description">Thông tin hỗ trợ quan sát từng phần bằng cùng mô hình.</p>
-                </div>
-              </summary>
-              <p id="sentence-breakdown-count" class="sentence-breakdown-count"></p>
-              <ol id="sentence-breakdown-list" class="sentence-breakdown-list"></ol>
-            </details>
-
-            <div id="batch-detail-nav" class="batch-detail-nav" hidden>
-              <button id="batch-detail-prev" class="text-button" type="button">← Dòng trước</button>
-              <span id="batch-detail-position" aria-live="polite"></span>
-              <button id="batch-detail-next" class="text-button" type="button">Dòng tiếp →</button>
-            </div>
-
-            <div class="actions result-actions">
-              <button id="new-comment" class="button primary" type="button">Phân tích nội dung khác</button>
-              <button id="report" class="button alert-outline" type="button">Báo cáo kết quả sai</button>
-            </div>
-          </section>
-        </div>
-
-        <figure class="illustration">
-          <div class="mascot-frame">
-            <img id="mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense" width="180" height="180">
+  <main>
+    <!-- TRANG CHỦ -->
+    <section id="trang-chu" class="section-home" aria-labelledby="hero-title">
+      <div class="shell hero-layout">
+        <div class="hero-copy">
+          <span class="brand-tag">Phân tích cảm xúc và phát hiện nội dung tiêu cực</span>
+          <h1 id="hero-title">Hiểu sắc thái bình luận</h1>
+          <p class="hero-lead">
+            Phân loại từng bình luận và khám phá xu hướng chung từ dữ liệu mạng xã hội.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#phan-tich" data-goto="phan-tich">Bắt đầu phân tích <span
+                aria-hidden="true">→</span></a>
+            <a class="button secondary" href="#hang-loat" data-goto="hang-loat">Phân tích hàng loạt</a>
           </div>
-          <figcaption id="mascot-caption" class="mascot-caption">Sẵn sàng phân tích</figcaption>
+        </div>
+
+        <figure class="hero-art">
+          <img src="media/hero-bird-feathers.webp" alt="Mascot chim xanh TextSense" width="320" height="390"
+            fetchpriority="high">
         </figure>
       </div>
-    </div>
 
-    <!-- Tab 2: Lịch sử phân tích -->
-    <div id="panel-history" role="tabpanel" aria-labelledby="subtab-history" hidden>
-      <div class="surface">
-        <div class="filter-bar">
-          <input id="hist-search" type="search" placeholder="Tìm theo nội dung bình luận…" aria-label="Tìm lịch sử">
-          <select id="hist-label-filter" aria-label="Lọc theo nhãn">
-            <option value="">Tất cả nhãn</option>
-            <option value="1">Có nội dung tiêu cực (1)</option>
-            <option value="0">Không phát hiện nội dung tiêu cực (0)</option>
-            <option value="invalid">Không phân loại được</option>
-          </select>
-          <select id="hist-batch-filter" aria-label="Lọc theo phiên phân tích">
-            <option value="">Tất cả phiên phân tích</option>
-          </select>
-          <input id="hist-date-from" type="date" aria-label="Từ ngày">
-          <input id="hist-date-to" type="date" aria-label="Đến ngày">
-          <button id="hist-refresh" class="button secondary" type="button">Làm mới</button>
+      <!-- Quy trình 3 bước & 2 nhãn -->
+      <div class="shell home-grid-blocks">
+        <div class="steps-row">
+          <article class="step-item">
+            <span class="step-label-pill">Bước 1</span>
+            <h3>Nhập dữ liệu</h3>
+            <p>Dán một bình luận tiếng Anh hoặc tải lên tệp CSV / Excel (.xlsx).</p>
+          </article>
+          <article class="step-item">
+            <span class="step-label-pill">Bước 2</span>
+            <h3>Phân tích</h3>
+            <p>Tiền xử lý đồng nhất và phân loại bằng mô hình TF-IDF + LinearSVC.</p>
+          </article>
+          <article class="step-item">
+            <span class="step-label-pill">Bước 3</span>
+            <h3>Xem kết quả</h3>
+            <p>Theo dõi nhãn phân loại, thống kê trực quan.</p>
+          </article>
         </div>
-        <p id="hist-status" class="status-note">Đang tải lịch sử từ SQL Server…</p>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Nội dung bình luận</th>
-                <th>Kết quả phân tích</th>
-                <th>Thời gian</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="hist-table-body"></tbody>
-          </table>
-        </div>
-        <div class="pagination-bar">
-          <button id="hist-prev" class="text-button" type="button" disabled>← Trang trước</button>
-          <span id="hist-page-info">Trang 1</span>
-          <button id="hist-next" class="text-button" type="button" disabled>Trang sau →</button>
+        <div class="labels-row">
+          <article class="label-box label-neg">
+            <span class="badge badge-neg">Nhãn 1</span>
+            <h3>Có nội dung tiêu cực</h3>
+            <p>Bình luận mang sắc thái tiêu cực, thất vọng, bức xúc, chỉ trích hoặc phản đối.</p>
+          </article>
+          <article class="label-box label-nonneg">
+            <span class="badge badge-nonneg">Nhãn 0</span>
+            <h3>Không phát hiện nội dung tiêu cực</h3>
+            <p>Bao gồm cả nội dung tích cực và nội dung trung tính.</p>
+          </article>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Tab 3: Báo cáo sai -->
-    <div id="panel-feedback" role="tabpanel" aria-labelledby="subtab-feedback" hidden>
-      <div class="surface">
-        <div class="feedback-summary-strip">
-          <span>Chờ xem xét: <strong id="fb-count-pending">0</strong></span>
-          <span>Đã xác minh: <strong id="fb-count-verified">0</strong></span>
-          <span>Không chấp nhận: <strong id="fb-count-rejected">0</strong></span>
-          <span class="fb-note">Báo cáo sai không tự động thay đổi nhãn gốc.</span>
-        </div>
-        <div class="filter-bar">
-          <input id="fb-search" type="search" placeholder="Tìm nội dung hoặc ghi chú…" aria-label="Tìm báo cáo sai">
-          <select id="fb-status-filter" aria-label="Lọc theo trạng thái">
-            <option value="">Tất cả trạng thái</option>
-            <option value="Chờ xem xét">Chờ xem xét</option>
-            <option value="Đã xác minh">Đã xác minh</option>
-            <option value="Không chấp nhận">Không chấp nhận</option>
-          </select>
-          <select id="fb-reason-filter" aria-label="Lọc theo lý do">
-            <option value="">Tất cả lý do</option>
-            <option value="Nhận diện sai sắc thái cảm xúc">Nhận diện sai sắc thái cảm xúc</option>
-            <option value="Nội dung có yếu tố mỉa mai hoặc châm biếm">Nội dung có yếu tố mỉa mai hoặc châm biếm</option>
-            <option value="Bình luận có nhiều sắc thái cảm xúc">Bình luận có nhiều sắc thái cảm xúc</option>
-            <option value="Không đủ ngữ cảnh">Không đủ ngữ cảnh</option>
-            <option value="Bỏ sót nội dung tiêu cực">Bỏ sót nội dung tiêu cực</option>
-            <option value="Nhầm lẫn nội dung trung tính hoặc tích cực">Nhầm lẫn nội dung trung tính hoặc tích cực</option>
-            <option value="Lý do khác">Lý do khác</option>
-          </select>
-          <button id="fb-refresh" class="button secondary" type="button">Làm mới</button>
-        </div>
-        <p id="fb-status" class="status-note">Đang tải danh sách báo cáo…</p>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Mã</th>
-                <th>Nguồn / Phiên</th>
-                <th>Nội dung</th>
-                <th>Mô hình dự đoán</th>
-                <th>Đề xuất</th>
-                <th>Lý do</th>
-                <th>Trạng thái xử lý</th>
-                <th>Cập nhật</th>
-              </tr>
-            </thead>
-            <tbody id="fb-table-body"></tbody>
-          </table>
-        </div>
-        <div class="pagination-bar">
-          <button id="fb-prev" class="text-button" type="button" disabled>← Trang trước</button>
-          <span id="fb-page-info">Trang 1</span>
-          <button id="fb-next" class="text-button" type="button" disabled>Trang sau →</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PHÂN TÍCH HÀNG LOẠT -->
-  <section id="hang-loat" class="section-block shell" aria-labelledby="batch-section-title">
-    <div class="section-heading">
-      <div>
-        <h2 id="batch-section-title">Phân tích hàng loạt</h2>
-        <p class="section-subtitle">Tải tệp CSV / Excel (.xlsx), kiểm tra dữ liệu trước khi phân tích và báo cáo sai theo từng dòng.</p>
-      </div>
-    </div>
-
-    <div class="batch-pipeline" aria-label="Quy trình phân tích hàng loạt">
-      <span class="pipe-step active" id="pipe-upload">Tải tệp</span>
-      <span class="pipe-arrow" aria-hidden="true">→</span>
-      <span class="pipe-step" id="pipe-check">Kiểm tra dữ liệu</span>
-      <span class="pipe-arrow" aria-hidden="true">→</span>
-      <span class="pipe-step" id="pipe-confirm">Xác nhận</span>
-      <span class="pipe-arrow" aria-hidden="true">→</span>
-      <span class="pipe-step" id="pipe-run">Phân tích</span>
-      <span class="pipe-arrow" aria-hidden="true">→</span>
-      <span class="pipe-step" id="pipe-result">Xem kết quả</span>
-      <span class="pipe-arrow" aria-hidden="true">→</span>
-      <span class="pipe-step" id="pipe-export">Xuất báo cáo</span>
-    </div>
-
-    <div class="batch-top-layout">
-      <div class="surface batch-upload-surface">
-        <label class="dropzone" id="csv-dropzone" for="csv-file">
-          <strong>Kéo thả tệp vào đây</strong>
-          <span>hoặc nhấn để chọn tệp từ máy</span>
-          <small>Hỗ trợ CSV và Excel (.xlsx) · tối đa <b id="csv-limit-label">100 MB</b> · <b id="csv-rows-label">300.000 dòng</b></small>
-          <input id="csv-file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-        </label>
-
-        <div class="selected-file" id="selected-file" hidden>
-          <div>
-            <strong id="file-name"></strong>
-            <small id="file-metadata"></small>
-          </div>
-          <button id="file-remove" class="text-button" type="button">Bỏ tệp</button>
-        </div>
-
-        <p id="batch-status" class="batch-status" role="status" aria-live="polite">Chưa có tệp được chọn.</p>
-        <div class="batch-progress" id="batch-progress" hidden>
-          <div class="batch-progress-track"><span></span></div>
-          <p id="batch-progress-label">Đang xử lý…</p>
-        </div>
-      </div>
-
-      <div class="surface csv-config" id="csv-config" hidden>
-        <div class="config-grid">
-          <div id="sheet-wrap" hidden>
-            <label for="xlsx-sheet" class="field-label">Chọn trang tính (Sheet)</label>
-            <select id="xlsx-sheet"></select>
-          </div>
-          <div>
-            <label for="csv-column" class="field-label">Chọn cột bình luận</label>
-            <select id="csv-column" disabled><option value="">Tự động nhận diện</option></select>
-          </div>
-        </div>
-
-        <div id="csv-preview" class="csv-preview" hidden>
-          <p class="preview-heading">Xem trước dữ liệu mẫu</p>
-          <ol id="csv-preview-list"></ol>
-        </div>
-
-        <div id="batch-confirm-box" class="confirm-box" hidden>
-          <h4>Xác nhận thông tin dữ liệu</h4>
-          <dl class="confirm-summary">
-            <div><dt>Tệp dữ liệu</dt><dd id="confirm-filename">—</dd></div>
-            <div><dt>Trang tính</dt><dd id="confirm-sheet">Mặc định (CSV)</dd></div>
-            <div><dt>Cột phân tích</dt><dd id="confirm-column">—</dd></div>
-            <div><dt>Tổng số dòng đầu vào</dt><dd id="confirm-total">—</dd></div>
-            <div><dt>Số dòng hợp lệ</dt><dd id="confirm-valid">—</dd></div>
-            <div><dt>Số dòng trống / không hợp lệ</dt><dd id="confirm-empty">—</dd></div>
-          </dl>
-          <button id="batch-submit" class="button primary full-btn" type="button" disabled>Phân tích toàn bộ tệp →</button>
-        </div>
-      </div>
-
-      <aside class="surface batch-mascot-card" aria-label="Trạng thái xử lý tệp">
-        <img id="batch-mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense trạng thái chờ" width="110" height="110">
+    <!-- PHÂN TÍCH VĂN BẢN -->
+    <section id="phan-tich" class="section-block shell" aria-labelledby="section-analyze-title">
+      <div class="section-heading">
         <div>
-          <strong id="batch-mascot-title">Sẵn sàng nhận tệp</strong>
-          <p id="batch-mascot-note">Tải lên tệp CSV hoặc XLSX chứa bình luận tiếng Anh để bắt đầu.</p>
+          <h2 id="section-analyze-title">Phân tích văn bản</h2>
+          <p class="section-subtitle">Kiểm thử bình luận tiếng Anh đơn lẻ, tra cứu lịch sử và theo dõi báo cáo kết quả
+            sai.</p>
         </div>
-      </aside>
-    </div>
-
-    <section id="batch-result" class="surface batch-result" aria-labelledby="batch-result-title" hidden>
-      <div class="result-header">
-        <div>
-          <h3 id="batch-result-title">Kết quả phân tích hàng loạt</h3>
-          <p id="batch-facts" class="batch-facts"></p>
-        </div>
-        <div class="batch-export-actions">
-          <a id="batch-download" class="button primary" href="#" download="TextSense-ket-qua.csv">Xuất CSV</a>
-          <button id="batch-download-xlsx" class="button secondary" type="button" disabled>Xuất Excel</button>
-          <a class="button secondary" href="#thong-ke" data-goto="thong-ke">Xem thống kê →</a>
+        <div class="sub-tabs" role="tablist" aria-label="Chức năng phân tích cảm xúc">
+          <button id="subtab-single" type="button" role="tab" aria-selected="true" aria-controls="panel-single">Phân
+            tích bình luận</button>
+          <button id="subtab-history" type="button" role="tab" aria-selected="false" aria-controls="panel-history">Lịch
+            sử phân tích</button>
+          <button id="subtab-feedback" type="button" role="tab" aria-selected="false" aria-controls="panel-feedback">Báo
+            cáo sai</button>
         </div>
       </div>
 
-      <div class="kpi-strip">
-        <div class="kpi-box"><span>Tổng số dòng đầu vào</span><strong id="batch-kpi-total">—</strong></div>
-        <div class="kpi-box"><span>Số dòng hợp lệ</span><strong id="batch-kpi-valid">—</strong></div>
-        <div class="kpi-box"><span>Phân tích thành công</span><strong id="batch-kpi-success">—</strong></div>
-        <div class="kpi-box"><span>Bỏ qua / không hợp lệ</span><strong id="batch-kpi-invalid">—</strong></div>
-        <div class="kpi-box kpi-neg"><span>Có nội dung tiêu cực (1)</span><strong id="batch-kpi-neg">—</strong></div>
-        <div class="kpi-box kpi-nonneg"><span>Không phát hiện tiêu cực (0)</span><strong id="batch-kpi-nonneg">—</strong></div>
+      <!-- Tab 1: Phân tích bình luận -->
+      <div id="panel-single" role="tabpanel" aria-labelledby="subtab-single">
+        <div id="workspace" class="workspace" data-state="idle">
+          <div class="panel surface">
+            <section id="entry" aria-labelledby="analysis-title">
+              <h3 id="analysis-title">Nhập nội dung bình luận</h3>
+              <p class="intro">Hỗ trợ tiếng Anh, tối đa 2.000 ký tự.</p>
+              <form id="comment-form">
+                <div class="label-row">
+                  <label for="comment">Bình luận cần phân tích</label>
+                  <span id="count" aria-hidden="true">0 / 2.000 ký tự</span>
+                </div>
+                <textarea id="comment" rows="5" placeholder="Dán nội dung bình luận tiếng Anh vào đây…"
+                  aria-describedby="text-limit input-error" autocomplete="off"></textarea>
+                <p id="text-limit" class="sr-only">Tối đa 2.000 ký tự cho mỗi bình luận.</p>
+                <p id="input-error" class="error" role="alert" hidden></p>
+                <div id="failure" class="failure" role="alert" hidden>
+                  <h4 id="failure-title"></h4>
+                  <p id="failure-detail"></p>
+                </div>
+                <p id="progress-message" class="sr-only" role="status"></p>
+                <div class="actions">
+                  <button id="submit" class="button primary" type="submit" disabled>Phân tích <span
+                      aria-hidden="true">→</span></button>
+                  <button id="retry" class="button primary" type="button" hidden>Thử lại <span
+                      aria-hidden="true">→</span></button>
+                  <button id="clear" class="text-button" type="button" hidden>Xóa nội dung</button>
+                </div>
+              </form>
+            </section>
+
+            <section id="result" class="result" aria-labelledby="result-title" hidden>
+              <div class="result-top-bar">
+                <button id="back-input" class="text-button back" type="button">← Nhập bình luận mới</button>
+                <button id="back-batch" class="text-button back" type="button" hidden>← Quay lại phân tích tệp dữ
+                  liệu</button>
+                <span id="result-timestamp" class="result-timestamp"></span>
+              </div>
+
+              <div class="result-banner" id="result-banner">
+                <span class="result-label" id="result-label">Kết quả phân loại</span>
+                <h3 id="result-title" tabindex="-1"></h3>
+                <p id="result-confidence" class="result-confidence" hidden></p>
+                <p id="result-detail" class="intro"></p>
+                <p id="result-sentence-summary" class="result-sentence-summary" hidden></p>
+                <p id="result-disclaimer" class="result-disclaimer" style="margin-top:8px;font-size:0.85rem;opacity:0.8;">Lưu ý: Nhãn phân loại dựa trên cảm xúc văn bản từ dữ liệu huấn luyện tiếng Anh, không xác nhận hành vi phân biệt đối xử hay xúc phạm tuyệt đối.</p>
+              </div>
+
+              <p id="history-warning" class="history-warning" role="status" hidden>
+                Đã phân loại, nhưng chưa lưu được lịch sử vào SQL Server. Hãy kiểm tra kết nối.
+              </p>
+
+              <div class="excerpt">
+                <h4>Nội dung đã phân tích</h4>
+                <blockquote id="result-quote"></blockquote>
+              </div>
+
+              <details id="sentence-breakdown" class="sentence-breakdown" open hidden>
+                <summary class="sentence-breakdown-heading">
+                  <div>
+                    <h4 id="sentence-breakdown-title">Phân tích từng câu / vế</h4>
+                    <p id="sentence-breakdown-description">Thông tin hỗ trợ quan sát từng phần bằng cùng mô hình.</p>
+                  </div>
+                </summary>
+                <p id="sentence-breakdown-count" class="sentence-breakdown-count"></p>
+                <ol id="sentence-breakdown-list" class="sentence-breakdown-list"></ol>
+              </details>
+
+              <div id="batch-detail-nav" class="batch-detail-nav" hidden>
+                <button id="batch-detail-prev" class="text-button" type="button">← Dòng trước</button>
+                <span id="batch-detail-position" aria-live="polite"></span>
+                <button id="batch-detail-next" class="text-button" type="button">Dòng tiếp →</button>
+              </div>
+
+              <div class="actions result-actions">
+                <button id="new-comment" class="button primary" type="button">Phân tích nội dung khác</button>
+                <button id="report" class="button alert-outline" type="button">Báo cáo kết quả sai</button>
+              </div>
+            </section>
+          </div>
+
+          <figure class="illustration">
+            <div class="mascot-frame">
+              <img id="mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense" width="180" height="180">
+            </div>
+            <figcaption id="mascot-caption" class="mascot-caption">Sẵn sàng phân tích</figcaption>
+          </figure>
+        </div>
       </div>
 
-      <section id="batch-browse" class="batch-browse" aria-labelledby="batch-browse-title" hidden>
-        <div class="batch-browse-heading">
-          <h4 id="batch-browse-title">Chi tiết từng dòng kết quả</h4>
-          <div class="batch-filter-controls">
-            <input id="batch-search-input" type="search" placeholder="Tìm bình luận…" aria-label="Tìm trong kết quả">
-            <select id="batch-label-filter" aria-label="Lọc theo nhãn">
+      <!-- Tab 2: Lịch sử phân tích -->
+      <div id="panel-history" role="tabpanel" aria-labelledby="subtab-history" hidden>
+        <div class="surface">
+          <div class="filter-bar">
+            <input id="hist-search" type="search" placeholder="Tìm theo nội dung bình luận…" aria-label="Tìm lịch sử">
+            <select id="hist-label-filter" aria-label="Lọc theo nhãn">
               <option value="">Tất cả nhãn</option>
               <option value="1">Có nội dung tiêu cực (1)</option>
-              <option value="0">Không phát hiện tiêu cực (0)</option>
-              <option value="invalid">Bỏ qua / không hợp lệ</option>
+              <option value="0">Không phát hiện nội dung tiêu cực (0)</option>
+              <option value="invalid">Không phân loại được</option>
             </select>
-            <select id="batch-sort-select" aria-label="Sắp xếp">
-              <option value="row-asc">STT tăng dần</option>
-              <option value="row-desc">STT giảm dần</option>
-              <option value="label-neg">Tiêu cực trước</option>
-              <option value="label-nonneg">Không tiêu cực trước</option>
+            <select id="hist-batch-filter" aria-label="Lọc theo phiên phân tích">
+              <option value="">Tất cả phiên phân tích</option>
             </select>
-            <div class="batch-jump">
-              <input id="batch-jump-input" type="number" min="1" step="1" placeholder="STT…" aria-label="Chuyển tới STT">
-              <button id="batch-jump-go" class="button secondary" type="button">Đi</button>
+            <input id="hist-date-from" type="date" aria-label="Từ ngày">
+            <input id="hist-date-to" type="date" aria-label="Đến ngày">
+            <button id="hist-refresh" class="button secondary" type="button">Làm mới</button>
+          </div>
+          <p id="hist-status" class="status-note">Đang tải lịch sử từ SQL Server…</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nội dung bình luận</th>
+                  <th>Kết quả phân tích</th>
+                  <th>Thời gian</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="hist-table-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination-bar">
+            <button id="hist-prev" class="text-button" type="button" disabled>← Trang trước</button>
+            <span id="hist-page-info">Trang 1</span>
+            <button id="hist-next" class="text-button" type="button" disabled>Trang sau →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Báo cáo sai -->
+      <div id="panel-feedback" role="tabpanel" aria-labelledby="subtab-feedback" hidden>
+        <div class="surface">
+          <div class="feedback-summary-strip">
+            <span>Chờ xem xét: <strong id="fb-count-pending">0</strong></span>
+            <span>Đã xác minh: <strong id="fb-count-verified">0</strong></span>
+            <span>Không chấp nhận: <strong id="fb-count-rejected">0</strong></span>
+            <span class="fb-note">Báo cáo sai không tự động thay đổi nhãn gốc.</span>
+          </div>
+          <div class="filter-bar">
+            <input id="fb-search" type="search" placeholder="Tìm nội dung hoặc ghi chú…" aria-label="Tìm báo cáo sai">
+            <select id="fb-status-filter" aria-label="Lọc theo trạng thái">
+              <option value="">Tất cả trạng thái</option>
+              <option value="Chờ xem xét">Chờ xem xét</option>
+              <option value="Đã xác minh">Đã xác minh</option>
+              <option value="Không chấp nhận">Không chấp nhận</option>
+            </select>
+            <select id="fb-reason-filter" aria-label="Lọc theo lý do">
+              <option value="">Tất cả lý do</option>
+              <option value="Nhận diện sai sắc thái cảm xúc">Nhận diện sai sắc thái cảm xúc</option>
+              <option value="Nội dung có yếu tố mỉa mai hoặc châm biếm">Nội dung có yếu tố mỉa mai hoặc châm biếm
+              </option>
+              <option value="Bình luận có nhiều sắc thái cảm xúc">Bình luận có nhiều sắc thái cảm xúc</option>
+              <option value="Không đủ ngữ cảnh">Không đủ ngữ cảnh</option>
+              <option value="Bỏ sót nội dung tiêu cực">Bỏ sót nội dung tiêu cực</option>
+              <option value="Nhầm lẫn nội dung trung tính hoặc tích cực">Nhầm lẫn nội dung trung tính hoặc tích cực
+              </option>
+              <option value="Lý do khác">Lý do khác</option>
+            </select>
+            <button id="fb-refresh" class="button secondary" type="button">Làm mới</button>
+          </div>
+          <p id="fb-status" class="status-note">Đang tải danh sách báo cáo…</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mã</th>
+                  <th>Nguồn / Phiên</th>
+                  <th>Nội dung</th>
+                  <th>Mô hình dự đoán</th>
+                  <th>Đề xuất</th>
+                  <th>Lý do</th>
+                  <th>Trạng thái xử lý</th>
+                  <th>Cập nhật</th>
+                </tr>
+              </thead>
+              <tbody id="fb-table-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination-bar">
+            <button id="fb-prev" class="text-button" type="button" disabled>← Trang trước</button>
+            <span id="fb-page-info">Trang 1</span>
+            <button id="fb-next" class="text-button" type="button" disabled>Trang sau →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHÂN TÍCH TỆP DỮ LIỆU -->
+    <section id="hang-loat" class="section-block shell" aria-labelledby="batch-section-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="batch-section-title">Phân tích tệp dữ liệu</h2>
+          <p class="section-subtitle">Tải tệp CSV / Excel (.xlsx), kiểm tra dữ liệu trước khi phân tích và báo cáo sai
+            theo từng dòng.</p>
+        </div>
+      </div>
+
+      <div class="batch-pipeline" aria-label="Quy trình phân tích tệp dữ liệu">
+        <span class="pipe-step active" id="pipe-upload">Tải tệp</span>
+        <span class="pipe-arrow" aria-hidden="true">→</span>
+        <span class="pipe-step" id="pipe-check">Kiểm tra dữ liệu</span>
+        <span class="pipe-arrow" aria-hidden="true">→</span>
+        <span class="pipe-step" id="pipe-confirm">Xác nhận</span>
+        <span class="pipe-arrow" aria-hidden="true">→</span>
+        <span class="pipe-step" id="pipe-run">Phân tích</span>
+        <span class="pipe-arrow" aria-hidden="true">→</span>
+        <span class="pipe-step" id="pipe-result">Xem kết quả</span>
+        <span class="pipe-arrow" aria-hidden="true">→</span>
+        <span class="pipe-step" id="pipe-export">Xuất báo cáo</span>
+      </div>
+
+      <div class="batch-top-layout">
+        <div class="surface batch-upload-surface">
+          <label class="dropzone" id="csv-dropzone" for="csv-file">
+            <strong>Kéo thả tệp vào đây</strong>
+            <span>hoặc nhấn để chọn tệp từ máy</span>
+            <small>Hỗ trợ CSV và Excel (.xlsx) · tối đa <b id="csv-limit-label">100 MB</b> · <b
+                id="csv-rows-label">300.000 dòng</b></small>
+            <input id="csv-file" type="file"
+              accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+          </label>
+
+          <div class="selected-file" id="selected-file" hidden>
+            <div>
+              <strong id="file-name"></strong>
+              <small id="file-metadata"></small>
             </div>
+            <button id="file-remove" class="text-button" type="button">Bỏ tệp</button>
+          </div>
+
+          <p id="batch-status" class="batch-status" role="status" aria-live="polite">Chưa có tệp được chọn.</p>
+          <div class="batch-progress" id="batch-progress" hidden>
+            <div class="batch-progress-track"><span></span></div>
+            <p id="batch-progress-label">Đang xử lý…</p>
           </div>
         </div>
 
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Nội dung bình luận</th>
-                <th>Kết quả phân tích</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="batch-table-body"></tbody>
-          </table>
+        <div class="surface csv-config" id="csv-config" hidden>
+          <div class="config-grid">
+            <div id="sheet-wrap" hidden>
+              <label for="xlsx-sheet" class="field-label">Chọn trang tính (Sheet)</label>
+              <select id="xlsx-sheet"></select>
+            </div>
+            <div>
+              <label for="csv-column" class="field-label">Chọn cột bình luận</label>
+              <select id="csv-column" disabled>
+                <option value="">Tự động nhận diện</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="csv-preview" class="csv-preview" hidden>
+            <p class="preview-heading">Xem trước dữ liệu mẫu</p>
+            <ol id="csv-preview-list"></ol>
+          </div>
+
+          <div id="batch-confirm-box" class="confirm-box" hidden>
+            <h4>Xác nhận thông tin dữ liệu</h4>
+            <dl class="confirm-summary">
+              <div>
+                <dt>Tệp dữ liệu</dt>
+                <dd id="confirm-filename">—</dd>
+              </div>
+              <div>
+                <dt>Trang tính</dt>
+                <dd id="confirm-sheet">Mặc định (CSV)</dd>
+              </div>
+              <div>
+                <dt>Cột phân tích</dt>
+                <dd id="confirm-column">—</dd>
+              </div>
+              <div>
+                <dt>Tổng số dòng đầu vào</dt>
+                <dd id="confirm-total">—</dd>
+              </div>
+              <div>
+                <dt>Số dòng hợp lệ</dt>
+                <dd id="confirm-valid">—</dd>
+              </div>
+              <div>
+                <dt>Số dòng trống / không hợp lệ</dt>
+                <dd id="confirm-empty">—</dd>
+              </div>
+            </dl>
+            <button id="batch-submit" class="button primary full-btn" type="button" disabled>Phân tích toàn bộ tệp
+              →</button>
+          </div>
         </div>
 
-        <nav class="batch-pages" aria-label="Phân trang kết quả">
-          <button id="batch-page-prev" class="text-button" type="button">← Trang trước</button>
-          <span id="batch-page-label"></span>
-          <button id="batch-page-next" class="text-button" type="button">Trang sau →</button>
-        </nav>
+        <aside class="surface batch-mascot-card" aria-label="Trạng thái xử lý tệp">
+          <img id="batch-mascot" src="media/idle.webp?v=mascot" alt="Mascot TextSense trạng thái chờ" width="110"
+            height="110">
+          <div>
+            <strong id="batch-mascot-title">Sẵn sàng nhận tệp</strong>
+            <p id="batch-mascot-note">Tải lên tệp CSV hoặc XLSX chứa bình luận tiếng Anh để bắt đầu.</p>
+          </div>
+        </aside>
+      </div>
+
+      <section id="batch-result" class="surface batch-result" aria-labelledby="batch-result-title" hidden>
+        <div class="result-header">
+          <div>
+            <h3 id="batch-result-title">Kết quả phân tích tệp dữ liệu</h3>
+            <p id="batch-facts" class="batch-facts"></p>
+          </div>
+          <div class="batch-export-actions">
+            <a id="batch-download" class="button primary" href="#" download="TextSense-ket-qua.csv">Xuất CSV</a>
+            <button id="batch-download-xlsx" class="button secondary" type="button" disabled>Xuất Excel</button>
+            <a class="button secondary" href="#thong-ke" data-goto="thong-ke">Xem thống kê →</a>
+          </div>
+        </div>
+
+        <div class="kpi-strip">
+          <div class="kpi-box"><span>Tổng số dòng đầu vào</span><strong id="batch-kpi-total">—</strong></div>
+          <div class="kpi-box"><span>Số dòng hợp lệ</span><strong id="batch-kpi-valid">—</strong></div>
+          <div class="kpi-box"><span>Phân tích thành công</span><strong id="batch-kpi-success">—</strong></div>
+          <div class="kpi-box"><span>Bỏ qua / không hợp lệ</span><strong id="batch-kpi-invalid">—</strong></div>
+          <div class="kpi-box kpi-neg"><span>Có nội dung tiêu cực (1)</span><strong id="batch-kpi-neg">—</strong></div>
+          <div class="kpi-box kpi-nonneg"><span>Không phát hiện tiêu cực (0)</span><strong
+              id="batch-kpi-nonneg">—</strong></div>
+        </div>
+
+        <section id="batch-browse" class="batch-browse" aria-labelledby="batch-browse-title" hidden>
+          <div class="batch-browse-heading">
+            <h4 id="batch-browse-title">Chi tiết từng dòng kết quả</h4>
+            <div class="batch-filter-controls">
+              <input id="batch-search-input" type="search" placeholder="Tìm bình luận…" aria-label="Tìm trong kết quả">
+              <select id="batch-label-filter" aria-label="Lọc theo nhãn">
+                <option value="">Tất cả nhãn</option>
+                <option value="1">Có nội dung tiêu cực (1)</option>
+                <option value="0">Không phát hiện tiêu cực (0)</option>
+                <option value="invalid">Bỏ qua / không hợp lệ</option>
+              </select>
+              <select id="batch-sort-select" aria-label="Sắp xếp">
+                <option value="row-asc">STT tăng dần</option>
+                <option value="row-desc">STT giảm dần</option>
+                <option value="label-neg">Tiêu cực trước</option>
+                <option value="label-nonneg">Không tiêu cực trước</option>
+              </select>
+              <div class="batch-jump">
+                <input id="batch-jump-input" type="number" min="1" step="1" placeholder="STT…"
+                  aria-label="Chuyển tới STT">
+                <button id="batch-jump-go" class="button secondary" type="button">Đi</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Nội dung bình luận</th>
+                  <th>Kết quả phân tích</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="batch-table-body"></tbody>
+            </table>
+          </div>
+
+          <nav class="batch-pages" aria-label="Phân trang kết quả">
+            <button id="batch-page-prev" class="text-button" type="button">← Trang trước</button>
+            <span id="batch-page-label"></span>
+            <button id="batch-page-next" class="text-button" type="button">Trang sau →</button>
+          </nav>
+        </section>
       </section>
     </section>
-  </section>
 
-  <!-- THỐNG KÊ -->
-  <section id="thong-ke" class="section-block shell" aria-labelledby="stats-section-title">
-    <div class="section-heading">
-      <div>
-        <h2 id="stats-section-title">Thống kê</h2>
-        <p class="section-subtitle">Tổng hợp dữ liệu thực tế từ tập dữ liệu hiện tại hoặc lịch sử lưu trên SQL Server.</p>
-      </div>
-      <div class="stats-scope-controls">
-        <label for="stats-batch-select" class="sr-only">Chọn tập dữ liệu đã phân tích</label>
-        <select id="stats-batch-select">
-          <option value="">Chọn tập dữ liệu đã lưu…</option>
-        </select>
-        <button id="stats-reload" class="button secondary" type="button">Tải dữ liệu</button>
-      </div>
-    </div>
-
-    <div id="stats-empty" class="surface empty-state">
-      <img src="media/thinking.webp" alt="Mascot TextSense" width="96" height="96">
-      <h3>Chưa có dữ liệu thống kê</h3>
-      <p>Thực hiện phân tích hàng loạt hoặc chọn một tập dữ liệu đã lưu trong SQL Server để xem báo cáo.</p>
-      <a class="button primary" href="#hang-loat" data-goto="hang-loat">Đến Phân tích hàng loạt</a>
-    </div>
-
-    <div id="batch-dashboard" hidden>
-      <div id="stats-scope-banner" class="scope-banner"></div>
-
-      <div class="stats-group">
-        <h3 class="stats-group-title">Tổng quan dữ liệu</h3>
-        <div class="kpi-strip">
-          <div class="kpi-box"><span>Tổng số dòng</span><strong id="dash-total">—</strong></div>
-          <div class="kpi-box"><span>Số dòng hợp lệ</span><strong id="dash-valid">—</strong><small id="dash-valid-rate">—</small></div>
-          <div class="kpi-box"><span>Số dòng không hợp lệ</span><strong id="dash-invalid">—</strong><small id="dash-invalid-rate">—</small></div>
-          <div class="kpi-box"><span>Số dòng đã phân tích</span><strong id="dash-analyzed">—</strong></div>
+    <!-- THỐNG KÊ -->
+    <section id="thong-ke" class="section-block shell" aria-labelledby="stats-section-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="stats-section-title">Thống kê</h2>
+          <p class="section-subtitle">Tổng hợp dữ liệu thực tế từ tập dữ liệu hiện tại hoặc lịch sử lưu trên hệ thống.
+          </p>
         </div>
       </div>
 
-      <div class="stats-group">
-        <h3 class="stats-group-title">Phân bố kết quả</h3>
-        <div class="stats-two-col">
-          <article class="surface">
-            <h4 class="card-title">Tỷ lệ hai nhãn</h4>
-            <div class="distribution-layout">
-              <div id="batch-donut" class="batch-donut" role="img" aria-label="Biểu đồ tỷ lệ hai nhãn">
-                <div class="donut-center"><strong id="donut-total">—</strong><span>hợp lệ</span></div>
-              </div>
-              <div class="distribution-legend">
-                <div class="legend-item">
-                  <span class="legend-dot negative"></span>
-                  <div><strong>Có nội dung tiêu cực (1)</strong><small>Sắc thái tiêu cực</small></div>
-                  <b id="dash-negative-count">—</b>
+      <div class="stats-top-layout">
+        <div class="surface stats-picker-panel">
+          <div class="panel-head">
+            <h3>Nguồn dữ liệu thống kê</h3>
+            <p class="panel-sub">Chọn một tập dữ liệu đã lưu trong hệ thống để tải báo cáo chi tiết.</p>
+          </div>
+          <div class="stats-scope-controls">
+            <label for="stats-batch-select" class="sr-only">Chọn tập dữ liệu đã phân tích</label>
+            <select id="stats-batch-select">
+              <option value="">Chọn tập dữ liệu đã lưu…</option>
+            </select>
+            <button id="stats-reload" class="button secondary" type="button">Tải dữ liệu</button>
+          </div>
+        </div>
+
+        <div id="stats-empty" class="surface empty-state stats-empty-pane">
+          <div class="mascot-frame">
+            <img src="media/thinking.webp" alt="Mascot TextSense" width="96" height="96">
+          </div>
+          <h3>Chưa có dữ liệu thống kê</h3>
+          <p>Thực hiện phân tích một tập dữ liệu đã lưu trong hệ thống để xem báo cáo.</p>
+          <a class="button primary" href="#hang-loat" data-goto="hang-loat">Đến Phân tích tệp dữ liệu</a>
+        </div>
+      </div>
+
+      <div id="batch-dashboard" hidden>
+        <div id="stats-scope-banner" class="scope-banner"></div>
+
+        <div class="stats-group">
+          <h3 class="stats-group-title">Tổng quan dữ liệu</h3>
+          <div class="kpi-strip">
+            <div class="kpi-box"><span>Tổng số dòng</span><strong id="dash-total">—</strong></div>
+            <div class="kpi-box"><span>Số dòng hợp lệ</span><strong id="dash-valid">—</strong><small
+                id="dash-valid-rate">—</small></div>
+            <div class="kpi-box"><span>Số dòng không hợp lệ</span><strong id="dash-invalid">—</strong><small
+                id="dash-invalid-rate">—</small></div>
+            <div class="kpi-box"><span>Số dòng đã phân tích</span><strong id="dash-analyzed">—</strong></div>
+          </div>
+        </div>
+
+        <div class="stats-group">
+          <h3 class="stats-group-title">Phân bố kết quả</h3>
+          <div class="stats-two-col">
+            <article class="surface">
+              <h4 class="card-title">Tỷ lệ hai nhãn</h4>
+              <div class="distribution-layout">
+                <div id="batch-donut" class="batch-donut" role="img" aria-label="Biểu đồ tỷ lệ hai nhãn">
+                  <div class="donut-center"><strong id="donut-total">—</strong><span>hợp lệ</span></div>
                 </div>
-                <div class="legend-item">
-                  <span class="legend-dot nonnegative"></span>
-                  <div><strong>Không phát hiện nội dung tiêu cực (0)</strong><small>Tích cực hoặc trung tính</small></div>
-                  <b id="dash-nonnegative-count">—</b>
+                <div class="distribution-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot negative"></span>
+                    <div><strong>Có nội dung tiêu cực (1)</strong><small>Sắc thái tiêu cực</small></div>
+                    <b id="dash-negative-count">—</b>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot nonnegative"></span>
+                    <div><strong>Không phát hiện nội dung tiêu cực (0)</strong><small>Tích cực hoặc trung tính</small>
+                    </div>
+                    <b id="dash-nonnegative-count">—</b>
+                  </div>
                 </div>
               </div>
+            </article>
+            <article class="surface">
+              <h4 class="card-title">So sánh tỷ trọng</h4>
+              <div class="ratio-row">
+                <div class="ratio-label"><span>Có nội dung tiêu cực</span><strong id="dash-negative-pct">—</strong>
+                </div>
+                <div class="ratio-track"><span id="dash-negative-bar" class="ratio-fill negative"></span></div>
+              </div>
+              <div class="ratio-row">
+                <div class="ratio-label"><span>Không phát hiện nội dung tiêu cực</span><strong
+                    id="dash-nonnegative-pct">—</strong></div>
+                <div class="ratio-track"><span id="dash-nonnegative-bar" class="ratio-fill nonnegative"></span></div>
+              </div>
+              <p class="ratio-insight" id="dash-insight">—</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="stats-group">
+          <h3 class="stats-group-title">Đặc điểm dữ liệu</h3>
+          <div class="stats-two-col">
+            <article class="surface">
+              <h4 class="card-title">Độ dài &amp; Trùng lặp</h4>
+              <div class="text-stats">
+                <div><span>Độ dài trung bình</span><strong id="dash-avg-words">—</strong><small>từ</small></div>
+                <div><span>Trung vị độ dài</span><strong id="dash-median-words">—</strong><small>từ</small></div>
+                <div><span>Bình luận trùng lặp</span><strong id="dash-duplicates">—</strong><small>dòng lặp</small>
+                </div>
+              </div>
+              <div id="dash-length-bars" class="insight-bars"></div>
+            </article>
+            <article id="dash-suspect-card" class="surface">
+              <h4 class="card-title">Từ ngữ cần xem xét thêm</h4>
+              <p class="card-note">Thống kê các từ ngữ trùng khớp với danh sách tham chiếu. Kết quả chỉ hỗ trợ khám phá
+                dữ liệu, không xác định một bình luận có hành vi xúc phạm hay không.</p>
+              <div id="dash-suspect-combined" class="suspect-terms-wrap"></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="stats-group">
+          <h3 class="stats-group-title">Phân tích từ khóa</h3>
+          <div class="surface">
+            <div class="term-toolbar">
+              <input id="term-search-input" type="search" placeholder="Tìm từ hoặc cụm từ…" aria-label="Tìm từ khóa">
+              <select id="term-ngram-select" aria-label="Loại từ">
+                <option value="unigram">Từ đơn (Unigram)</option>
+                <option value="bigram">Cụm 2 từ (Bigram)</option>
+              </select>
+              <select id="term-label-select" aria-label="Nhóm nhãn">
+                <option value="negative">Nhóm Có nội dung tiêu cực (1)</option>
+                <option value="all">Toàn bộ bình luận</option>
+                <option value="nonnegative">Nhóm Không phát hiện tiêu cực (0)</option>
+              </select>
+              <select id="term-sort-select" aria-label="Sắp xếp">
+                <option value="count">Theo số lần xuất hiện</option>
+                <option value="documents">Theo số bình luận chứa từ</option>
+              </select>
+              <select id="term-limit-select" aria-label="Số lượng">
+                <option value="10">Top 10</option>
+                <option value="20">Top 20</option>
+              </select>
             </div>
-          </article>
-          <article class="surface">
-            <h4 class="card-title">So sánh tỷ trọng</h4>
-            <div class="ratio-row">
-              <div class="ratio-label"><span>Có nội dung tiêu cực</span><strong id="dash-negative-pct">—</strong></div>
-              <div class="ratio-track"><span id="dash-negative-bar" class="ratio-fill negative"></span></div>
+            <div class="term-analytics-grid">
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Từ khóa / cụm từ</th>
+                      <th>Số lần xuất hiện</th>
+                      <th>Số bình luận chứa từ</th>
+                      <th>Tỷ lệ trong nhóm</th>
+                      <th>Bình luận liên quan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="term-freq-tbody"></tbody>
+                </table>
+              </div>
+              <div>
+                <h4 class="card-title">Biểu đồ tần suất</h4>
+                <div id="term-freq-bars" class="insight-bars"></div>
+              </div>
             </div>
-            <div class="ratio-row">
-              <div class="ratio-label"><span>Không phát hiện nội dung tiêu cực</span><strong id="dash-nonnegative-pct">—</strong></div>
-              <div class="ratio-track"><span id="dash-nonnegative-bar" class="ratio-fill nonnegative"></span></div>
+            <div id="term-comments-box" class="term-comments-box" hidden>
+              <div class="term-comments-head">
+                <h4 id="term-comments-title">Bình luận liên quan</h4>
+                <button id="term-comments-close" class="text-button" type="button">Đóng</button>
+              </div>
+              <ul id="term-comments-list" class="term-comments-list"></ul>
             </div>
-            <p class="ratio-insight" id="dash-insight">—</p>
-          </article>
+          </div>
+        </div>
+
+        <div id="stats-source-time-block" class="stats-group" hidden>
+          <h3 class="stats-group-title">Phân tích theo nguồn và thời gian</h3>
+          <div class="stats-two-col">
+            <article id="dash-source-card" class="surface" hidden>
+              <h4 class="card-title">Theo nguồn</h4>
+              <div id="dash-source-bars" class="insight-bars"></div>
+            </article>
+            <article id="dash-month-card" class="surface" hidden>
+              <h4 class="card-title">Theo thời gian</h4>
+              <div id="dash-month-bars" class="insight-bars"></div>
+            </article>
+          </div>
+        </div>
+
+        <div id="dash-original-card" class="stats-group" hidden>
+          <h3 class="stats-group-title">Đánh giá trên tập dữ liệu có nhãn tham chiếu</h3>
+          <div class="surface">
+            <p class="card-note">Đối chiếu <strong>Nhãn dự đoán</strong> của TextSense với <strong>Nhãn tham
+                chiếu</strong> có sẵn trong tệp tải lên (ánh xạ nhãn gốc -1 → 1; 0 và +1 → 0).</p>
+            <div id="ref-eval-metrics" class="kpi-strip"></div>
+            <div class="stats-two-col" style="margin-top:16px">
+              <div>
+                <h4 class="card-title">Phân bố nhãn tham chiếu gốc</h4>
+                <div id="dash-original-bars" class="insight-bars"></div>
+              </div>
+              <div id="ref-confusion-wrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÔ HÌNH -->
+    <section id="thong-tin-mo-hinh" class="section-block shell" aria-labelledby="model-section-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="model-section-title">Thông tin mô hình</h2>
+          <p class="section-subtitle">Kiến trúc và quy trình tiền xử lý của mô hình phân tích cảm xúc.</p>
         </div>
       </div>
 
-      <div class="stats-group">
-        <h3 class="stats-group-title">Đặc điểm dữ liệu</h3>
-        <div class="stats-two-col">
-          <article class="surface">
-            <h4 class="card-title">Độ dài &amp; Trùng lặp</h4>
-            <div class="text-stats">
-              <div><span>Độ dài trung bình</span><strong id="dash-avg-words">—</strong><small>từ</small></div>
-              <div><span>Trung vị độ dài</span><strong id="dash-median-words">—</strong><small>từ</small></div>
-              <div><span>Bình luận trùng lặp</span><strong id="dash-duplicates">—</strong><small>dòng lặp</small></div>
-            </div>
-            <div id="dash-length-bars" class="insight-bars"></div>
-          </article>
-          <article id="dash-suspect-card" class="surface">
-            <h4 class="card-title">Từ ngữ cần xem xét thêm</h4>
-            <p class="card-note">Thống kê các từ ngữ trùng khớp với danh sách tham chiếu. Kết quả chỉ hỗ trợ khám phá dữ liệu, không xác định một bình luận có hành vi xúc phạm hay không.</p>
-            <div id="dash-suspect-combined" class="suspect-terms-wrap"></div>
-          </article>
-        </div>
-      </div>
+      <div class="model-info-grid">
+        <article class="surface">
+          <h3>Phương pháp &amp; Tham số</h3>
+          <ul class="info-list">
+            <li><strong>Biểu diễn văn bản:</strong> TF-IDF (<code>max_features = 40.000</code>,
+              <code>ngram_range = (1, 2)</code>, <code>min_df = 2</code>, <code>sublinear_tf = True</code>).
+            </li>
+            <li><strong>Bộ phân loại (E3 Đa miền):</strong> LinearSVC (<code>C = 0.5</code>, trọng số nguồn
+              <code>r = 0.15</code> trên 533.314 mẫu chính trị + Sentiment140, ngưỡng quyết định
+              <code>threshold = -0.1916</code> chọn trên Validation).
+            </li>
+            <li><strong>Phân loại nhị phân:</strong> Nhãn <code>1</code> (Có nội dung tiêu cực) và Nhãn <code>0</code>
+              (Không phát hiện nội dung tiêu cực, gồm tích cực và trung tính).</li>
+          </ul>
+        </article>
 
-      <div class="stats-group">
-        <h3 class="stats-group-title">Phân tích từ khóa</h3>
-        <div class="surface">
-          <div class="term-toolbar">
-            <input id="term-search-input" type="search" placeholder="Tìm từ hoặc cụm từ…" aria-label="Tìm từ khóa">
-            <select id="term-ngram-select" aria-label="Loại từ">
-              <option value="unigram">Từ đơn (Unigram)</option>
-              <option value="bigram">Cụm 2 từ (Bigram)</option>
-            </select>
-            <select id="term-label-select" aria-label="Nhóm nhãn">
-              <option value="negative">Nhóm Có nội dung tiêu cực (1)</option>
-              <option value="all">Toàn bộ bình luận</option>
-              <option value="nonnegative">Nhóm Không phát hiện tiêu cực (0)</option>
-            </select>
-            <select id="term-sort-select" aria-label="Sắp xếp">
-              <option value="count">Theo số lần xuất hiện</option>
-              <option value="documents">Theo số bình luận chứa từ</option>
-            </select>
-            <select id="term-limit-select" aria-label="Số lượng">
-              <option value="10">Top 10</option>
-              <option value="20">Top 20</option>
-            </select>
-          </div>
-          <div class="term-analytics-grid">
-            <div class="table-wrap">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Từ khóa / cụm từ</th>
-                    <th>Số lần xuất hiện</th>
-                    <th>Số bình luận chứa từ</th>
-                    <th>Tỷ lệ trong nhóm</th>
-                    <th>Bình luận liên quan</th>
-                  </tr>
-                </thead>
-                <tbody id="term-freq-tbody"></tbody>
-              </table>
-            </div>
-            <div>
-              <h4 class="card-title">Biểu đồ tần suất</h4>
-              <div id="term-freq-bars" class="insight-bars"></div>
-            </div>
-          </div>
-          <div id="term-comments-box" class="term-comments-box" hidden>
-            <div class="term-comments-head">
-              <h4 id="term-comments-title">Bình luận liên quan</h4>
-              <button id="term-comments-close" class="text-button" type="button">Đóng</button>
-            </div>
-            <ul id="term-comments-list" class="term-comments-list"></ul>
-          </div>
-        </div>
+        <article class="surface">
+          <h3>Tiền xử lý văn bản (chuẩn v4 + phủ định)</h3>
+          <ul class="info-list">
+            <li>Chuẩn hóa Unicode NFKC, giải mã HTML entities (<code>&amp;amp;</code>, <code>&amp;quot;</code>…) và dấu nháy đơn.</li>
+            <li>Loại bỏ tiền tố <code>RT @handle</code> ở đầu bình luận và đường dẫn URL.</li>
+            <li>Chuyển chữ thường (<code>casefold</code>), chuẩn hóa viết tắt phủ định ngữ cảnh
+              (<code>cant → can not</code>, <code>don t → do not</code>…) và sinh đặc trưng phủ định <code>not_</code> (<code>window = 3</code>).</li>
+            <li>Tách dấu câu, thay dấu gạch dưới bằng khoảng trắng và chuẩn hóa khoảng trắng.</li>
+          </ul>
+        </article>
       </div>
+    </section>
+  </main>
 
-      <div id="stats-source-time-block" class="stats-group" hidden>
-        <h3 class="stats-group-title">Phân tích theo nguồn và thời gian</h3>
-        <div class="stats-two-col">
-          <article id="dash-source-card" class="surface" hidden>
-            <h4 class="card-title">Theo nguồn</h4>
-            <div id="dash-source-bars" class="insight-bars"></div>
-          </article>
-          <article id="dash-month-card" class="surface" hidden>
-            <h4 class="card-title">Theo thời gian</h4>
-            <div id="dash-month-bars" class="insight-bars"></div>
-          </article>
-        </div>
-      </div>
+  <footer class="site-footer">
+    <div class="shell">TextSense · Phân tích cảm xúc bình luận mạng xã hội</div>
+  </footer>
 
-      <div id="dash-original-card" class="stats-group" hidden>
-        <h3 class="stats-group-title">Đánh giá trên tập dữ liệu có nhãn tham chiếu</h3>
-        <div class="surface">
-          <p class="card-note">Đối chiếu <strong>Nhãn dự đoán</strong> của TextSense với <strong>Nhãn tham chiếu</strong> có sẵn trong tệp tải lên (ánh xạ nhãn gốc -1 → 1; 0 và +1 → 0).</p>
-          <div id="ref-eval-metrics" class="kpi-strip"></div>
-          <div class="stats-two-col" style="margin-top:16px">
-            <div>
-              <h4 class="card-title">Phân bố nhãn tham chiếu gốc</h4>
-              <div id="dash-original-bars" class="insight-bars"></div>
-            </div>
-            <div id="ref-confusion-wrap"></div>
-          </div>
-        </div>
-      </div>
+  <span id="model-state" class="status-indicator" role="status" title="Trạng thái hệ thống">
+    <span class="status-dot"></span>
+    <span id="model-state-text">Đang kiểm tra</span>
+  </span>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-dialog-title">
+    <div class="dialog-head">
+      <h3 id="detail-dialog-title">Chi tiết kết quả phân tích</h3>
+      <button id="close-detail-dialog" class="text-button" type="button">Đóng</button>
     </div>
-  </section>
-
-  <!-- MÔ HÌNH -->
-  <section id="thong-tin-mo-hinh" class="section-block shell" aria-labelledby="model-section-title">
-    <div class="section-heading">
-      <div>
-        <h2 id="model-section-title">Thông tin mô hình</h2>
-        <p class="section-subtitle">Kiến trúc, quy trình tiền xử lý, dữ liệu huấn luyện, chỉ số thực nghiệm và các giới hạn hiện tại.</p>
-      </div>
-    </div>
-
-    <div class="model-info-grid">
-      <article class="surface">
-        <h3>Phương pháp &amp; Tham số</h3>
-        <ul class="info-list">
-          <li><strong>Biểu diễn văn bản:</strong> TF-IDF (<code>max_features = 40.000</code>, <code>ngram_range = (1, 2)</code>, <code>min_df = 2</code>, <code>sublinear_tf = True</code>).</li>
-          <li><strong>Bộ phân loại:</strong> LinearSVC (<code>C = 1.0</code>, ngưỡng quyết định <code>threshold = -0.2203</code> chọn trên tập Validation).</li>
-          <li><strong>Phân loại nhị phân:</strong> Nhãn <code>1</code> (Có nội dung tiêu cực) và Nhãn <code>0</code> (Không phát hiện nội dung tiêu cực, gồm tích cực và trung tính).</li>
-        </ul>
-      </article>
-
-      <article class="surface">
-        <h3>Tiền xử lý văn bản</h3>
-        <ul class="info-list">
-          <li>Chuẩn hóa Unicode NFKC và dấu nháy đơn.</li>
-          <li>Loại bỏ tiền tố <code>RT @handle</code> ở đầu bình luận và đường dẫn URL.</li>
-          <li>Chuyển chữ thường (<code>casefold</code>) và chuẩn hóa từ viết tắt phủ định (<code>cant → can not</code>, <code>wasnt → was not</code>…).</li>
-          <li>Tách dấu câu, thay dấu gạch dưới bằng khoảng trắng và chuẩn hóa khoảng trắng.</li>
-        </ul>
-      </article>
-
-      <article class="surface">
-        <h3>Nguồn dữ liệu &amp; Chia tập</h3>
-        <ul class="info-list">
-          <li><strong>Tổng dữ liệu sạch sau lọc trùng:</strong> <span id="mi-total-rows">196.056</span> bình luận tiếng Anh.</li>
-          <li><strong>Nguồn:</strong> Twitter (<span id="mi-twitter-rows">159.588</span> mẫu) và Reddit (<span id="mi-reddit-rows">36.468</span> mẫu).</li>
-          <li><strong>Chia tập phân tầng (seed 42):</strong> Train <span id="mi-train-rows">133.317</span> (68%) · Validation <span id="mi-val-rows">23.527</span> (12%) · Test <span id="mi-test-rows">39.212</span> (20%).</li>
-        </ul>
-      </article>
-
-      <article class="surface">
-        <h3>Chỉ số đánh giá trên tập Test (39.212 mẫu)</h3>
-        <div class="kpi-strip" style="margin-top:12px">
-          <div class="kpi-box"><span>Accuracy</span><strong id="mi-acc">94,55%</strong></div>
-          <div class="kpi-box"><span>Precision (lớp 1)</span><strong id="mi-prec">85,99%</strong></div>
-          <div class="kpi-box"><span>Recall (lớp 1)</span><strong id="mi-rec">89,87%</strong></div>
-          <div class="kpi-box"><span>F1-score (lớp 1)</span><strong id="mi-f1">87,89%</strong></div>
-        </div>
-      </article>
-
-      <article class="surface model-limits-card">
-        <h3>Giới hạn của mô hình</h3>
-        <ul class="info-list">
-          <li>Mô hình được huấn luyện trên dữ liệu tiếng Anh; hệ thống từ chối văn bản tiếng Việt có dấu vì chưa được huấn luyện và đánh giá trên tiếng Việt.</li>
-          <li>Nhãn 0 gộp chung nội dung tích cực và trung tính, không phân loại 3 lớp độc lập.</li>
-          <li>Có thể nhầm lẫn với câu mỉa mai, châm biếm, phủ định phức tạp hoặc thiếu ngữ cảnh.</li>
-          <li>Phân tích câu/cụm từ chỉ mang tính hỗ trợ quan sát bằng cùng mô hình, không phải mô hình phân loại cấp câu độc lập.</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <div class="shell">TextSense · Phân tích cảm xúc bình luận mạng xã hội</div>
-</footer>
-
-<dialog id="detail-dialog" aria-labelledby="detail-dialog-title">
-  <div class="dialog-head">
-    <h3 id="detail-dialog-title">Chi tiết kết quả phân tích</h3>
-    <button id="close-detail-dialog" class="text-button" type="button">Đóng</button>
-  </div>
-  <div class="detail-meta" id="detail-meta"></div>
-  <div class="report-readonly-box">
-    <label>Nội dung bình luận</label>
-    <p id="detail-text" class="detail-full-text"></p>
-  </div>
-</dialog>
-
-<dialog id="report-dialog" aria-labelledby="report-title">
-  <form id="report-form">
-    <h3 id="report-title">Báo cáo kết quả sai</h3>
-    <p class="intro">Báo cáo được lưu vào SQL Server với trạng thái <strong>Chờ xem xét</strong>, không tự động thay đổi kết quả dự đoán ban đầu.</p>
-
+    <div class="detail-meta" id="detail-meta"></div>
     <div class="report-readonly-box">
       <label>Nội dung bình luận</label>
-      <p id="report-text-preview" class="report-preview-text"></p>
-      <div class="report-model-pred">
-        <span>Kết quả mô hình:</span>
-        <strong id="report-model-label"></strong>
+      <p id="detail-text" class="detail-full-text"></p>
+    </div>
+  </dialog>
+
+  <dialog id="report-dialog" aria-labelledby="report-title">
+    <form id="report-form">
+      <h3 id="report-title">Báo cáo kết quả sai</h3>
+      <p class="intro">Báo cáo được lưu vào hệ thống với trạng thái <strong>Chờ xem xét</strong>, không tự động thay
+        đổi kết quả dự đoán ban đầu.</p>
+
+      <div class="report-readonly-box">
+        <label>Nội dung bình luận</label>
+        <p id="report-text-preview" class="report-preview-text"></p>
+        <div class="report-model-pred">
+          <span>Kết quả mô hình:</span>
+          <strong id="report-model-label"></strong>
+        </div>
       </div>
+
+      <label for="report-label">Nhãn đề xuất <span class="req">*</span></label>
+      <select id="report-label" required>
+        <option value="">Chọn nhãn đề xuất…</option>
+        <option value="Có nội dung tiêu cực">Có nội dung tiêu cực (Nhãn 1)</option>
+        <option value="Không phát hiện nội dung tiêu cực">Không phát hiện nội dung tiêu cực (Nhãn 0)</option>
+      </select>
+
+      <label for="report-reason-cat">Lý do báo cáo <span class="req">*</span></label>
+      <select id="report-reason-cat" required>
+        <option value="Nhận diện sai sắc thái cảm xúc">Nhận diện sai sắc thái cảm xúc</option>
+        <option value="Nội dung có yếu tố mỉa mai hoặc châm biếm">Nội dung có yếu tố mỉa mai hoặc châm biếm</option>
+        <option value="Bình luận có nhiều sắc thái cảm xúc">Bình luận có nhiều sắc thái cảm xúc</option>
+        <option value="Không đủ ngữ cảnh">Không đủ ngữ cảnh</option>
+        <option value="Bỏ sót nội dung tiêu cực">Bỏ sót nội dung tiêu cực</option>
+        <option value="Nhầm lẫn nội dung trung tính hoặc tích cực">Nhầm lẫn nội dung trung tính hoặc tích cực</option>
+        <option value="Lý do khác">Lý do khác</option>
+      </select>
+
+      <label for="report-reason">Giải thích bổ sung (không bắt buộc)</label>
+      <textarea id="report-reason" rows="3" maxlength="2000" placeholder="Nhập thêm giải thích nếu có…"></textarea>
+
+      <p id="report-feedback-msg" class="report-feedback-msg" role="alert" hidden></p>
+
+      <div class="actions">
+        <button id="report-submit-btn" class="button primary" type="submit">Gửi báo cáo</button>
+        <button class="text-button" id="cancel-report" type="button">Đóng</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="auth-dialog" aria-labelledby="auth-dialog-title">
+    <div class="dialog-head">
+      <h3 id="auth-dialog-title">Đăng nhập TextSense</h3>
+      <button id="close-auth-dialog" class="text-button" type="button">Đóng</button>
     </div>
-
-    <label for="report-label">Nhãn đề xuất <span class="req">*</span></label>
-    <select id="report-label" required>
-      <option value="">Chọn nhãn đề xuất…</option>
-      <option value="Có nội dung tiêu cực">Có nội dung tiêu cực (Nhãn 1)</option>
-      <option value="Không phát hiện nội dung tiêu cực">Không phát hiện nội dung tiêu cực (Nhãn 0)</option>
-    </select>
-
-    <label for="report-reason-cat">Lý do báo cáo <span class="req">*</span></label>
-    <select id="report-reason-cat" required>
-      <option value="Nhận diện sai sắc thái cảm xúc">Nhận diện sai sắc thái cảm xúc</option>
-      <option value="Nội dung có yếu tố mỉa mai hoặc châm biếm">Nội dung có yếu tố mỉa mai hoặc châm biếm</option>
-      <option value="Bình luận có nhiều sắc thái cảm xúc">Bình luận có nhiều sắc thái cảm xúc</option>
-      <option value="Không đủ ngữ cảnh">Không đủ ngữ cảnh</option>
-      <option value="Bỏ sót nội dung tiêu cực">Bỏ sót nội dung tiêu cực</option>
-      <option value="Nhầm lẫn nội dung trung tính hoặc tích cực">Nhầm lẫn nội dung trung tính hoặc tích cực</option>
-      <option value="Lý do khác">Lý do khác</option>
-    </select>
-
-    <label for="report-reason">Giải thích bổ sung (không bắt buộc)</label>
-    <textarea id="report-reason" rows="3" maxlength="2000" placeholder="Nhập thêm giải thích nếu có…"></textarea>
-
-    <p id="report-feedback-msg" class="report-feedback-msg" role="alert" hidden></p>
-
-    <div class="actions">
-      <button id="report-submit-btn" class="button primary" type="submit">Gửi báo cáo</button>
-      <button class="text-button" id="cancel-report" type="button">Đóng</button>
+    <div class="sub-tabs auth-tabs" role="tablist" aria-label="Chọn đăng nhập hoặc đăng ký">
+      <button id="auth-tab-login" type="button" role="tab" aria-selected="true">Đăng nhập</button>
+      <button id="auth-tab-register" type="button" role="tab" aria-selected="false">Đăng ký</button>
     </div>
-  </form>
-</dialog>
+    <form id="auth-form">
+      <label for="auth-username">Email hoặc tên đăng nhập <span class="req">*</span></label>
+      <input id="auth-username" type="text" required minlength="3" maxlength="120" autocomplete="username"
+        placeholder="Ví dụ: ten@gmail.com">
+
+      <div id="auth-displayname-wrap" hidden>
+        <label for="auth-displayname">Tên hiển thị</label>
+        <input id="auth-displayname" type="text" maxlength="120" autocomplete="name" placeholder="Ví dụ: Nguyễn Văn A">
+      </div>
+
+      <label for="auth-password">Mật khẩu <span class="req">*</span></label>
+      <input id="auth-password" type="password" required minlength="6" autocomplete="current-password"
+        placeholder="Tối thiểu 6 ký tự">
+
+      <p id="auth-msg" class="report-feedback-msg" role="alert" hidden></p>
+
+      <div class="actions">
+        <button id="auth-submit-btn" class="button primary full-btn" type="submit">Đăng nhập</button>
+        <a id="auth-google-btn" class="button secondary full-btn" href="/api/auth/google" hidden>Đăng nhập bằng Google
+          Email</a>
+      </div>
+    </form>
+  </dialog>
 </body>
+
 </html>

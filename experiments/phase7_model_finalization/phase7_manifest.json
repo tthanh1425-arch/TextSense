@@ -1,0 +1,54 @@
+{
+  "phase": "Phase 7 - Official Model Finalization",
+  "created_utc": "2026-11-27T17:01:00+07:00",
+  "selected_model_id": "E0-Artifact",
+  "frozen_artifact_path": "baseline_v3/binary_linear_svm.joblib",
+  "deployed_artifact_path": "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib",
+  "artifact_sha256": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+  "preprocessing_version": "textsense_clean_v3_context",
+  "threshold": -0.19220128657328076,
+  "decision_rule": "decision_score > threshold => 1 (Negative); decision_score <= threshold => 0 (Non-negative)",
+  "label_mapping": {
+    "0": "Không tiêu cực (Non-negative)",
+    "1": "Tiêu cực (Negative)"
+  },
+  "config": {
+    "vectorizer": {
+      "type": "TfidfVectorizer",
+      "lowercase": true,
+      "ngram_range": [1, 2],
+      "min_df": 2,
+      "max_features": 40000,
+      "sublinear_tf": true,
+      "dtype": "float32"
+    },
+    "classifier": {
+      "type": "LinearSVC",
+      "C": 1.0,
+      "class_weight": null,
+      "max_iter": 3000,
+      "random_state": 42
+    },
+    "trained_on": "Political Train + Validation (156,840 rows)"
+  },
+  "evaluation_summary": {
+    "T1_rows": 39210,
+    "T1_accuracy": 0.9476154042336139,
+    "T1_precision_class1": 0.8705060295277809,
+    "T1_recall_class1": 0.8951211032564608,
+    "T1_f1_class1": 0.8826419837732831,
+    "T1_pr_auc_class1": 0.9379947285888458,
+    "T1_f1_ci95": [0.8773583580483718, 0.8878198420788993],
+    "T2_rows": 60000,
+    "T2_f1_class1": 0.4496867795347104,
+    "T2_pr_auc_class1": 0.6857610964193774
+  },
+  "environment": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  }
+}

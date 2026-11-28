@@ -1,0 +1,45 @@
+{
+  "experiment_id": "E6-50k",
+  "base_experiment": "E2 (locked C & threshold)",
+  "preprocessing_version": "textsense_clean_v4",
+  "train_datasets": [
+    "data/splits/political_train.csv (133314)",
+    "s140 (50000)"
+  ],
+  "val_datasets": [
+    "data/splits/political_val.csv (23526)",
+    "data/splits/s140_val_60k.csv (60000)"
+  ],
+  "vectorizer": {
+    "type": "TfidfVectorizer",
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "max_features": 40000,
+    "sublinear_tf": true
+  },
+  "model": {
+    "type": "LinearSVC",
+    "C": 0.5,
+    "class_weight": null,
+    "max_iter": 3000,
+    "random_state": 42
+  },
+  "sample_weight": "uniform (1.0)",
+  "threshold": -0.23788077037364946,
+  "threshold_objective": "LOCKED_FROM_E2",
+  "seed": 42,
+  "train_time_sec": 16.637,
+  "infer_time_sec": 2.637,
+  "env": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "model_sha256": "e101a1433244879754123b52077f8da496b6299bc870883a6db658fe2f253fa1"
+}

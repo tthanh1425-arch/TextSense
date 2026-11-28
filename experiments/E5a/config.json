@@ -1,0 +1,39 @@
+{
+  "experiment_id": "E5a",
+  "base_experiment": "E3",
+  "preprocessing_version": "textsense_clean_v4+negation_window3",
+  "train_datasets": [
+    "data/splits/political_train.csv (133314)",
+    "data/splits/s140_train_400k.csv (400000)"
+  ],
+  "val_datasets": [
+    "data/splits/political_val.csv (23526)",
+    "data/splits/s140_val_60k.csv (60000)"
+  ],
+  "model": {
+    "type": "LinearSVC",
+    "C": 0.5,
+    "selected_class_weight": null,
+    "max_iter": 3000,
+    "random_state": 42
+  },
+  "sample_weight": {
+    "selected_r": 0.15,
+    "w_pol": 2.7587965693121035,
+    "w_s140": 0.4138194853968155
+  },
+  "threshold": -0.19164636482240816,
+  "threshold_objective": "F1_class1 (political_val)",
+  "seed": 42,
+  "train_time_sec": 43.854,
+  "infer_time_sec": 2.82,
+  "env": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "model_sha256": "ea0030580091094fd47af7a2ec68758dd9452183c230a374857d235969ba2c3e"
+}

@@ -1,0 +1,1 @@
+E5a (base=E3, class_weight=None): thr=-0.191646, pol_val F1=0.8026

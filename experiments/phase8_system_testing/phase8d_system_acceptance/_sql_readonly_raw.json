@@ -1,0 +1,476 @@
+{
+  "db_name": "TextSenseDB",
+  "status": {
+    "configured": true,
+    "available": true,
+    "message": "Đã kết nối SQL Server; toàn bộ lịch sử dùng SQL Server."
+  },
+  "tables": {
+    "Tweets": {
+      "exists": true,
+      "row_count": 196050,
+      "columns": [
+        {
+          "name": "TweetID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "Source",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 40
+        },
+        {
+          "name": "Content",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": -1
+        },
+        {
+          "name": "OriginalLabel",
+          "type": "int",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "BinaryLabel",
+          "type": "int",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "ImportedAt",
+          "type": "datetime2",
+          "nullable": "NO",
+          "max_len": null
+        }
+      ]
+    },
+    "TweetTokens": {
+      "exists": true,
+      "row_count": 3780313,
+      "columns": [
+        {
+          "name": "TweetID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "Token",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 100
+        },
+        {
+          "name": "Frequency",
+          "type": "int",
+          "nullable": "NO",
+          "max_len": null
+        }
+      ]
+    },
+    "TrainingRuns": {
+      "exists": true,
+      "row_count": 7,
+      "columns": [
+        {
+          "name": "TrainingRunID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "StartedUtc",
+          "type": "datetimeoffset",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "Task",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 40
+        },
+        {
+          "name": "Status",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 30
+        },
+        {
+          "name": "ModelPath",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": 1000
+        },
+        {
+          "name": "Accuracy",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "MacroF1",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "PrecisionPositive",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "RecallPositive",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "F1Positive",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "TestRows",
+          "type": "int",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "SelectedC",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "DecisionThreshold",
+          "type": "float",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "PythonVersion",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": 50
+        },
+        {
+          "name": "SklearnVersion",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": 50
+        },
+        {
+          "name": "DataSha256",
+          "type": "char",
+          "nullable": "YES",
+          "max_len": 64
+        },
+        {
+          "name": "ManifestSha256",
+          "type": "char",
+          "nullable": "YES",
+          "max_len": 64
+        },
+        {
+          "name": "MetricsJson",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": -1
+        },
+        {
+          "name": "LogText",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": -1
+        },
+        {
+          "name": "CreatedAt",
+          "type": "datetimeoffset",
+          "nullable": "NO",
+          "max_len": null
+        }
+      ]
+    },
+    "PredictionBatches": {
+      "exists": true,
+      "row_count": 44,
+      "columns": [
+        {
+          "name": "BatchID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "CreatedUtc",
+          "type": "datetimeoffset",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "Task",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 40
+        },
+        {
+          "name": "SourceName",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 260
+        },
+        {
+          "name": "RowCount",
+          "type": "int",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "UploadBytes",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "UploadSha256",
+          "type": "char",
+          "nullable": "NO",
+          "max_len": 64
+        },
+        {
+          "name": "UserID",
+          "type": "bigint",
+          "nullable": "YES",
+          "max_len": null
+        }
+      ]
+    },
+    "Predictions": {
+      "exists": true,
+      "row_count": 624403,
+      "columns": [
+        {
+          "name": "PredictionID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "BatchID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "RowNumber",
+          "type": "int",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "InputText",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": -1
+        },
+        {
+          "name": "PredictedLabel",
+          "type": "tinyint",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "LabelName",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": 40
+        },
+        {
+          "name": "Status",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 100
+        }
+      ]
+    },
+    "UserFeedback": {
+      "exists": true,
+      "row_count": 3,
+      "columns": [
+        {
+          "name": "FeedbackID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "CreatedUtc",
+          "type": "datetimeoffset",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "SourceName",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 40
+        },
+        {
+          "name": "InputText",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": -1
+        },
+        {
+          "name": "ModelPrediction",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 100
+        },
+        {
+          "name": "SuggestedLabel",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 100
+        },
+        {
+          "name": "UserNote",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": -1
+        },
+        {
+          "name": "BatchID",
+          "type": "bigint",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "RowNumber",
+          "type": "int",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "PredictionID",
+          "type": "bigint",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "InputSha256",
+          "type": "char",
+          "nullable": "YES",
+          "max_len": 64
+        },
+        {
+          "name": "ReasonCategory",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 150
+        },
+        {
+          "name": "ReviewStatus",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 40
+        },
+        {
+          "name": "ReviewedUtc",
+          "type": "datetimeoffset",
+          "nullable": "YES",
+          "max_len": null
+        },
+        {
+          "name": "UserID",
+          "type": "bigint",
+          "nullable": "YES",
+          "max_len": null
+        }
+      ]
+    },
+    "Users": {
+      "exists": true,
+      "row_count": 1,
+      "columns": [
+        {
+          "name": "UserID",
+          "type": "bigint",
+          "nullable": "NO",
+          "max_len": null
+        },
+        {
+          "name": "Username",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 120
+        },
+        {
+          "name": "Email",
+          "type": "nvarchar",
+          "nullable": "YES",
+          "max_len": 254
+        },
+        {
+          "name": "DisplayName",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 120
+        },
+        {
+          "name": "PasswordHash",
+          "type": "varchar",
+          "nullable": "NO",
+          "max_len": 128
+        },
+        {
+          "name": "PasswordSalt",
+          "type": "varchar",
+          "nullable": "NO",
+          "max_len": 64
+        },
+        {
+          "name": "AuthProvider",
+          "type": "nvarchar",
+          "nullable": "NO",
+          "max_len": 32
+        },
+        {
+          "name": "CreatedUtc",
+          "type": "datetimeoffset",
+          "nullable": "NO",
+          "max_len": null
+        }
+      ]
+    }
+  },
+  "foreign_keys": [
+    {
+      "name": "FK_TweetTokens_Tweets",
+      "table": "TweetTokens",
+      "ref_table": "Tweets"
+    },
+    {
+      "name": "FK_Predictions_PredictionBatches",
+      "table": "Predictions",
+      "ref_table": "PredictionBatches"
+    },
+    {
+      "name": "FK_PredictionBatches_Users",
+      "table": "PredictionBatches",
+      "ref_table": "Users"
+    },
+    {
+      "name": "FK_UserFeedback_Users",
+      "table": "UserFeedback",
+      "ref_table": "Users"
+    }
+  ]
+}

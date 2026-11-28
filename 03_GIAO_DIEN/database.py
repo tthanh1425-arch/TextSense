@@ -6,8 +6,10 @@ continue but history is not persisted; callers receive None and a RuntimeWarning
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
+import secrets
 import warnings
 from datetime import datetime, timezone
 from typing import Any
@@ -132,6 +134,184 @@ def _feedback_has_extended_columns(cursor) -> bool:
     return bool(row and len(row) == 3 and all(bool(v) for v in row))
 
 
+def _table_has_user_id(cursor, table_name: str) -> bool:
+    row = cursor.execute(
+        "SELECT CASE WHEN COL_LENGTH(?, N'UserID') IS NOT NULL THEN 1 ELSE 0 END",
+        (table_name,),
+    ).fetchone()
+    return bool(row and len(row) == 1 and row[0] == 1)
+
+
+def _hash_password(password: str, salt_hex: str | None = None) -> tuple[str, str]:
+    salt = bytes.fromhex(salt_hex) if salt_hex else secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 120_000)
+    return dk.hex(), salt.hex()
+
+
+def _is_valid_email(value: str) -> bool:
+    import re
+    return bool(re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', value))
+
+
+def _ensure_auth_schema(conn) -> None:
+    """Safely create dbo.Users and UserID columns if missing, without altering existing data."""
+    cursor = conn.cursor()
+    cursor.execute("""
+        IF OBJECT_ID(N'dbo.Users', N'U') IS NULL
+        BEGIN
+            CREATE TABLE dbo.Users (
+                UserID BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                Username NVARCHAR(120) NOT NULL UNIQUE,
+                Email NVARCHAR(254) NULL,
+                DisplayName NVARCHAR(120) NOT NULL,
+                PasswordHash VARCHAR(128) NOT NULL,
+                PasswordSalt VARCHAR(64) NOT NULL,
+                AuthProvider NVARCHAR(32) NOT NULL CONSTRAINT DF_Users_AuthProvider DEFAULT N'local',
+                CreatedUtc DATETIMEOFFSET NOT NULL CONSTRAINT DF_Users_CreatedUtc DEFAULT SYSDATETIMEOFFSET()
+            );
+        END;
+    """)
+    cursor.execute("""
+        IF COL_LENGTH(N'dbo.Users', N'Email') IS NULL
+            ALTER TABLE dbo.Users ADD Email NVARCHAR(254) NULL;
+        IF COL_LENGTH(N'dbo.Users', N'AuthProvider') IS NULL
+            ALTER TABLE dbo.Users ADD AuthProvider NVARCHAR(32) NOT NULL CONSTRAINT DF_Users_AuthProvider DEFAULT N'local';
+        IF COL_LENGTH(N'dbo.PredictionBatches', N'UserID') IS NULL
+            ALTER TABLE dbo.PredictionBatches ADD UserID BIGINT NULL;
+        IF COL_LENGTH(N'dbo.UserFeedback', N'UserID') IS NULL
+            ALTER TABLE dbo.UserFeedback ADD UserID BIGINT NULL;
+    """)
+    conn.commit()
+
+
+def create_user(username: str, display_name: str, password: str) -> dict[str, Any]:
+    """Create a new user in dbo.Users using email or username. Raises ValueError on duplicate or invalid input."""
+    ident = username.strip().lower()
+    is_email = _is_valid_email(ident)
+    dname = display_name.strip() or (ident.split('@')[0] if is_email else ident)
+    if not is_email and (len(ident) < 3 or len(ident) > 50 or not ident.replace('_', '').replace('.', '').isalnum()):
+        raise ValueError('Hãy nhập Email hợp lệ (ví dụ: ten@gmail.com) hoặc tên đăng nhập 3–50 ký tự.')
+    if len(ident) > 120:
+        raise ValueError('Email hoặc tên đăng nhập quá dài.')
+    if len(password) < 6:
+        raise ValueError('Mật khẩu cần ít nhất 6 ký tự.')
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        raise RuntimeError('Chưa kết nối được SQL Server để đăng ký tài khoản.')
+    pyodbc = _get_pyodbc()
+    pw_hash, pw_salt = _hash_password(password)
+    with pyodbc.connect(connection_string, timeout=8) as conn:
+        _ensure_auth_schema(conn)
+        cursor = conn.cursor()
+        has_email_col = cursor.execute("SELECT CASE WHEN COL_LENGTH(N'dbo.Users', N'Email') IS NOT NULL THEN 1 ELSE 0 END").fetchone()[0] == 1
+        if has_email_col:
+            existing = cursor.execute(
+                "SELECT TOP (1) UserID FROM dbo.Users WHERE Username = ? OR (Email IS NOT NULL AND Email = ?)",
+                (ident, ident),
+            ).fetchone()
+        else:
+            existing = cursor.execute("SELECT TOP (1) UserID FROM dbo.Users WHERE Username = ?", (ident,)).fetchone()
+        if existing:
+            raise ValueError('Email hoặc tên đăng nhập đã tồn tại.')
+        if has_email_col:
+            cursor.execute("""
+                SET NOCOUNT ON;
+                INSERT INTO dbo.Users (Username, Email, DisplayName, PasswordHash, PasswordSalt, AuthProvider)
+                OUTPUT INSERTED.UserID
+                VALUES (?, ?, ?, ?, ?, N'local')
+            """, (ident, ident if is_email else None, dname[:120], pw_hash, pw_salt))
+        else:
+            cursor.execute("""
+                SET NOCOUNT ON;
+                INSERT INTO dbo.Users (Username, DisplayName, PasswordHash, PasswordSalt)
+                OUTPUT INSERTED.UserID
+                VALUES (?, ?, ?, ?)
+            """, (ident, dname[:120], pw_hash, pw_salt))
+        uid = _read_inserted_id(cursor)
+        conn.commit()
+        return {'user_id': uid, 'username': ident, 'email': ident if is_email else None, 'display_name': dname[:120]}
+
+
+def authenticate_user(username: str, password: str) -> dict[str, Any] | None:
+    """Verify email/username and password against dbo.Users."""
+    ident = username.strip().lower()
+    if not ident or not password:
+        return None
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        raise RuntimeError('Chưa kết nối được SQL Server để đăng nhập.')
+    pyodbc = _get_pyodbc()
+    with pyodbc.connect(connection_string, timeout=8) as conn:
+        _ensure_auth_schema(conn)
+        cursor = conn.cursor()
+        has_email_col = cursor.execute("SELECT CASE WHEN COL_LENGTH(N'dbo.Users', N'Email') IS NOT NULL THEN 1 ELSE 0 END").fetchone()[0] == 1
+        if has_email_col:
+            row = cursor.execute("""
+                SELECT TOP (1) UserID, Username, DisplayName, PasswordHash, PasswordSalt, Email
+                FROM dbo.Users WHERE Username = ? OR Email = ?
+            """, (ident, ident)).fetchone()
+        else:
+            row = cursor.execute("""
+                SELECT TOP (1) UserID, Username, DisplayName, PasswordHash, PasswordSalt, NULL AS Email
+                FROM dbo.Users WHERE Username = ?
+            """, (ident,)).fetchone()
+        if not row or not row[4]:
+            return None
+        expected_hash, _ = _hash_password(password, row[4])
+        if not hmac.compare_digest(expected_hash, row[3]):
+            return None
+        return {'user_id': int(row[0]), 'username': row[1], 'display_name': row[2], 'email': row[5]}
+
+
+def upsert_oauth_user(email: str, display_name: str, provider: str = 'google') -> dict[str, Any]:
+    """Find or create a user in dbo.Users via verified OAuth email."""
+    clean_email = email.strip().lower()
+    if not _is_valid_email(clean_email):
+        raise ValueError('Email OAuth không hợp lệ.')
+    dname = display_name.strip() or clean_email.split('@')[0]
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        raise RuntimeError('Chưa kết nối được SQL Server.')
+    pyodbc = _get_pyodbc()
+    with pyodbc.connect(connection_string, timeout=8) as conn:
+        _ensure_auth_schema(conn)
+        cursor = conn.cursor()
+        row = cursor.execute(
+            "SELECT TOP (1) UserID, Username, DisplayName, Email FROM dbo.Users WHERE Email = ? OR Username = ?",
+            (clean_email, clean_email),
+        ).fetchone()
+        if row:
+            return {'user_id': int(row[0]), 'username': row[1], 'display_name': row[2], 'email': row[3] or clean_email}
+        cursor.execute("""
+            SET NOCOUNT ON;
+            INSERT INTO dbo.Users (Username, Email, DisplayName, PasswordHash, PasswordSalt, AuthProvider)
+            OUTPUT INSERTED.UserID
+            VALUES (?, ?, ?, '', '', ?)
+        """, (clean_email[:120], clean_email, dname[:120], provider[:32]))
+        uid = _read_inserted_id(cursor)
+        conn.commit()
+        return {'user_id': uid, 'username': clean_email[:120], 'display_name': dname[:120], 'email': clean_email}
+
+
+def get_user_by_id(user_id: int) -> dict[str, Any] | None:
+    connection_string = sql_server_connection_string()
+    if not connection_string:
+        return None
+    try:
+        pyodbc = _get_pyodbc()
+        with pyodbc.connect(connection_string, timeout=5) as conn:
+            cursor = conn.cursor()
+            row = cursor.execute(
+                "SELECT TOP (1) UserID, Username, DisplayName FROM dbo.Users WHERE UserID = ?",
+                (int(user_id),),
+            ).fetchone()
+            if not row:
+                return None
+            return {'user_id': int(row[0]), 'username': row[1], 'display_name': row[2]}
+    except Exception:
+        return None
+
+
 def record_training_run(task: str, status: str, model_path: str | None = None,
                         metrics: dict | None = None, log_text: str = '',
                         manifest_sha256: str | None = None) -> int | None:
@@ -203,7 +383,8 @@ def record_user_feedback(source_name: str, model_prediction: str,
                          batch_id: int | None = None,
                          row_number: int | None = None,
                          prediction_id: int | None = None,
-                         reason_category: str = 'Lý do khác') -> int | None:
+                         reason_category: str = 'Lý do khác',
+                         user_id: int | None = None) -> int | None:
     """Store user correction/feedback in SQL Server dbo.UserFeedback with duplicate guard."""
     connection_string = sql_server_connection_string()
     if not connection_string:
@@ -216,6 +397,7 @@ def record_user_feedback(source_name: str, model_prediction: str,
         with pyodbc.connect(connection_string, timeout=10) as conn:
             cursor = conn.cursor()
             extended = _feedback_has_extended_columns(cursor)
+            has_uid = extended and _table_has_user_id(cursor, 'dbo.UserFeedback')
             if extended:
                 resolved_prediction_id = None if prediction_id is None else int(prediction_id)
                 if resolved_prediction_id is None and batch_id is not None and row_number is not None:
@@ -243,26 +425,49 @@ def record_user_feedback(source_name: str, model_prediction: str,
                     """, (input_hash, str(model_prediction)[:100], str(suggested_label)[:100])).fetchone()
                     if existing:
                         return int(existing[0])
-                cursor.execute("""
-                    SET NOCOUNT ON;
-                    INSERT INTO dbo.UserFeedback
-                        (SourceName, BatchID, RowNumber, PredictionID, InputText, InputSha256,
-                         ModelPrediction, SuggestedLabel, ReasonCategory, UserNote, ReviewStatus)
-                    OUTPUT INSERTED.FeedbackID
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    str(source_name)[:40],
-                    None if batch_id is None else int(batch_id),
-                    None if row_number is None else int(row_number),
-                    resolved_prediction_id,
-                    None if input_text is None else text_str,
-                    input_hash,
-                    str(model_prediction)[:100],
-                    str(suggested_label)[:100],
-                    str(reason_category or 'Lý do khác')[:150],
-                    str(user_note)[:4000],
-                    'Chờ xem xét',
-                ))
+                if has_uid:
+                    cursor.execute("""
+                        SET NOCOUNT ON;
+                        INSERT INTO dbo.UserFeedback
+                            (SourceName, BatchID, RowNumber, PredictionID, InputText, InputSha256,
+                             ModelPrediction, SuggestedLabel, ReasonCategory, UserNote, ReviewStatus, UserID)
+                        OUTPUT INSERTED.FeedbackID
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        str(source_name)[:40],
+                        None if batch_id is None else int(batch_id),
+                        None if row_number is None else int(row_number),
+                        resolved_prediction_id,
+                        None if input_text is None else text_str,
+                        input_hash,
+                        str(model_prediction)[:100],
+                        str(suggested_label)[:100],
+                        str(reason_category or 'Lý do khác')[:150],
+                        str(user_note)[:4000],
+                        'Chờ xem xét',
+                        None if user_id is None else int(user_id),
+                    ))
+                else:
+                    cursor.execute("""
+                        SET NOCOUNT ON;
+                        INSERT INTO dbo.UserFeedback
+                            (SourceName, BatchID, RowNumber, PredictionID, InputText, InputSha256,
+                             ModelPrediction, SuggestedLabel, ReasonCategory, UserNote, ReviewStatus)
+                        OUTPUT INSERTED.FeedbackID
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        str(source_name)[:40],
+                        None if batch_id is None else int(batch_id),
+                        None if row_number is None else int(row_number),
+                        resolved_prediction_id,
+                        None if input_text is None else text_str,
+                        input_hash,
+                        str(model_prediction)[:100],
+                        str(suggested_label)[:100],
+                        str(reason_category or 'Lý do khác')[:150],
+                        str(user_note)[:4000],
+                        'Chờ xem xét',
+                    ))
             else:
                 cursor.execute("""
                     SET NOCOUNT ON;
@@ -286,7 +491,8 @@ def record_user_feedback(source_name: str, model_prediction: str,
 
 
 def list_user_feedback(status_filter: str = '', reason_filter: str = '',
-                       search: str = '', page: int = 1, page_size: int = 20) -> dict[str, Any]:
+                       search: str = '', page: int = 1, page_size: int = 20,
+                       user_id: int | None = None) -> dict[str, Any]:
     """List user feedback records with pagination, filtering, and status summary."""
     connection_string = sql_server_connection_string()
     if not connection_string:
@@ -299,8 +505,15 @@ def list_user_feedback(status_filter: str = '', reason_filter: str = '',
         with pyodbc.connect(connection_string, timeout=8) as conn:
             cursor = conn.cursor()
             extended = _feedback_has_extended_columns(cursor)
+            has_uid = _table_has_user_id(cursor, 'dbo.UserFeedback')
             where_clauses = []
             params: list[Any] = []
+            if has_uid:
+                if user_id is not None:
+                    where_clauses.append('UserID = ?')
+                    params.append(int(user_id))
+                else:
+                    where_clauses.append('UserID IS NULL')
             if extended and status_filter in FEEDBACK_STATUSES:
                 where_clauses.append('ReviewStatus = ?')
                 params.append(status_filter)
@@ -319,8 +532,17 @@ def list_user_feedback(status_filter: str = '', reason_filter: str = '',
 
             counts = {'Chờ xem xét': 0, 'Đã xác minh': 0, 'Không chấp nhận': 0}
             if extended:
+                cnt_where = ''
+                cnt_params: list[Any] = []
+                if has_uid:
+                    if user_id is not None:
+                        cnt_where = 'WHERE UserID = ?'
+                        cnt_params.append(int(user_id))
+                    else:
+                        cnt_where = 'WHERE UserID IS NULL'
                 for st, cnt in cursor.execute(
-                    'SELECT ReviewStatus, COUNT_BIG(*) FROM dbo.UserFeedback GROUP BY ReviewStatus'
+                    f'SELECT ReviewStatus, COUNT_BIG(*) FROM dbo.UserFeedback {cnt_where} GROUP BY ReviewStatus',
+                    cnt_params
                 ).fetchall():
                     if st in counts:
                         counts[st] = int(cnt)
@@ -386,6 +608,7 @@ def update_feedback_status(feedback_id: int, new_status: str) -> bool:
         return False
     pyodbc = _get_pyodbc()
     with pyodbc.connect(connection_string, timeout=8) as conn:
+        _ensure_auth_schema(conn)
         cursor = conn.cursor()
         if not _feedback_has_extended_columns(cursor):
             return False
@@ -400,7 +623,8 @@ def update_feedback_status(feedback_id: int, new_status: str) -> bool:
 
 
 def record_prediction_batch(task: str, source_name: str, results: list[dict],
-                             upload_bytes: int = 0, raw_bytes: bytes | None = None) -> int | None:
+                             upload_bytes: int = 0, raw_bytes: bytes | None = None,
+                             user_id: int | None = None) -> int | None:
     """Store a prediction batch and every row in SQL Server; never writes to a local file database."""
     connection_string = sql_server_connection_string()
     if not connection_string:
@@ -423,13 +647,23 @@ def record_prediction_batch(task: str, source_name: str, results: list[dict],
         pyodbc = _get_pyodbc()
         with pyodbc.connect(connection_string, timeout=15) as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                SET NOCOUNT ON;
-                INSERT INTO dbo.PredictionBatches
-                    (Task, SourceName, [RowCount], UploadBytes, UploadSha256)
-                OUTPUT INSERTED.BatchID
-                VALUES (?, ?, ?, ?, ?)
-            """, (task, str(source_name)[:260], len(rows), int(upload_bytes), digest))
+            if user_id is not None and _table_has_user_id(cursor, 'dbo.PredictionBatches'):
+                cursor.execute("""
+                    SET NOCOUNT ON;
+                    INSERT INTO dbo.PredictionBatches
+                        (Task, SourceName, [RowCount], UploadBytes, UploadSha256, UserID)
+                    OUTPUT INSERTED.BatchID
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (task, str(source_name)[:260], len(rows), int(upload_bytes), digest,
+                      None if user_id is None else int(user_id)))
+            else:
+                cursor.execute("""
+                    SET NOCOUNT ON;
+                    INSERT INTO dbo.PredictionBatches
+                        (Task, SourceName, [RowCount], UploadBytes, UploadSha256)
+                    OUTPUT INSERTED.BatchID
+                    VALUES (?, ?, ?, ?, ?)
+                """, (task, str(source_name)[:260], len(rows), int(upload_bytes), digest))
             batch_id = _read_inserted_id(cursor)
             insert_sql = """
                 INSERT INTO dbo.Predictions
@@ -447,15 +681,25 @@ def record_prediction_batch(task: str, source_name: str, results: list[dict],
         return None
 
 
-def list_prediction_batches(limit: int = 50) -> list[dict]:
-    """Read prediction batch history from SQL Server with label counts."""
+def list_prediction_batches(limit: int = 50, user_id: int | None = None) -> list[dict]:
+    """Read prediction batch history from SQL Server with label counts, scoped per user."""
     connection_string = sql_server_connection_string()
     if not connection_string:
         return []
     pyodbc = _get_pyodbc()
     safe_limit = max(1, min(int(limit), 500))
     with pyodbc.connect(connection_string, timeout=8) as conn:
+        _ensure_auth_schema(conn)
         cursor = conn.cursor()
+        has_uid = _table_has_user_id(cursor, 'dbo.PredictionBatches')
+        where_sql = ''
+        params: list[Any] = []
+        if has_uid:
+            if user_id is not None:
+                where_sql = 'WHERE b.UserID = ?'
+                params.append(int(user_id))
+            else:
+                where_sql = 'WHERE b.UserID IS NULL'
         cursor.execute(f"""
             SELECT TOP ({safe_limit})
                    b.BatchID AS id,
@@ -470,9 +714,10 @@ def list_prediction_batches(limit: int = 50) -> list[dict]:
                    SUM(CASE WHEN p.PredictedLabel IS NULL THEN 1 ELSE 0 END) AS invalid_count
             FROM dbo.PredictionBatches AS b
             LEFT JOIN dbo.Predictions AS p ON p.BatchID = b.BatchID
+            {where_sql}
             GROUP BY b.BatchID, b.CreatedUtc, b.Task, b.SourceName, b.[RowCount], b.UploadBytes, b.UploadSha256
             ORDER BY b.BatchID DESC
-        """)
+        """, params)
         columns = [item[0] for item in cursor.description]
         items = []
         for row in cursor.fetchall():
@@ -485,8 +730,9 @@ def list_prediction_batches(limit: int = 50) -> list[dict]:
 
 def query_predictions_paginated(batch_id: int | None = None, label_filter: str = '',
                                 search: str = '', date_from: str = '', date_to: str = '',
-                                page: int = 1, page_size: int = 20) -> dict[str, Any]:
-    """Paginated prediction history from SQL Server."""
+                                page: int = 1, page_size: int = 20,
+                                user_id: int | None = None) -> dict[str, Any]:
+    """Paginated prediction history from SQL Server, scoped per user."""
     connection_string = sql_server_connection_string()
     if not connection_string:
         return {'available': False, 'items': [], 'total': 0}
@@ -513,11 +759,17 @@ def query_predictions_paginated(batch_id: int | None = None, label_filter: str =
     if date_to:
         where_clauses.append('b.CreatedUtc <= ?')
         params.append(date_to)
-    where_sql = ('WHERE ' + ' AND '.join(where_clauses)) if where_clauses else ''
 
     try:
         with pyodbc.connect(connection_string, timeout=10) as conn:
             cursor = conn.cursor()
+            if user_id is not None and _table_has_user_id(cursor, 'dbo.PredictionBatches'):
+                if user_id is not None:
+                    where_clauses.append('b.UserID = ?')
+                    params.append(int(user_id))
+                else:
+                    where_clauses.append('b.UserID IS NULL')
+            where_sql = ('WHERE ' + ' AND '.join(where_clauses)) if where_clauses else ''
             total = int(cursor.execute(f"""
                 SELECT COUNT_BIG(*)
                 FROM dbo.Predictions AS p
@@ -559,18 +811,38 @@ def query_predictions_paginated(batch_id: int | None = None, label_filter: str =
         return {'available': False, 'error': str(exc), 'items': [], 'total': 0}
 
 
-def get_predictions(batch_id: int) -> list[dict]:
-    """Read row-level prediction details from SQL Server only."""
+def get_predictions(batch_id: int, user_id: int | None = None) -> list[dict]:
+    """Read row-level prediction details from SQL Server only, scoped by user if UserID exists."""
     connection_string = sql_server_connection_string()
     if not connection_string:
         return []
     pyodbc = _get_pyodbc()
     with pyodbc.connect(connection_string, timeout=10) as conn:
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT PredictionID AS prediction_id, RowNumber AS row_number, InputText AS input_text,
-                   PredictedLabel AS predicted_label, LabelName AS label_name, Status AS status
-            FROM dbo.Predictions WHERE BatchID = ? ORDER BY RowNumber
-        """, (int(batch_id),))
+        if _table_has_user_id(cursor, 'dbo.PredictionBatches'):
+            if user_id is not None:
+                cursor.execute("""
+                    SELECT p.PredictionID AS prediction_id, p.RowNumber AS row_number, p.InputText AS input_text,
+                           p.PredictedLabel AS predicted_label, p.LabelName AS label_name, p.Status AS status
+                    FROM dbo.Predictions AS p
+                    JOIN dbo.PredictionBatches AS b ON b.BatchID = p.BatchID
+                    WHERE p.BatchID = ? AND b.UserID = ?
+                    ORDER BY p.RowNumber
+                """, (int(batch_id), int(user_id)))
+            else:
+                cursor.execute("""
+                    SELECT p.PredictionID AS prediction_id, p.RowNumber AS row_number, p.InputText AS input_text,
+                           p.PredictedLabel AS predicted_label, p.LabelName AS label_name, p.Status AS status
+                    FROM dbo.Predictions AS p
+                    JOIN dbo.PredictionBatches AS b ON b.BatchID = p.BatchID
+                    WHERE p.BatchID = ? AND b.UserID IS NULL
+                    ORDER BY p.RowNumber
+                """, (int(batch_id),))
+        else:
+            cursor.execute("""
+                SELECT PredictionID AS prediction_id, RowNumber AS row_number, InputText AS input_text,
+                       PredictedLabel AS predicted_label, LabelName AS label_name, Status AS status
+                FROM dbo.Predictions WHERE BatchID = ? ORDER BY RowNumber
+            """, (int(batch_id),))
         columns = [item[0] for item in cursor.description]
         return [dict(zip(columns, row)) for row in cursor.fetchall()]

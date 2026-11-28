@@ -1,0 +1,138 @@
+﻿case_id,group,input_text,expected_behavior,expected_semantic_label
+A-01,A_basic,The new policy is a complete disaster for working families.,valid_prediction,1
+A-02,A_basic,Corrupt politicians are ruining the country's economy.,valid_prediction,1
+A-03,A_basic,This leadership has failed miserably on every promise.,valid_prediction,1
+A-04,A_basic,Terrible decision that hurts poor citizens the most.,valid_prediction,1
+A-05,A_basic,The minister's speech was full of lies and propaganda.,valid_prediction,1
+A-06,A_basic,Unemployment is rising and nobody in power cares.,valid_prediction,1
+A-07,A_basic,Horrible handling of the crisis by the administration.,valid_prediction,1
+A-08,A_basic,Wasting taxpayer money on useless projects is shameful.,valid_prediction,1
+A-09,A_basic,The healthcare system is broken and getting worse.,valid_prediction,1
+A-10,A_basic,Disgusting behavior from elected officials during the debate.,valid_prediction,1
+A-11,A_basic,The infrastructure project created thousands of new jobs.,valid_prediction,0
+A-12,A_basic,Great progress in renewable energy over the past year.,valid_prediction,0
+A-13,A_basic,The committee released its annual budget report today.,valid_prediction,0
+A-14,A_basic,Voters turned out in large numbers for the local election.,valid_prediction,0
+A-15,A_basic,Public schools received additional funding for science labs.,valid_prediction,0
+A-16,A_basic,The parliament will convene on Monday morning to discuss the bill.,valid_prediction,0
+A-17,A_basic,Strong economic growth helped stabilize inflation this quarter.,valid_prediction,0
+A-18,A_basic,Citizens welcomed the transparent digital government portal.,valid_prediction,0
+A-19,A_basic,The diplomatic summit concluded with a trade agreement.,valid_prediction,0
+A-20,A_basic,Clean water access improved in several rural districts.,valid_prediction,0
+A-21,A_basic,"The bill has some good ideas, though implementation remains unclear.",valid_prediction,-1
+A-22,A_basic,"Taxes were reduced, yet public transit fares increased.",valid_prediction,-1
+A-23,A_basic,Some critics raised concerns while supporters praised the reform.,valid_prediction,-1
+A-24,A_basic,"The speech was long and technical, covering many topics.",valid_prediction,-1
+A-25,A_basic,"Maybe this policy will help in the long run, who knows.",valid_prediction,-1
+A-26,A_basic,Exports rose slightly despite global supply chain pressures.,valid_prediction,-1
+A-27,A_basic,Half of the council voted yes and half voted no.,valid_prediction,-1
+A-28,A_basic,"The mayor promised changes, but results are still pending.",valid_prediction,-1
+A-29,A_basic,Interesting proposal that needs much more data to evaluate.,valid_prediction,-1
+A-30,A_basic,"Prices stabilized, though wages have barely moved.",valid_prediction,-1
+B-01,B_contrastive,"The design is beautiful, but the performance is disappointing.",valid_prediction_check_parity,-1
+B-02,B_contrastive,"The food wasn't bad, but I wouldn't call it delicious either.",valid_prediction_check_parity,-1
+B-03,B_contrastive,"The service was excellent, although the price was disappointing.",valid_prediction_check_parity,-1
+B-04,B_contrastive,"I like the product, but the customer support is terrible.",valid_prediction_check_parity,-1
+B-05,B_contrastive,"The update fixed several bugs, but introduced new problems.",valid_prediction_check_parity,-1
+B-06,B_contrastive,"The speech sounded inspiring, however the actual policy is awful.",valid_prediction_check_parity,-1
+B-07,B_contrastive,"Education funding increased, yet teacher morale is terrible.",valid_prediction_check_parity,-1
+B-08,B_contrastive,"The roads are smoother, but traffic congestion is worse than ever.",valid_prediction_check_parity,-1
+B-09,B_contrastive,"Healthcare access expanded, although wait times remain unacceptable.",valid_prediction_check_parity,-1
+B-10,B_contrastive,"The new law protects consumers, but hurts small businesses badly.",valid_prediction_check_parity,-1
+B-11,B_contrastive,"Great presentation by the minister, but zero accountability for failures.",valid_prediction_check_parity,-1
+B-12,B_contrastive,"Inflation cooled slightly, however grocery prices are still outrageous.",valid_prediction_check_parity,-1
+B-13,B_contrastive,"The app looks modern, but crashes constantly during checkout.",valid_prediction_check_parity,-1
+B-14,B_contrastive,"Good intentions behind the reform, but poor execution ruined it.",valid_prediction_check_parity,-1
+B-15,B_contrastive,"The city built new parks, yet homelessness continues to worsen.",valid_prediction_check_parity,-1
+B-16,B_contrastive,"Strong defense spending, but veterans are neglected.",valid_prediction_check_parity,-1
+B-17,B_contrastive,"I appreciate the effort, although the outcome is a total failure.",valid_prediction_check_parity,-1
+B-18,B_contrastive,"The train is fast, but the stations are filthy and unsafe.",valid_prediction_check_parity,-1
+B-19,B_contrastive,"Economic indicators look solid, yet many families feel abandoned.",valid_prediction_check_parity,-1
+B-20,B_contrastive,"Nice rhetoric during the campaign, but broken promises afterward.",valid_prediction_check_parity,-1
+B-21,B_contrastive,"The policy helps exporters, while domestic workers suffer.",valid_prediction_check_parity,-1
+B-22,B_contrastive,"Clean interface, but customer complaints are ignored.",valid_prediction_check_parity,-1
+B-23,B_contrastive,"The bridge was completed on time, though the budget exploded.",valid_prediction_check_parity,-1
+B-24,B_contrastive,"Police response was quick, but the investigation was sloppy.",valid_prediction_check_parity,-1
+B-25,B_contrastive,"Solar adoption is growing, however coal pollution remains terrible.",valid_prediction_check_parity,-1
+B-26,B_contrastive,"The mayor is popular, yet city services are failing.",valid_prediction_check_parity,-1
+B-27,B_contrastive,"Good battery life, awful screen quality.",valid_prediction_check_parity,-1
+B-28,B_contrastive,"Helpful staff, but the waiting room was dirty and chaotic.",valid_prediction_check_parity,-1
+B-29,B_contrastive,"Transparent reporting, but disastrous financial management.",valid_prediction_check_parity,-1
+B-30,B_contrastive,"Impressive growth numbers, although inequality is worsening rapidly.",valid_prediction_check_parity,-1
+C-01,C_negation,not good,valid_prediction,1
+C-02,C_negation,not bad,valid_prediction,0
+C-03,C_negation,never worked,valid_prediction,1
+C-04,C_negation,no problem,valid_prediction,0
+C-05,C_negation,not only good but excellent,valid_prediction,0
+C-06,C_negation,not as bad as expected,valid_prediction,0
+C-07,C_negation,I don't dislike it,valid_prediction,0
+C-08,C_negation,I wouldn't recommend it,valid_prediction,1
+C-09,C_negation,"The product is not perfect, but acceptable.",valid_prediction,0
+C-10,C_negation,"I thought it was terrible, but it turned out fine.",valid_prediction,0
+C-11,C_negation,This policy is not helpful at all.,valid_prediction,1
+C-12,C_negation,They did not fail to deliver on time.,valid_prediction,0
+C-13,C_negation,Nobody believes the official report.,valid_prediction,1
+C-14,C_negation,Nothing in this budget helps poor families.,valid_prediction,1
+C-15,C_negation,"Without transparency, democracy suffers.",valid_prediction,1
+C-16,C_negation,Neither the mayor nor the council took responsibility.,valid_prediction,1
+C-17,C_negation,I cannot say this is a bad decision.,valid_prediction,0
+C-18,C_negation,It is not the worst law ever passed.,valid_prediction,0
+C-19,C_negation,The minister never lies to the public.,valid_prediction,0
+C-20,C_negation,No one can deny the terrible damage done.,valid_prediction,1
+C-21,C_negation,This isn't going to end well for voters.,valid_prediction,1
+C-22,C_negation,He didn't do anything wrong in that debate.,valid_prediction,0
+C-23,C_negation,We shouldn't ignore the rising poverty rate.,valid_prediction,1
+C-24,C_negation,She wasn't happy about the unfair tax hike.,valid_prediction,1
+C-25,C_negation,Not a single promise was kept by the party.,valid_prediction,1
+C-26,C_negation,"Don't worry, the economy is not collapsing.",valid_prediction,0
+C-27,C_negation,"I don't hate the proposal, it's just incomplete.",valid_prediction,0
+C-28,C_negation,There is no reason to panic about the audit.,valid_prediction,0
+C-29,C_negation,This is anything but a successful reform.,valid_prediction,1
+C-30,C_negation,Hardly anyone supports this corrupt bill.,valid_prediction,1
+D-01,D_boundary,,reject_empty,-1
+D-02,D_boundary,     	  ,reject_empty,-1
+D-03,D_boundary,!!! ??? --- ...,reject_empty,-1
+D-04,D_boundary,https://example.com/news/123,reject_url,-1
+D-05,D_boundary,www.example.com/politics,reject_url,-1
+D-06,D_boundary,https://x.com/user/status/12345,reject_url,-1
+D-07,D_boundary,Terrible policy! https://t.co/abc123,valid_prediction,-1
+D-08,D_boundary,RT @user123: Great speech today! http://news.org,valid_prediction,-1
+D-09,D_boundary,policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform policy reform,valid_prediction,-1
+D-10,D_boundary,terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy terrible policy,reject_too_long,-1
+D-11,D_boundary,bad !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!,check_raw_vs_norm_limit,-1
+D-12,D_boundary,😡😡😡,reject_empty_after_norm,-1
+D-13,D_boundary,Bad policy 😡😡,valid_prediction,-1
+D-14,D_boundary,Ｔｈｉｓ　ｉｓ　ａｗｆｕｌ！,valid_prediction,-1
+D-15,D_boundary,It’s a terrible—broken—system…,valid_prediction,-1
+D-16,D_boundary,@#$%^&*()_+={}[]|\,reject_empty,-1
+D-17,D_boundary,"Line one is good.
+Line two is terrible.",valid_prediction,-1
+D-18,D_boundary,bad bad bad bad bad bad,valid_prediction,-1
+D-19,D_boundary,1234567890 2026,valid_prediction,-1
+D-20,D_boundary,Chính sách này thật tệ hại và gây bức xúc.,reject_vietnamese,-1
+D-21,D_boundary,Bình luận tiếng Việt có dấu rất rõ ràng.,reject_vietnamese,-1
+D-22,D_boundary,The policy is bad nhưng thực sự rất tệ hại.,reject_vietnamese,-1
+D-23,D_boundary,The policy is bad nhưng ok,valid_prediction_low_vi_ratio,-1
+D-24,D_boundary,a,valid_prediction_single_char,-1
+D-25,D_boundary,no,valid_prediction_short_word,-1
+D-26,D_boundary,News &amp; politics &lt;fail&gt;,valid_prediction,-1
+E-01,E_stability,The economic policy is terrible and hurts workers.,deterministic_consistent,-1
+E-02,E_stability,Great progress on clean energy infrastructure.,deterministic_consistent,-1
+E-03,E_stability,I don't think this law is fair.,deterministic_consistent,-1
+E-04,E_stability,"Good design, but awful battery life.",deterministic_consistent,-1
+E-05,E_stability,https://example.com,deterministic_consistent,-1
+E-06,E_stability,,deterministic_consistent,-1
+E-07,E_stability,Văn bản tiếng Việt có dấu.,deterministic_consistent,-1
+E-08,E_stability,Corrupt officials must be held accountable.,deterministic_consistent,-1
+E-09,E_stability,Public schools received new funding.,deterministic_consistent,-1
+E-10,E_stability,"Not bad at all, actually quite good.",deterministic_consistent,-1
+E-11,E_stability,They won't listen to citizens.,deterministic_consistent,-1
+E-12,E_stability,The budget passed without debate.,deterministic_consistent,-1
+E-13,E_stability,Prices are rising fast!,deterministic_consistent,-1
+E-14,E_stability,Thank you for the transparent report.,deterministic_consistent,-1
+E-15,E_stability,Nothing worked as promised.,deterministic_consistent,-1
+E-16,E_stability,!!!???,deterministic_consistent,-1
+E-17,E_stability,Terrible crisis management.,deterministic_consistent,-1
+E-18,E_stability,Strong leadership and steady growth.,deterministic_consistent,-1
+E-19,E_stability,Mixed results across the region.,deterministic_consistent,-1
+E-20,E_stability,Another broken promise from the minister.,deterministic_consistent,-1

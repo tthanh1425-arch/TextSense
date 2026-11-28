@@ -1,0 +1,1 @@
+E0-Train reproduced on baseline_v3/train.csv (133314 rows), thr=-0.192201, pol_val F1=0.8792

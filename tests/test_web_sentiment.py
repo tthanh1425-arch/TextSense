@@ -176,7 +176,41 @@ def test_frontend_contract_and_preserved_dual_pages():
     assert 'dash-negative-pct' in index + js
     assert 'sentence-breakdown-count' in index + js
     assert 'history-warning' in index + js
+    assert 'result-confidence' in index + js
+    assert 'result-disclaimer' in index + js
     assert (webdir / 'index.html').is_file()
+
+
+def test_notebook_and_app_normalize_and_threshold_parity():
+    import joblib
+    import predict as app_predict
+
+    nb_path = ROOT / '01_TRAIN_MODEL/TextSense_Notebook_SQLServer_Hoan_Thien_v3.ipynb'
+    nb = json.loads(nb_path.read_text(encoding='utf-8'))
+    nb_norm_src = ''.join(nb['cells'][6]['source'])
+    ns = {'pd': __import__('pandas'), 're': __import__('re'), 'unicodedata': __import__('unicodedata'),
+          'RETWEET_PREFIX_RE': app_predict.RETWEET_PREFIX_RE, 'URL_RE': app_predict.URL_RE}
+    exec(nb_norm_src, ns)
+    nb_normalize = ns['normalize_text']
+
+    sample_sentences = [
+        "RT @user: I wasn't happy with this terrible update! https://example.com",
+        "Honestly, this phone isn't bad at all — works great!",
+        "Worst service ever... complete waste of money.",
+    ]
+    for s in sample_sentences:
+        assert nb_normalize(s) == app_predict.normalize_text(s)
+
+    model_path = ROOT / '01_TRAIN_MODEL/outputs/binary_linear_svm.joblib'
+    if model_path.is_file():
+        artifact = joblib.load(model_path)
+        app_results = app_predict.predict(model_path, sample_sentences)
+        for s, app_res in zip(sample_sentences, app_results):
+            cleaned = nb_normalize(s)
+            nb_score = float(artifact['pipeline'].decision_function([cleaned])[0])
+            nb_label = int(nb_score > float(artifact['threshold']))
+            assert app_res['predicted_label'] == nb_label
+            assert abs(app_res['decision_score'] - nb_score) < 1e-9
 
 
 def test_database_prediction_write_with_mock_pyodbc(monkeypatch):
@@ -286,6 +320,7 @@ if __name__ == '__main__':
     test_single_sentence_no_breakdown(stub)
     test_batch_percentages_still_describe_number_of_comments(stub)
     test_frontend_contract_and_preserved_dual_pages()
+    test_notebook_and_app_normalize_and_threshold_parity()
     test_database_prediction_write_with_mock_pyodbc(mp)
     test_user_feedback_write_with_mock_pyodbc(mp)
     print("ALL TESTS PASSED!")

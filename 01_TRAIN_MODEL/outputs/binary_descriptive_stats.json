@@ -1,50 +1,50 @@
 {
-  "total_clean_unique_rows": 196056,
+  "total_clean_unique_rows": 196050,
   "rows_by_source": {
-    "Twitter_Data.csv": 159588,
+    "Twitter_Data.csv": 159582,
     "Reddit_Data.csv": 36468
   },
   "original_label_counts": {
-    "-1": 43147,
-    "0": 66239,
-    "1": 86670
+    "-1": 43146,
+    "0": 66235,
+    "1": 86669
   },
   "binary_label_counts": {
-    "0": 152909,
-    "1": 43147
+    "0": 152904,
+    "1": 43146
   },
   "text_length_words": {
-    "mean": 21.88878177663525,
+    "mean": 22.002433052792654,
     "median": 18.0,
     "q1": 10.0,
-    "q3": 29.0,
+    "q3": 30.0,
     "min": 1,
-    "max": 1307
+    "max": 1308
   },
   "top_20_terms": [
     {
       "term": "modi",
-      "frequency": 157280
+      "frequency": 157301
     },
     {
       "term": "india",
-      "frequency": 33564
+      "frequency": 33573
     },
     {
       "term": "bjp",
-      "frequency": 19494
+      "frequency": 19497
     },
     {
       "term": "people",
-      "frequency": 19224
+      "frequency": 19225
     },
     {
       "term": "congress",
-      "frequency": 14826
+      "frequency": 14828
     },
     {
       "term": "now",
-      "frequency": 14378
+      "frequency": 14379
     },
     {
       "term": "only",
@@ -52,11 +52,15 @@
     },
     {
       "term": "narendra",
-      "frequency": 11374
+      "frequency": 11376
+    },
+    {
+      "term": "did",
+      "frequency": 11011
     },
     {
       "term": "more",
-      "frequency": 10958
+      "frequency": 10964
     },
     {
       "term": "govt",
@@ -68,7 +72,7 @@
     },
     {
       "term": "country",
-      "frequency": 9601
+      "frequency": 9602
     },
     {
       "term": "even",
@@ -80,27 +84,23 @@
     },
     {
       "term": "indian",
-      "frequency": 8776
+      "frequency": 8778
     },
     {
       "term": "also",
       "frequency": 8637
     },
     {
-      "term": "did",
-      "frequency": 8617
-    },
-    {
       "term": "which",
-      "frequency": 8596
+      "frequency": 8599
     },
     {
       "term": "good",
-      "frequency": 8502
+      "frequency": 8503
     },
     {
       "term": "years",
-      "frequency": 8481
+      "frequency": 8483
     }
   ],
   "note": "Thống kê mô tả từ dữ liệu đã làm sạch và loại trùng, trước khi chia tập."

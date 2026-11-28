@@ -1,0 +1,41 @@
+{
+  "started_utc": "2026-11-27T18:51:12.264051+00:00",
+  "finished_utc": "2026-11-27T18:51:14.105312+00:00",
+  "total_cases": 136,
+  "counts_by_group": {
+    "A_basic": 30,
+    "B_contrastive": 30,
+    "C_negation": 30,
+    "D_boundary": 26,
+    "E_stability": 20
+  },
+  "group_b_same": 27,
+  "group_b_or_flip": 3,
+  "group_e_checks": {
+    "repeat_ok": true,
+    "single_vs_batch_ok": true,
+    "order_invariant_ok": true,
+    "batch_size_lt_eq_gt_512_ok": true
+  },
+  "sha256_before": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "03_GIAO_DIEN/predict.py": "ba211b5ca9996ab33b6f327fa35ad898582b0c3e8893833d7ae2f373a0459456",
+    "03_GIAO_DIEN/serve_textsense.py": "5b646e8b80e955c20c64b018a63c7f4f3f06c86fca528da4f92a81c1e4d5c41d"
+  },
+  "sha256_after": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "03_GIAO_DIEN/predict.py": "ba211b5ca9996ab33b6f327fa35ad898582b0c3e8893833d7ae2f373a0459456",
+    "03_GIAO_DIEN/serve_textsense.py": "5b646e8b80e955c20c64b018a63c7f4f3f06c86fca528da4f92a81c1e4d5c41d"
+  },
+  "sha256_unchanged": true,
+  "environment": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  }
+}

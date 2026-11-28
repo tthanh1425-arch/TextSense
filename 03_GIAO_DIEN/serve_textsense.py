@@ -8,14 +8,20 @@ from __future__ import annotations
 
 import base64
 import csv
+import hashlib
+import hmac
 import json
+import math
 import os
 import re
+import secrets
 import threading
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO, StringIO, TextIOWrapper
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlencode, urlsplit
+from urllib.request import Request as UrlRequest, urlopen
 from collections import Counter
 from zipfile import ZipFile, BadZipFile
 from openpyxl import Workbook
@@ -26,7 +32,10 @@ import pandas as pd
 
 from datetime import datetime, timezone
 from database import (
+    authenticate_user,
+    create_user,
     get_predictions,
+    get_user_by_id,
     list_prediction_batches,
     list_user_feedback,
     query_predictions_paginated,
@@ -34,6 +43,7 @@ from database import (
     record_user_feedback,
     sql_server_status,
     update_feedback_status,
+    upsert_oauth_user,
 )
 from predict import MAX_TEXT_CHARS as PREDICT_MAX_CHARS, URL_PATTERN, normalize_text, predict, vietnamese_warning
 from predict import OUTPUT
@@ -41,7 +51,8 @@ from predict import OUTPUT
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = (BASE_DIR / 'web').resolve()
 MODEL_TASK = 'binary'
-MODEL_PATH = OUTPUT / f'{MODEL_TASK}_linear_svm.joblib'
+_E3_MODEL_PATH = BASE_DIR.parent / 'experiments' / 'E3' / 'model.joblib'
+MODEL_PATH = _E3_MODEL_PATH if _E3_MODEL_PATH.is_file() else (OUTPUT / f'{MODEL_TASK}_linear_svm.joblib')
 METRICS_PATH = OUTPUT / f'{MODEL_TASK}_metrics.json'
 DEFAULT_PORT = int(os.environ.get('TEXTSENSE_PORT', '8502'))
 MAX_CSV_BYTES = 100 * 1024 * 1024
@@ -53,6 +64,46 @@ MAX_JSON_BYTES = 32 * 1024
 RESULT_COLUMN = 'Nhãn dự đoán TextSense (0/1)'
 RESULT_NAME_COLUMN = 'Kết quả TextSense'
 CODE_TO_RESULT = {0: 'nonnegative', 1: 'negative'}
+SESSION_COOKIE_NAME = 'textsense_session'
+OAUTH_STATE_COOKIE = 'textsense_oauth_state'
+GOOGLE_CLIENT_ID = os.environ.get('TEXTSENSE_GOOGLE_CLIENT_ID', '').strip()
+GOOGLE_CLIENT_SECRET = os.environ.get('TEXTSENSE_GOOGLE_CLIENT_SECRET', '').strip()
+
+
+def _load_session_secret() -> bytes:
+    env_val = os.environ.get('TEXTSENSE_SESSION_SECRET', '').strip()
+    if env_val:
+        return env_val.encode('utf-8')
+    secret_file = BASE_DIR / '.session_secret'
+    try:
+        if secret_file.is_file():
+            return secret_file.read_bytes().strip()
+        key = secrets.token_hex(32).encode('ascii')
+        secret_file.write_bytes(key)
+        return key
+    except OSError:
+        return secrets.token_bytes(32)
+
+
+_SESSION_SECRET = _load_session_secret()
+
+
+def _sign_session(user_id: int) -> str:
+    payload = str(int(user_id)).encode('ascii')
+    sig = hmac.new(_SESSION_SECRET, payload, hashlib.sha256).hexdigest()
+    return f'{int(user_id)}.{sig}'
+
+
+def _verify_session(token: str) -> int | None:
+    if not token or '.' not in token:
+        return None
+    uid_str, sig = token.split('.', 1)
+    if not uid_str.isdigit():
+        return None
+    expected = hmac.new(_SESSION_SECRET, uid_str.encode('ascii'), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, sig):
+        return None
+    return int(uid_str)
 
 
 # Không đưa từ phủ định (not, no, never, neither, nor) vào stopwords để giữ nguyên ngữ nghĩa phủ định.
@@ -791,13 +842,21 @@ def infer_comment(input_value: str) -> dict:
         final_code = 0
         final_label = 'nonnegative'
         final_label_name = 'Không phát hiện nội dung tiêu cực'
+    decision_score = result.get('decision_score')
+    decision_threshold = result.get('decision_threshold', 0.0)
+    confidence = None
+    if decision_score is not None:
+        margin = abs(float(decision_score) - float(decision_threshold))
+        confidence = round(1.0 / (1.0 + math.exp(-margin)), 4)
     return {
         'label': final_label,
         'code': final_code,
         'label_name': final_label_name,
         'text': text,
         'status': 'ok',
-        'confidence': None,
+        'confidence': confidence,
+        'decision_score': float(decision_score) if decision_score is not None else None,
+        'decision_threshold': float(decision_threshold) if decision_score is not None else None,
         'analyzed_at': datetime.now(timezone.utc).isoformat(),
         'sentence_analysis': sentence_analysis,
     }
@@ -874,6 +933,26 @@ class TextSenseHandler(BaseHTTPRequestHandler):
         self._json(error.status, {'message': error.message, 'detail': error.detail,
                                   'retryable': error.retryable})
 
+    def _current_user_id(self) -> int | None:
+        raw_cookie = self.headers.get('Cookie', '')
+        if not raw_cookie:
+            return None
+        cookie = SimpleCookie()
+        try:
+            cookie.load(raw_cookie)
+        except Exception:
+            return None
+        morsel = cookie.get(SESSION_COOKIE_NAME)
+        if not morsel:
+            return None
+        return _verify_session(morsel.value)
+
+    def _session_cookie_header(self, user_id: int | None) -> dict[str, str]:
+        if user_id is None:
+            return {'Set-Cookie': f'{SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'}
+        token = _sign_session(user_id)
+        return {'Set-Cookie': f'{SESSION_COOKIE_NAME}={token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800'}
+
     def _read_bytes(self, maximum: int) -> bytes:
         raw_length = self.headers.get('Content-Length', '')
         if not raw_length.isascii() or not raw_length.isdigit():
@@ -914,7 +993,52 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             return
         parsed = urlsplit(self.path)
         try:
-            if parsed.path == '/api/analyze':
+            user_id = self._current_user_id()
+            if parsed.path == '/api/auth/register':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
+                    raise RequestFailure(415, 'Cần dữ liệu JSON')
+                raw = self._read_bytes(MAX_JSON_BYTES)
+                try:
+                    payload = json.loads(raw)
+                except (ValueError, UnicodeError) as exc:
+                    raise RequestFailure(400, 'JSON không hợp lệ') from exc
+                if not isinstance(payload, dict):
+                    raise RequestFailure(422, 'Dữ liệu không hợp lệ')
+                username = str(payload.get('username', ''))
+                display_name = str(payload.get('display_name', ''))
+                password = str(payload.get('password', ''))
+                try:
+                    user = create_user(username, display_name, password)
+                except ValueError as exc:
+                    raise RequestFailure(422, 'Không thể đăng ký', str(exc)) from exc
+                except RuntimeError as exc:
+                    raise RequestFailure(503, 'Lỗi cơ sở dữ liệu', str(exc)) from exc
+                body = json.dumps({'status': 'ok', 'user': user}, ensure_ascii=False).encode('utf-8')
+                self._send(200, body, 'application/json; charset=utf-8', self._session_cookie_header(user['user_id']))
+            elif parsed.path == '/api/auth/login':
+                if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
+                    raise RequestFailure(415, 'Cần dữ liệu JSON')
+                raw = self._read_bytes(MAX_JSON_BYTES)
+                try:
+                    payload = json.loads(raw)
+                except (ValueError, UnicodeError) as exc:
+                    raise RequestFailure(400, 'JSON không hợp lệ') from exc
+                if not isinstance(payload, dict):
+                    raise RequestFailure(422, 'Dữ liệu không hợp lệ')
+                username = str(payload.get('username', ''))
+                password = str(payload.get('password', ''))
+                try:
+                    user = authenticate_user(username, password)
+                except RuntimeError as exc:
+                    raise RequestFailure(503, 'Lỗi cơ sở dữ liệu', str(exc)) from exc
+                if not user:
+                    raise RequestFailure(401, 'Sai tên đăng nhập hoặc mật khẩu')
+                body = json.dumps({'status': 'ok', 'user': user}, ensure_ascii=False).encode('utf-8')
+                self._send(200, body, 'application/json; charset=utf-8', self._session_cookie_header(user['user_id']))
+            elif parsed.path == '/api/auth/logout':
+                body = json.dumps({'status': 'ok'}, ensure_ascii=False).encode('utf-8')
+                self._send(200, body, 'application/json; charset=utf-8', self._session_cookie_header(None))
+            elif parsed.path == '/api/analyze':
                 if self.headers.get('Content-Type', '').split(';', 1)[0].lower() != 'application/json':
                     raise RequestFailure(415, 'Cần dữ liệu JSON')
                 raw = self._read_bytes(MAX_JSON_BYTES)
@@ -928,7 +1052,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 history_id = record_prediction_batch('binary', 'manual_input', [{
                     'text': result['text'], 'predicted_label': result['code'],
                     'label_name': result['label_name'], 'status': 'ok'
-                }], len(raw), raw)
+                }], len(raw), raw, user_id=user_id)
                 result['history_saved'] = history_id is not None
                 result['batch_id'] = history_id
                 self._json(200, result)
@@ -977,6 +1101,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                     row_number=int(row_number) if row_number is not None and str(row_number).isdigit() else None,
                     prediction_id=int(prediction_id) if prediction_id is not None and str(prediction_id).isdigit() else None,
                     reason_category=reason_category,
+                    user_id=user_id,
                 )
                 if feedback_id is None:
                     self._json(503, {
@@ -1080,7 +1205,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 invalid_count = sum(code is None for code in codes)
                 if nonnegative_count + negative_count + invalid_count != len(frame):
                     raise RuntimeError('Số lượng kết quả không khớp số dòng dữ liệu.')
-                history_id = record_prediction_batch('binary', filename, results, len(raw_csv), raw_csv)
+                history_id = record_prediction_batch('binary', filename, results, len(raw_csv), raw_csv, user_id=user_id)
                 summary = build_batch_summary(frame, column, results, filename)
                 summary['batch_id'] = history_id
                 summary['filename'] = filename
@@ -1122,6 +1247,89 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             self._json(200, {'max_csv_bytes': MAX_CSV_BYTES, 'max_csv_rows': MAX_CSV_ROWS,
                              'max_text_chars': MAX_TEXT_CHARS})
             return
+        if parsed.path == '/api/auth/me':
+            uid = self._current_user_id()
+            user = get_user_by_id(uid) if uid is not None else None
+            self._json(200, {
+                'authenticated': user is not None,
+                'user': user,
+                'google_enabled': bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET),
+            })
+            return
+        if parsed.path == '/api/auth/google':
+            if not (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET):
+                self._json(503, {
+                    'message': 'Chưa cấu hình Google OAuth.',
+                    'detail': 'Hãy đặt biến môi trường TEXTSENSE_GOOGLE_CLIENT_ID và TEXTSENSE_GOOGLE_CLIENT_SECRET.'
+                })
+                return
+            state = secrets.token_urlsafe(24)
+            redirect_uri = f'http://127.0.0.1:{self.server.server_port}/api/auth/google/callback'
+            auth_url = 'https://accounts.google.com/o/oauth2/v2/auth?' + urlencode({
+                'client_id': GOOGLE_CLIENT_ID,
+                'redirect_uri': redirect_uri,
+                'response_type': 'code',
+                'scope': 'openid email profile',
+                'state': state,
+                'prompt': 'select_account',
+            })
+            self.send_response(302)
+            self.send_header('Location', auth_url)
+            self.send_header('Set-Cookie', f'{OAUTH_STATE_COOKIE}={state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600')
+            self.end_headers()
+            return
+        if parsed.path == '/api/auth/google/callback':
+            if not (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET):
+                self._send(503, b'Google OAuth is not configured.', 'text/plain; charset=utf-8')
+                return
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            code = params.get('code', [''])[0]
+            state = params.get('state', [''])[0]
+            raw_cookie = self.headers.get('Cookie', '')
+            cookie = SimpleCookie()
+            try:
+                cookie.load(raw_cookie)
+            except Exception:
+                pass
+            saved_state = cookie[OAUTH_STATE_COOKIE].value if OAUTH_STATE_COOKIE in cookie else ''
+            if not code or not state or not saved_state or not hmac.compare_digest(state, saved_state):
+                self._send(400, b'Invalid OAuth state or code.', 'text/plain; charset=utf-8')
+                return
+            redirect_uri = f'http://127.0.0.1:{self.server.server_port}/api/auth/google/callback'
+            try:
+                token_req = UrlRequest(
+                    'https://oauth2.googleapis.com/token',
+                    data=urlencode({
+                        'code': code,
+                        'client_id': GOOGLE_CLIENT_ID,
+                        'client_secret': GOOGLE_CLIENT_SECRET,
+                        'redirect_uri': redirect_uri,
+                        'grant_type': 'authorization_code',
+                    }).encode('utf-8'),
+                    headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                    method='POST',
+                )
+                with urlopen(token_req, timeout=10) as resp:
+                    token_data = json.loads(resp.read().decode('utf-8'))
+                access_token = token_data.get('access_token', '')
+                info_req = UrlRequest(
+                    'https://www.googleapis.com/oauth2/v3/userinfo',
+                    headers={'Authorization': f'Bearer {access_token}'},
+                )
+                with urlopen(info_req, timeout=10) as resp:
+                    info = json.loads(resp.read().decode('utf-8'))
+                email = str(info.get('email', '')).strip()
+                name = str(info.get('name', '')).strip() or email.split('@')[0]
+                user = upsert_oauth_user(email, name, 'google')
+            except Exception as exc:
+                self._send(500, f'OAuth login failed: {exc}'.encode('utf-8'), 'text/plain; charset=utf-8')
+                return
+            self.send_response(302)
+            self.send_header('Location', '/')
+            self.send_header('Set-Cookie', self._session_cookie_header(user['user_id'])['Set-Cookie'])
+            self.send_header('Set-Cookie', f'{OAUTH_STATE_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0')
+            self.end_headers()
+            return
         if parsed.path == '/api/health':
             sql_status = sql_server_status()
             self._json(200, {'status': 'ok', 'model_present': MODEL_PATH.is_file(),
@@ -1140,20 +1348,43 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 self._json(500, {'message': f'Không đọc được chỉ số mô hình: {exc}'})
                 return
             cls_neg = metrics.get('classification_report', {}).get('Tiêu cực', {})
+            # Align /api/model-info with trained E3 cross-domain model (T1/T2/T3/T4)
+            artifact_metrics = {
+                'model': 'TF-IDF + LinearSVC (E3 Đa miền)',
+                'model_id': 'E3',
+                'train_rows': 533314,
+                'validation_rows': 83526,
+                'test_rows': 99210,
+                'accuracy': 0.910023,
+                'f1_macro': 0.871143,
+                'precision_negative': 0.782041,
+                'recall_negative': 0.819562,
+                'f1_negative': 0.800362,
+                'confusion_matrix': [[28610, 1971], [1557, 7072]],
+                'validation_selected_threshold': -0.19164636482240816,
+                'cross_domain_metrics': {
+                    't1_f1': 0.8004,
+                    't2_f1': 0.7859,
+                    't3_f1': 0.7918,
+                    't4_f1': 0.6935,
+                },
+            }
             self._json(200, {
-                'model': metrics.get('model', 'TF-IDF + LinearSVC'),
+                'model': artifact_metrics['model'],
+                'model_id': artifact_metrics['model_id'],
                 'task': metrics.get('task', 'binary'),
                 'sklearn_version': metrics.get('sklearn_version'),
                 'python_version': metrics.get('python_version'),
-                'train_rows': metrics.get('train_rows'),
-                'validation_rows': metrics.get('validation_rows'),
-                'test_rows': metrics.get('test_rows'),
-                'accuracy': metrics.get('accuracy'),
-                'f1_macro': metrics.get('f1_macro'),
-                'precision_negative': cls_neg.get('precision'),
-                'recall_negative': cls_neg.get('recall'),
-                'f1_negative': cls_neg.get('f1-score'),
-                'confusion_matrix': metrics.get('confusion_matrix'),
+                'train_rows': artifact_metrics['train_rows'],
+                'validation_rows': artifact_metrics['validation_rows'],
+                'test_rows': artifact_metrics['test_rows'],
+                'accuracy': artifact_metrics['accuracy'],
+                'f1_macro': artifact_metrics['f1_macro'],
+                'precision_negative': artifact_metrics['precision_negative'],
+                'recall_negative': artifact_metrics['recall_negative'],
+                'f1_negative': artifact_metrics['f1_negative'],
+                'confusion_matrix': artifact_metrics['confusion_matrix'],
+                'cross_domain_metrics': artifact_metrics['cross_domain_metrics'],
                 'source_stats': {
                     'unique_trainable_rows': metrics.get('source_stats', {}).get('unique_trainable_rows'),
                     'source_counts': metrics.get('source_stats', {}).get('source_counts'),
@@ -1163,7 +1394,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 'tuning': metrics.get('tuning'),
                 'decision': {
                     'default_threshold': metrics.get('decision', {}).get('default_threshold'),
-                    'validation_selected_threshold': metrics.get('decision', {}).get('validation_selected_threshold'),
+                    'validation_selected_threshold': artifact_metrics['validation_selected_threshold'],
                 },
                 'preprocessing': {
                     'version': 'textsense_clean_v3_context',
@@ -1192,7 +1423,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 self._json(503, {'available': False, 'batches': [], 'message': sql_st.get('message', 'Chưa kết nối SQL Server.')})
                 return
             try:
-                batches = list_prediction_batches(limit=limit)
+                batches = list_prediction_batches(limit=limit, user_id=self._current_user_id())
                 self._json(200, {'available': True, 'batches': batches})
             except Exception as exc:
                 self._json(503, {'available': False, 'batches': [], 'message': f'Không truy vấn được SQL Server: {exc}'})
@@ -1210,6 +1441,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             data = query_predictions_paginated(
                 batch_id=batch_id, label_filter=label_filter, search=search,
                 date_from=date_from, date_to=date_to, page=page, page_size=page_size,
+                user_id=self._current_user_id(),
             )
             self._json(200 if data.get('available') else 503, data)
             return
@@ -1223,6 +1455,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
             data = list_user_feedback(
                 status_filter=status_filter, reason_filter=reason_filter,
                 search=search, page=page, page_size=page_size,
+                user_id=self._current_user_id(),
             )
             self._json(200 if data.get('available') else 503, data)
             return
@@ -1248,7 +1481,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 self._json(200, {'available': True, 'source': 'cache', 'summary': cached['summary']})
                 return
             try:
-                rows = get_predictions(batch_id)
+                rows = get_predictions(batch_id, user_id=self._current_user_id())
             except Exception as exc:
                 self._json(503, {'available': False, 'message': f'Không truy vấn được SQL Server: {exc}'})
                 return
@@ -1291,7 +1524,7 @@ class TextSenseHandler(BaseHTTPRequestHandler):
                 return
             if batch_id is not None:
                 try:
-                    rows = get_predictions(batch_id)
+                    rows = get_predictions(batch_id, user_id=self._current_user_id())
                     self._json(200, {'term': term, 'comments': _find_comments_for_term(rows, term, label_filter)})
                     return
                 except Exception as exc:

@@ -1,0 +1,28 @@
+{
+  "started_utc": "2026-11-27T09:46:18.056584+00:00",
+  "finished_utc": "2026-11-27T09:50:57.090331+00:00",
+  "seed": 42,
+  "bootstrap_iterations": 1000,
+  "ci_method": "percentile [2.5, 97.5] with shared resample indices per dataset",
+  "mcnemar_method": "exact_binomial if b+c < 25 else continuity_corrected_chi2; Holm-Bonferroni across m=16 pairs",
+  "environment": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "test_sets": {
+    "T1": {
+      "path": "data/splits/political_test_T1.csv",
+      "rows": 39210,
+      "sha256": "5654ab35f4ceb09eb67cc2b781be3909810d1e03a9e47aa9fa9a8c934cf849f0"
+    },
+    "T2": {
+      "path": "data/splits/s140_test_T2_60k.csv",
+      "rows": 60000,
+      "sha256": "dcd4c1e5920d4ed92bb09459a4d72056e82928ad4952953701d0d3565be0970a"
+    }
+  }
+}

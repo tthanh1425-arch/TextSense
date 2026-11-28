@@ -1,0 +1,61 @@
+{
+  "experiment_id": "E4b",
+  "base_experiment": "E2w",
+  "preprocessing_version": "textsense_clean_v4",
+  "train_datasets": [
+    "data/splits/political_train.csv (133314)",
+    "data/splits/s140_train_400k.csv (400000)"
+  ],
+  "val_datasets": [
+    "data/splits/political_val.csv (23526)",
+    "data/splits/s140_val_60k.csv (60000)"
+  ],
+  "vectorizer": {
+    "type": "FeatureUnion",
+    "word": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 2,
+      "max_features": 40000,
+      "sublinear_tf": true
+    },
+    "char": {
+      "analyzer": "char_wb",
+      "ngram_range": [
+        2,
+        5
+      ],
+      "min_df": 3,
+      "max_features": 80000,
+      "sublinear_tf": true
+    }
+  },
+  "model": {
+    "type": "LinearSVC",
+    "C": 0.5,
+    "class_weight": null,
+    "max_iter": 3000,
+    "random_state": 42
+  },
+  "sample_weight": {
+    "selected_r": 0.15,
+    "w_pol": 2.7587965693121035,
+    "w_s140": 0.4138194853968155
+  },
+  "threshold": -0.17140876231746896,
+  "threshold_objective": "F1_class1 (political_val)",
+  "seed": 42,
+  "train_time_sec": 182.115,
+  "infer_time_sec": 13.846,
+  "env": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "model_sha256": "3f436ab22eb92aa1262dcf56fc195ceed739b7c777962ef889c077336691d842"
+}

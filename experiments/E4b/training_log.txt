@@ -1,0 +1,1 @@
+E4b (Word+Char_wb, base=E2w): thr=-0.171409, pol_val F1=0.7988

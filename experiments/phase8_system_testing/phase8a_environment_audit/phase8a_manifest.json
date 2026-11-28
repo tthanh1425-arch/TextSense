@@ -1,0 +1,46 @@
+{
+  "phase": "Phase 8A - Environment & Architecture Audit",
+  "created_utc": "2026-11-28T01:36:00+07:00",
+  "mode": "READ_ONLY",
+  "python_version": "3.14.8",
+  "packages": {
+    "scikit-learn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0",
+    "openpyxl": "3.1.5",
+    "pyodbc": "5.5.0",
+    "vaderSentiment": "3.3.2",
+    "matplotlib": "3.11.2",
+    "pytest": "NOT INSTALLED"
+  },
+  "artifacts_sha256": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a"
+  },
+  "audited_source_sha256": {
+    "03_GIAO_DIEN/predict.py": "ba211b5ca9996ab33b6f327fa35ad898582b0c3e8893833d7ae2f373a0459456",
+    "03_GIAO_DIEN/serve_textsense.py": "5b646e8b80e955c20c64b018a63c7f4f3f06c86fca528da4f92a81c1e4d5c41d",
+    "03_GIAO_DIEN/database.py": "11b935f638c88e7f096a8273768c9fbdb017a25a6529db7a0e23a5adee995ef7",
+    "02_SQL_SERVER/textsense.sql": "b61bde54e8f24d6247121359b22f2dd403b6245880e1c2b5939fc8d05cf9f4a1",
+    "03_GIAO_DIEN/web/app.js": "8c0f5dab45f426d9780f51f2f669a4599101bdd570cd3b39eb8b1928b67789a0",
+    "03_GIAO_DIEN/web/index.html": "52914b820f77e836af7ed2d2d3378e4b4fb93a3b001863a04ea014f39ef86be1",
+    "03_GIAO_DIEN/web/model_weights.json": "0aff578b3f9623d64c2652cb1986e3e8c16a39d2d66586f60a61a24bfcf2a733",
+    "tests/test_web_sentiment.py": "c83f6791c003a3e01f2715371479978bbc142dd2d47520a908eb1c653a307e72"
+  },
+  "actions_performed": [
+    "Directory and component inventory",
+    "Python and package version check in .venv-1",
+    "SHA-256 verification and read-only joblib inspection of E0-Artifact",
+    "Source code audit of predict.py, serve_textsense.py, web/app.js, database.py, textsense.sql"
+  ],
+  "actions_not_performed": [
+    "No model retraining or threshold changes",
+    "No source code, UI, or artifact modifications",
+    "No package installation or upgrades",
+    "No SQL Server live queries or writes",
+    "No HTTP server startup or functional tests (deferred to 8B)"
+  ],
+  "status": "PASS WITH WARNINGS"
+}

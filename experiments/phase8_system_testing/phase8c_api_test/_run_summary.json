@@ -1,0 +1,208 @@
+{
+  "started_utc": "2026-11-27T19:00:26.553947+00:00",
+  "finished_utc": "2026-11-27T19:00:28.888519+00:00",
+  "server_bind": "127.0.0.1:64184",
+  "total_cases": 51,
+  "passed": 49,
+  "failed": 2,
+  "db_mock_calls_count": 61,
+  "db_mock_calls": [
+    [
+      "sql_server_status",
+      {}
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9001
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9002
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9003
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9004
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9005
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9006
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9007
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9008
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9009
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9010
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9011
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9012
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "manual_input",
+        "rows": 1,
+        "mock_id": 9013
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 1,
+        "mock_id": 9014
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 5,
+        "mock_id": 9015
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 100,
+        "mock_id": 9016
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 1000,
+        "mock_id": 9017
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 3,
+        "mock_id": 9018
+      }
+    ],
+    [
+      "record_prediction_batch",
+      {
+        "source": "test.csv",
+        "rows": 2,
+        "mock_id": 9019
+      }
+    ]
+  ],
+  "concurrency": {
+    "conc_5": {
+      "success": 5,
+      "total": 5,
+      "max_ms": 11.54
+    },
+    "conc_10": {
+      "success": 10,
+      "total": 10,
+      "max_ms": 13.58
+    },
+    "conc_20": {
+      "success": 20,
+      "total": 20,
+      "max_ms": 524.19
+    }
+  },
+  "sha256_before": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "03_GIAO_DIEN/predict.py": "ba211b5ca9996ab33b6f327fa35ad898582b0c3e8893833d7ae2f373a0459456",
+    "03_GIAO_DIEN/serve_textsense.py": "5b646e8b80e955c20c64b018a63c7f4f3f06c86fca528da4f92a81c1e4d5c41d",
+    "03_GIAO_DIEN/database.py": "11b935f638c88e7f096a8273768c9fbdb017a25a6529db7a0e23a5adee995ef7"
+  },
+  "sha256_after": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "03_GIAO_DIEN/predict.py": "ba211b5ca9996ab33b6f327fa35ad898582b0c3e8893833d7ae2f373a0459456",
+    "03_GIAO_DIEN/serve_textsense.py": "5b646e8b80e955c20c64b018a63c7f4f3f06c86fca528da4f92a81c1e4d5c41d",
+    "03_GIAO_DIEN/database.py": "11b935f638c88e7f096a8273768c9fbdb017a25a6529db7a0e23a5adee995ef7"
+  },
+  "sha256_unchanged": true,
+  "environment": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0",
+    "openpyxl": "3.1.5"
+  }
+}

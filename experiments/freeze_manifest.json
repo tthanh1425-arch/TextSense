@@ -1,0 +1,166 @@
+{
+  "created_utc": "2026-11-27T09:06:31.708834+00:00",
+  "phase": "Phase 4A Freeze Gate (Before opening T1/T2)",
+  "python_version": "3.14.8",
+  "libraries": {
+    "python": "3.14.8",
+    "sklearn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0"
+  },
+  "code_sha256": {
+    "phase4a_run.py": "5c9c83b567786c5863318af814a9d1ecce56c0d5992be634bbf6cb93bff6da3d",
+    "preprocessing_v4.py": "0262b01edad02a2ba292cc5bf280e25b0988d72552d9f1406a117edc137103e2",
+    "negation_feature.py": "d2fb5d5b36d302d8a632c0fbf942a4428aeae5e7aea516369f92c1e713120f6b"
+  },
+  "train_val_splits_sha256": {
+    "political_train": "af203576bd351cde73526b84eab3d7e7fca1dd4e30be32441154f29855d67902",
+    "political_val": "65b9fbb2c477475314d9db8016a9db3e7f15b23ff0b5de94b7999ffcd4e65d7f",
+    "s140_train_400k": "5f74f2540333a083fa5c0f4c4f4e35a2b3ebc7664483e103e99f5525da700cdb",
+    "s140_val_60k": "b5eb7a5b76d918658f1fc40686f1d18384ae0da2e597d32e951e193699336f74",
+    "s140_train_e6_50k": "7c939de795e285754e14cf6b30de10ac6f008986dbb8313c1e67cc863f9a7ed1",
+    "s140_train_e6_120k": "8ece80d446408dd1311138366b0ba2d8b497ab7d94c90dc76cad5ab4409df177"
+  },
+  "allowed_artifacts_for_step4B": [
+    {
+      "experiment_id": "E0-Artifact",
+      "model_path": "baseline_v3/binary_linear_svm.joblib",
+      "model_sha256": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+      "preprocessing_version": "textsense_clean_v3_context",
+      "threshold": -0.19220128657328076,
+      "threshold_objective": "Frozen baseline_v3 (trained on Train+Val; evaluate ONLY on T1/T2, NEVER on political_val)"
+    },
+    {
+      "experiment_id": "E0-Train",
+      "model_path": "experiments/E0-Train/model.joblib",
+      "config_path": "experiments/E0-Train/config.json",
+      "model_sha256": "04613c64ec74cdda82b7babd86eede3c52378f6c858a2189b0cc64b33377b4bb",
+      "config_sha256": "990056458c13e8faf8a9f596ac71b2282738c6367376dc4f8bf4ffba9f52a67b",
+      "preprocessing_version": "textsense_clean_v3_context",
+      "threshold": -0.19220128657328076,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E1a",
+      "model_path": "experiments/E1a/model.joblib",
+      "config_path": "experiments/E1a/config.json",
+      "model_sha256": "f623bbc355d9ea4167b2ec7b2e0300dcc095593cc0508bf7d8b57c6430cee9cc",
+      "config_sha256": "0bec550631c34c9a60c6110e5bab411485166e2bf72afbbc30416fe4a6b18bdf",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.19220128657328076,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E1b",
+      "model_path": "experiments/E1b/model.joblib",
+      "config_path": "experiments/E1b/config.json",
+      "model_sha256": "10706924ff67a3f66d8e2c0f12880609046d710bd0dfc8e27a4e2dfdafcb8b38",
+      "config_sha256": "50ce8e4fb74d9e899a8697819c17e89e64be63936bfb378f49f80c5595b4d00d",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.2202415760146304,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E2",
+      "model_path": "experiments/E2/model.joblib",
+      "config_path": "experiments/E2/config.json",
+      "model_sha256": "f9ada6dcb928fc67237f53a987864b5f4286865b4d8ad70da23e01d9d6265b95",
+      "config_sha256": "76905ca0d06930afa24e9c92d59076a4852e53ca238518374a31b6d37acd3eec",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.23788077037364946,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E2w",
+      "model_path": "experiments/E2w/model.joblib",
+      "config_path": "experiments/E2w/config.json",
+      "model_sha256": "c5d4127ade986831d09971babbc480e663899e0177cde140d697f52ecfabbf91",
+      "config_sha256": "36687cdb4f8dc4627d3f65e473c8575799784b661899f133e53621f9a519e515",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.18785302154487846,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E3",
+      "model_path": "experiments/E3/model.joblib",
+      "config_path": "experiments/E3/config.json",
+      "model_sha256": "9ec29b3760b77ad950de45c584d1d53fb5d65c8681a1c378bb898506460e212c",
+      "config_sha256": "0122974b2cf680bccd55d484366d77f5a5afe25c90983b8f582fd4a83a621413",
+      "preprocessing_version": "textsense_clean_v4+negation_window3",
+      "threshold": -0.19164636482240816,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E4a",
+      "model_path": "experiments/E4a/model.joblib",
+      "config_path": "experiments/E4a/config.json",
+      "model_sha256": "41a7c41391f2cf2c0eeda658568a5c08ed850c733ed475d05d23968615ba3cc0",
+      "config_sha256": "344120b7d768b542750634411470c6897ec3fd20dbbdd773d072dcc8117929f9",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.20855146121732068,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E4b",
+      "model_path": "experiments/E4b/model.joblib",
+      "config_path": "experiments/E4b/config.json",
+      "model_sha256": "3f436ab22eb92aa1262dcf56fc195ceed739b7c777962ef889c077336691d842",
+      "config_sha256": "8db4de89ec4539174e60a6837d05c465edbb36b00b620f3806eae1a8920dff86",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.17140876231746896,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E5a",
+      "model_path": "experiments/E5a/model.joblib",
+      "config_path": "experiments/E5a/config.json",
+      "model_sha256": "ea0030580091094fd47af7a2ec68758dd9452183c230a374857d235969ba2c3e",
+      "config_sha256": "08911108ca5af82362960f7b1db870f38e73e5a1b9b9970b7515f1531a8d6bc4",
+      "preprocessing_version": "textsense_clean_v4+negation_window3",
+      "threshold": -0.19164636482240816,
+      "threshold_objective": "F1_class1 (political_val)"
+    },
+    {
+      "experiment_id": "E5b",
+      "model_path": "experiments/E5b/model.joblib",
+      "config_path": "experiments/E5b/config.json",
+      "model_sha256": "32fcfe17016c4c1e2cad8417862e354e6b89ae348a4e9a59605586a0284ebdad",
+      "config_sha256": "2033d526a7ceaeeacb06063de563d5f7c683205f734fe4428cb3bf5052564e01",
+      "preprocessing_version": "textsense_clean_v4+negation_window3",
+      "threshold": -0.4123712826874764,
+      "threshold_objective": "F2_class1 (beta=2.0, political_val)"
+    },
+    {
+      "experiment_id": "E6-50k",
+      "model_path": "experiments/E6-50k/model.joblib",
+      "config_path": "experiments/E6-50k/config.json",
+      "model_sha256": "e101a1433244879754123b52077f8da496b6299bc870883a6db658fe2f253fa1",
+      "config_sha256": "49963ee5f7b9d08ff0f735f5df6e5f0032b6e7539975f91f9f9dc4a363f84398",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.23788077037364946,
+      "threshold_objective": "LOCKED_FROM_E2"
+    },
+    {
+      "experiment_id": "E6-120k",
+      "model_path": "experiments/E6-120k/model.joblib",
+      "config_path": "experiments/E6-120k/config.json",
+      "model_sha256": "948af73ed6e7a6009602db866ef96efac9358829e8cf22797bf47695a095b872",
+      "config_sha256": "6f41bd215da47bdcbf15cd201a208b199219f4c8e658de26f7141eae0d74be24",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.23788077037364946,
+      "threshold_objective": "LOCKED_FROM_E2"
+    },
+    {
+      "experiment_id": "E6-400k",
+      "model_path": "experiments/E6-400k/model.joblib",
+      "config_path": "experiments/E6-400k/config.json",
+      "model_sha256": "5614085b83a34cb210258d3ff08358625f3741c1e3e4f1e1e2711448a6a8db82",
+      "config_sha256": "756c8be8ffb687b3c9c1c8a42f900b80f0e428aeabcc67a3dc4de8a769bda95d",
+      "preprocessing_version": "textsense_clean_v4",
+      "threshold": -0.23788077037364946,
+      "threshold_objective": "LOCKED_FROM_E2"
+    }
+  ]
+}

@@ -83,20 +83,132 @@ async function refreshHealth() {
 }
 refreshHealth();
 
+// ---------- User Auth (Login / Register / Logout) ----------
+const authDialog = byId('auth-dialog');
+const authForm = byId('auth-form');
+const authTabLogin = byId('auth-tab-login');
+const authTabRegister = byId('auth-tab-register');
+const authMsg = byId('auth-msg');
+let authMode = 'login';
+let currentUser = null;
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isReg = mode === 'register';
+  authTabLogin.setAttribute('aria-selected', String(!isReg));
+  authTabRegister.setAttribute('aria-selected', String(isReg));
+  byId('auth-displayname-wrap').hidden = !isReg;
+  byId('auth-dialog-title').textContent = isReg ? 'Đăng ký tài khoản TextSense' : 'Đăng nhập TextSense';
+  byId('auth-submit-btn').textContent = isReg ? 'Tạo tài khoản' : 'Đăng nhập';
+  byId('auth-password').autocomplete = isReg ? 'new-password' : 'current-password';
+  authMsg.hidden = true;
+}
+
+function renderAuthBar(user) {
+  currentUser = user || null;
+  const openBtn = byId('auth-open-btn');
+  const userBox = byId('auth-user-box');
+  if (currentUser) {
+    openBtn.hidden = true;
+    userBox.hidden = false;
+    byId('auth-user-name').textContent = currentUser.display_name || currentUser.username;
+  } else {
+    openBtn.hidden = false;
+    userBox.hidden = true;
+  }
+}
+
+async function refreshAuth() {
+  try {
+    const res = await fetch('/api/auth/me');
+    const data = await res.json().catch(() => ({}));
+    renderAuthBar(data.authenticated ? data.user : null);
+    const gBtn = byId('auth-google-btn');
+    if (gBtn) gBtn.hidden = !data.google_enabled;
+  } catch {
+    renderAuthBar(null);
+  }
+}
+
+byId('auth-open-btn').addEventListener('click', () => {
+  authForm.reset();
+  setAuthMode('login');
+  authDialog.showModal();
+});
+byId('close-auth-dialog').addEventListener('click', () => authDialog.close());
+authTabLogin.addEventListener('click', () => setAuthMode('login'));
+authTabRegister.addEventListener('click', () => setAuthMode('register'));
+
+authForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const username = byId('auth-username').value.trim();
+  const displayName = byId('auth-displayname').value.trim();
+  const password = byId('auth-password').value;
+  const btn = byId('auth-submit-btn');
+  btn.disabled = true;
+  authMsg.hidden = true;
+  try {
+    const endpoint = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, display_name: displayName, password })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.user) {
+      authMsg.textContent = data.detail || data.message || 'Không thể xác thực tài khoản.';
+      authMsg.className = 'report-feedback-msg err';
+      authMsg.hidden = false;
+      return;
+    }
+    renderAuthBar(data.user);
+    authDialog.close();
+    loadHistoryBatches();
+    loadHistoryPredictions();
+    loadFeedbackList();
+    loadStatsFromServer('');
+  } catch {
+    authMsg.textContent = 'Lỗi kết nối máy chủ.';
+    authMsg.className = 'report-feedback-msg err';
+    authMsg.hidden = false;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+byId('auth-logout-btn').addEventListener('click', async () => {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch {
+    // Ignore
+  }
+  renderAuthBar(null);
+  loadHistoryBatches();
+  loadHistoryPredictions();
+  loadFeedbackList();
+  loadStatsFromServer('');
+});
+
+refreshAuth();
+
 fetch('/api/model-info').then((r) => (r.ok ? r.json() : null)).then((data) => {
   if (!data) return;
+  const setText = (id, val) => {
+    const el = byId(id);
+    if (el) el.textContent = val;
+  };
   const pct = (v) => (Number(v) * 100).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
-  if (data.accuracy != null) byId('mi-acc').textContent = pct(data.accuracy);
-  if (data.precision_negative != null) byId('mi-prec').textContent = pct(data.precision_negative);
-  if (data.recall_negative != null) byId('mi-rec').textContent = pct(data.recall_negative);
-  if (data.f1_negative != null) byId('mi-f1').textContent = pct(data.f1_negative);
-  if (data.train_rows) byId('mi-train-rows').textContent = formatNumber(data.train_rows);
-  if (data.validation_rows) byId('mi-val-rows').textContent = formatNumber(data.validation_rows);
-  if (data.test_rows) byId('mi-test-rows').textContent = formatNumber(data.test_rows);
+  if (data.accuracy != null) setText('mi-acc', pct(data.accuracy));
+  if (data.precision_negative != null) setText('mi-prec', pct(data.precision_negative));
+  if (data.recall_negative != null) setText('mi-rec', pct(data.recall_negative));
+  if (data.f1_negative != null) setText('mi-f1', pct(data.f1_negative));
+  if (data.train_rows) setText('mi-train-rows', formatNumber(data.train_rows));
+  if (data.validation_rows) setText('mi-val-rows', formatNumber(data.validation_rows));
+  if (data.test_rows) setText('mi-test-rows', formatNumber(data.test_rows));
   const src = data.source_stats || {};
-  if (src.unique_trainable_rows) byId('mi-total-rows').textContent = formatNumber(src.unique_trainable_rows);
-  if (src.source_counts?.['Twitter_Data.csv']) byId('mi-twitter-rows').textContent = formatNumber(src.source_counts['Twitter_Data.csv']);
-  if (src.source_counts?.['Reddit_Data.csv']) byId('mi-reddit-rows').textContent = formatNumber(src.source_counts['Reddit_Data.csv']);
+  if (src.unique_trainable_rows) setText('mi-total-rows', formatNumber(src.unique_trainable_rows));
+  if (src.source_counts?.['Twitter_Data.csv']) setText('mi-twitter-rows', formatNumber(src.source_counts['Twitter_Data.csv']));
+  if (src.source_counts?.['Reddit_Data.csv']) setText('mi-reddit-rows', formatNumber(src.source_counts['Reddit_Data.csv']));
 }).catch(() => {});
 
 // ---------- Detail Modal ----------
@@ -227,6 +339,16 @@ function showClassification(payload, origin = 'single', rowNumber = 0) {
   byId('new-comment').hidden = origin === 'batch';
   byId('batch-detail-nav').hidden = origin !== 'batch';
   resultTitle.textContent = classification.title;
+  const confEl = byId('result-confidence');
+  if (confEl) {
+    if (typeof payload.confidence === 'number') {
+      confEl.textContent = 'Điểm quyết định: ' + (payload.confidence * 100).toFixed(1) + '%';
+      confEl.hidden = false;
+    } else {
+      confEl.textContent = '';
+      confEl.hidden = true;
+    }
+  }
   byId('result-detail').textContent = classification.detail;
   const ts = payload.analyzed_at ? new Date(payload.analyzed_at) : new Date();
   byId('result-timestamp').textContent = ts.toLocaleString('vi-VN');

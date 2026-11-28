@@ -1,0 +1,45 @@
+{
+  "experiment_id": "E4b",
+  "political_val": {
+    "n_evaluated": 23526,
+    "n_skipped": 0,
+    "pos_count": 5177,
+    "neg_count": 18349,
+    "threshold": -0.17140876231746896,
+    "accuracy": 0.9098444274419791,
+    "precision_class1": 0.784862043251305,
+    "recall_class1": 0.8132122851072049,
+    "f1_class1": 0.7987856939569301,
+    "f2_class1": 0.8073795642835225,
+    "macro_f1": 0.87034680605929,
+    "pr_auc_class1": 0.8676917019064734,
+    "specificity": 0.9371082892800697,
+    "confusion_matrix": {
+      "tn": 17195,
+      "fp": 1154,
+      "fn": 967,
+      "tp": 4210
+    }
+  },
+  "s140_val": {
+    "n_evaluated": 60000,
+    "n_skipped": 0,
+    "pos_count": 30000,
+    "neg_count": 30000,
+    "threshold": -0.17140876231746896,
+    "accuracy": 0.7812,
+    "precision_class1": 0.7609987005754595,
+    "recall_class1": 0.8199,
+    "f1_class1": 0.7893520747087706,
+    "f2_class1": 0.8074014259266554,
+    "macro_f1": 0.7808718139069704,
+    "pr_auc_class1": 0.8465192411485429,
+    "specificity": 0.7425,
+    "confusion_matrix": {
+      "tn": 22275,
+      "fp": 7725,
+      "fn": 5403,
+      "tp": 24597
+    }
+  }
+}

@@ -3,12 +3,19 @@ import argparse
 from functools import lru_cache
 from pathlib import Path
 import re
+import sys
 import warnings
 import unicodedata
 
 import joblib
 import pandas as pd
 import sklearn
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+from preprocessing_v4 import normalize_text as normalize_text_v4  # noqa: E402
+from scripts.negation_feature import add_negation_features  # noqa: E402
 
 BINARY_NAMES = {0: 'Không phát hiện nội dung tiêu cực', 1: 'Có nội dung tiêu cực'}
 OUTPUT = Path(__file__).resolve().parent.parent / '01_TRAIN_MODEL' / 'outputs'
@@ -99,14 +106,19 @@ def predict(model_path, texts, batch_size=512):
     if batch_size < 1:
         raise ValueError('batch_size must be a positive integer.')
     prep_ver = artifact.get('preprocessing_version')
-    if prep_ver and prep_ver != PREPROCESSING_VERSION:
+    exp_id = artifact.get('experiment_id')
+    use_v4 = bool(prep_ver and prep_ver.startswith('textsense_clean_v4'))
+    use_negation = exp_id in {'E3', 'E5a', 'E5b'} or bool(prep_ver and 'negation' in prep_ver)
+    if prep_ver and prep_ver not in {PREPROCESSING_VERSION, 'textsense_clean_v4', 'textsense_clean_v4+negation_window3'}:
         warnings.warn(
             f'Model preprocessing version ({prep_ver}) does not match current ({PREPROCESSING_VERSION}).',
             RuntimeWarning
         )
     model = artifact['pipeline']
     raw_texts = [str(text) if text is not None else '' for text in texts]
-    cleaned = [normalize_text(text) for text in raw_texts]
+    clean_fn = normalize_text_v4 if use_v4 else normalize_text
+    cleaned = [clean_fn(text) for text in raw_texts]
+    model_inputs = [add_negation_features(c) for c in cleaned] if use_negation else cleaned
     statuses = []
     eligible = []
     for index, value in enumerate(cleaned):
@@ -127,7 +139,7 @@ def predict(model_path, texts, batch_size=512):
     scores = {}
     for start in range(0, len(eligible), batch_size):
         indices = eligible[start:start + batch_size]
-        texts_batch = [cleaned[i] for i in indices]
+        texts_batch = [model_inputs[i] for i in indices]
         if artifact.get('task') == 'binary':
             decision_scores = model.decision_function(texts_batch)
             threshold = float(artifact.get('threshold', 0.0))

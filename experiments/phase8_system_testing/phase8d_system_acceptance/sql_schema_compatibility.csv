@@ -1,0 +1,8 @@
+﻿table,exists,row_count,column_count,columns,status
+dbo.Tweets,True,196050,6,"TweetID(bigint), Source(nvarchar), Content(nvarchar), OriginalLabel(int), BinaryLabel(int), ImportedAt(datetime2)",PASS
+dbo.TweetTokens,True,3780313,3,"TweetID(bigint), Token(nvarchar), Frequency(int)",PASS
+dbo.TrainingRuns,True,7,20,"TrainingRunID(bigint), StartedUtc(datetimeoffset), Task(nvarchar), Status(nvarchar), ModelPath(nvarchar), Accuracy(float), MacroF1(float), PrecisionPositive(float), RecallPositive(float), F1Positive(float), TestRows(int), SelectedC(float), DecisionThreshold(float), PythonVersion(nvarchar), SklearnVersion(nvarchar), DataSha256(char), ManifestSha256(char), MetricsJson(nvarchar), LogText(nvarchar), CreatedAt(datetimeoffset)",PASS
+dbo.PredictionBatches,True,44,8,"BatchID(bigint), CreatedUtc(datetimeoffset), Task(nvarchar), SourceName(nvarchar), RowCount(int), UploadBytes(bigint), UploadSha256(char), UserID(bigint)",PASS
+dbo.Predictions,True,624403,7,"PredictionID(bigint), BatchID(bigint), RowNumber(int), InputText(nvarchar), PredictedLabel(tinyint), LabelName(nvarchar), Status(nvarchar)",PASS
+dbo.UserFeedback,True,3,15,"FeedbackID(bigint), CreatedUtc(datetimeoffset), SourceName(nvarchar), InputText(nvarchar), ModelPrediction(nvarchar), SuggestedLabel(nvarchar), UserNote(nvarchar), BatchID(bigint), RowNumber(int), PredictionID(bigint), InputSha256(char), ReasonCategory(nvarchar), ReviewStatus(nvarchar), ReviewedUtc(datetimeoffset), UserID(bigint)",PASS
+dbo.Users,True,1,8,"UserID(bigint), Username(nvarchar), Email(nvarchar), DisplayName(nvarchar), PasswordHash(varchar), PasswordSalt(varchar), AuthProvider(nvarchar), CreatedUtc(datetimeoffset)",PASS

@@ -1,0 +1,13 @@
+﻿case_id,type,http,code,label,confidence,neg_parts,status
+UI-S-01,single,200,1,negative,0.9063,,PASS
+UI-S-02,single,200,0,nonnegative,0.9944,,PASS
+UI-S-03,single,200,1,negative,0.6129,1,PASS
+UI-S-04,single,200,1,negative,0.5122,,PASS
+UI-S-05,single,422,,TextSense chỉ phân tích nội dung bình luận,,,PASS
+UI-S-06,single,200,1,negative,0.9985,,PASS
+UI-S-07,single,413,,Văn bản vượt giới hạn,,,PASS
+UI-S-08,single,422,,Chưa có nội dung,,,PASS
+UI-S-09,single,422,,Không thể phân loại văn bản,,,PASS
+UI-S-10,single,200,1,negative,0.8663,1,PASS
+UI-B-01,batch,200,,"neg=1, inv=1",,,PASS
+UI-E-01,export_xlsx,200,,sheets=4,,,PASS

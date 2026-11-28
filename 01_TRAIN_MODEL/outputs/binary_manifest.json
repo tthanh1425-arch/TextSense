@@ -1,24 +1,24 @@
 {
   "task": "binary",
-  "created_utc": "2026-11-19T07:52:09.965072+00:00",
+  "created_utc": "2026-11-27T01:17:37.461784+00:00",
   "seed": 42,
   "data_hashes": {
-    "canonical_dataset_sha256": "820c29d9f9f6ecd0f15ea1fb97d274e9c51eb2b19605f765c89be7831e07c7e8",
+    "canonical_dataset_sha256": "cb38aecc6397db54434596376434be6bec61a2896d48c969c18907b61f5be517",
     "source_file_sha256": {
       "Twitter_Data.csv": "5a7af1ec5fc749ec8e5ea13c574aeb5c06254aa1c081e3421868079d5356b3f4",
       "Reddit_Data.csv": "441cae031c856b9239091b00c683dd13d8624d09e973a91f010e3cc432455370"
     }
   },
   "split_file_sha256": {
-    "train": "ade743d95f4159e93491a6a8e1e13218f5324cf0d0760e4ad67968d9dd58fde6",
-    "validation": "db676db4d57403c7484eba1e70aa4085d902b8b4e348a43bb310f561aa7c4125",
-    "test": "70399ae4b998f757dcd38ac234eaad29f8182bc47c07804cee4ff7dccc17b5ad"
+    "train": "113638fa85d3d16fd93feab932daaa5d37a772333b090e89c6961a9a7ba37d2b",
+    "validation": "34e0ccb303a1a9e6c64939a37c96c390c3cf7cdf676a39f96f0a1c5a828bae86",
+    "test": "d6fa7f3fa45ef5bac8eff90673ecb929144921cc84a6b71ffd26afaf3634cf1c"
   },
   "split_rows": {
-    "train": 133317,
-    "validation": 23527,
-    "test": 39212
+    "train": 133314,
+    "validation": 23526,
+    "test": 39210
   },
-  "model_file_sha256": "d770e899a904af727b6b91a98089521242756a202b8aa46a53aa839ec063c342",
-  "metrics_file_sha256": "a3817acf5c10323206eb19da76adc10faf6d5169f15ae8209cc725e7b82507d1"
+  "model_file_sha256": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+  "metrics_file_sha256": "6847c013d63d64221af6da56df695e2351af24caacb6d39f4bc31b3dea50b12a"
 }

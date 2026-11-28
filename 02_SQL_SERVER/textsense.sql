@@ -156,6 +156,44 @@ IF INDEXPROPERTY(OBJECT_ID(N'dbo.UserFeedback'), N'IX_UserFeedback_Status', 'Ind
     CREATE INDEX IX_UserFeedback_Status ON dbo.UserFeedback(ReviewStatus, CreatedUtc DESC);
 GO
 
+-- PHẦN 4B. TÀI KHOẢN NGƯỜI DÙNG & PHÂN TÁCH LỊCH SỬ THEO NGƯỜI DÙNG
+IF OBJECT_ID(N'dbo.Users', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Users (
+        UserID BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        Username NVARCHAR(120) NOT NULL UNIQUE,
+        Email NVARCHAR(254) NULL,
+        DisplayName NVARCHAR(120) NOT NULL,
+        PasswordHash VARCHAR(128) NOT NULL,
+        PasswordSalt VARCHAR(64) NOT NULL,
+        AuthProvider NVARCHAR(32) NOT NULL CONSTRAINT DF_Users_AuthProvider DEFAULT N'local',
+        CreatedUtc DATETIMEOFFSET NOT NULL CONSTRAINT DF_Users_CreatedUtc DEFAULT SYSDATETIMEOFFSET()
+    );
+END;
+GO
+
+IF COL_LENGTH(N'dbo.Users', N'Email') IS NULL
+    ALTER TABLE dbo.Users ADD Email NVARCHAR(254) NULL;
+IF COL_LENGTH(N'dbo.Users', N'AuthProvider') IS NULL
+    ALTER TABLE dbo.Users ADD AuthProvider NVARCHAR(32) NOT NULL CONSTRAINT DF_Users_AuthProvider DEFAULT N'local';
+GO
+
+IF INDEXPROPERTY(OBJECT_ID(N'dbo.Users'), N'UX_Users_Email', 'IndexId') IS NULL AND COL_LENGTH(N'dbo.Users', N'Email') IS NOT NULL
+    CREATE UNIQUE INDEX UX_Users_Email ON dbo.Users(Email) WHERE Email IS NOT NULL;
+GO
+
+IF COL_LENGTH(N'dbo.PredictionBatches', N'UserID') IS NULL
+    ALTER TABLE dbo.PredictionBatches ADD UserID BIGINT NULL;
+IF COL_LENGTH(N'dbo.UserFeedback', N'UserID') IS NULL
+    ALTER TABLE dbo.UserFeedback ADD UserID BIGINT NULL;
+GO
+
+IF OBJECT_ID(N'FK_PredictionBatches_Users', N'F') IS NULL AND COL_LENGTH(N'dbo.PredictionBatches', N'UserID') IS NOT NULL
+    ALTER TABLE dbo.PredictionBatches ADD CONSTRAINT FK_PredictionBatches_Users FOREIGN KEY (UserID) REFERENCES dbo.Users(UserID) ON DELETE SET NULL;
+IF OBJECT_ID(N'FK_UserFeedback_Users', N'F') IS NULL AND COL_LENGTH(N'dbo.UserFeedback', N'UserID') IS NOT NULL
+    ALTER TABLE dbo.UserFeedback ADD CONSTRAINT FK_UserFeedback_Users FOREIGN KEY (UserID) REFERENCES dbo.Users(UserID) ON DELETE NO ACTION;
+GO
+
 -- Xem lịch sử huấn luyện gần nhất
 SELECT TOP (50) TrainingRunID, StartedUtc, Task, Status, Accuracy,
        F1Positive, TestRows, SelectedC, DecisionThreshold, ModelPath

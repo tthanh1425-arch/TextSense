@@ -1,0 +1,34 @@
+{
+  "model": "E0-Artifact",
+  "tn": 26714,
+  "fp": 3286,
+  "fn": 20345,
+  "tp": 9655,
+  "classification_report": {
+    "0": {
+      "precision": 0.5676703712361079,
+      "recall": 0.8904666666666666,
+      "f1-score": 0.6933388702163278,
+      "support": 30000.0
+    },
+    "1": {
+      "precision": 0.7460783556139402,
+      "recall": 0.32183333333333336,
+      "f1-score": 0.4496867795347104,
+      "support": 30000.0
+    },
+    "accuracy": 0.60615,
+    "macro avg": {
+      "precision": 0.656874363425024,
+      "recall": 0.60615,
+      "f1-score": 0.5715128248755191,
+      "support": 60000.0
+    },
+    "weighted avg": {
+      "precision": 0.656874363425024,
+      "recall": 0.60615,
+      "f1-score": 0.571512824875519,
+      "support": 60000.0
+    }
+  }
+}

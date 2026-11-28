@@ -1,0 +1,32 @@
+{
+  "phase": "Phase 9B - Academic Project Report V4",
+  "created_utc": "2026-11-27T19:44:58.129318+00:00",
+  "created_local": "2026-11-28T02:44:58.129318+07:00",
+  "official_artifact_sha256_before_and_after": {
+    "baseline_v3/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a",
+    "01_TRAIN_MODEL/outputs/binary_linear_svm.joblib": "474b0f5fdce1f2e0ca6ddbda55d2efb9dc7fb70330aa4b68e72c4dbc2b2c6b8a"
+  },
+  "created_files": [
+    {
+      "path": "reports/bao_cao_do_an_TextSense_V4_draft.md",
+      "bytes": 27801,
+      "sha256": "5a02bd922b68750c13be7ea2c5f16c827e683fffcd239e0f38e3a245764272a9"
+    },
+    {
+      "path": "experiments/phase9_documentation/phase9b_report/phase9b_source_traceability.md",
+      "bytes": 3187,
+      "sha256": "711a6a85be77cc09eecd18b4f83845aa3c337158148ee7a4bde0a50b20646ad1"
+    },
+    {
+      "path": "experiments/phase9_documentation/phase9b_report/phase9b_verification_report.md",
+      "bytes": 4517,
+      "sha256": "8acfcd9656344ec2b8b666f1d914ee2336311d9ad1eaacfe6de6f0c1d0831bee"
+    },
+    {
+      "path": "experiments/phase9_documentation/phase9b_report/phase9b_completion_report.md",
+      "bytes": 3860,
+      "sha256": "8d4b0fea9e948f71263963a05b7bd63721f780acad3b84af06a0027e558e2ded"
+    }
+  ],
+  "conclusion": "PASS WITH WARNINGS"
+}
