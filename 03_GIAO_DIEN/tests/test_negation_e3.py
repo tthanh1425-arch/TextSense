@@ -4,9 +4,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "scripts"))
+TRAIN_DIR = Path(__file__).resolve().parents[2] / "01_TRAIN_MODEL"
+sys.path.insert(0, str(TRAIN_DIR))
+sys.path.insert(0, str(TRAIN_DIR / "scripts"))
 
 from preprocessing_v4 import normalize_text  # noqa: E402
 from negation_feature import add_negation_features  # noqa: E402

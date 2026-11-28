@@ -11,9 +11,9 @@ import joblib
 import pandas as pd
 import sklearn
 
-_REPO_ROOT = Path(__file__).resolve().parent.parent
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+_TRAIN_DIR = Path(__file__).resolve().parent.parent / '01_TRAIN_MODEL'
+if str(_TRAIN_DIR) not in sys.path:
+    sys.path.insert(0, str(_TRAIN_DIR))
 from preprocessing_v4 import normalize_text as normalize_text_v4  # noqa: E402
 from scripts.negation_feature import add_negation_features  # noqa: E402
 

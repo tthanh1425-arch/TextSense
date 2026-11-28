@@ -51,7 +51,7 @@ from predict import OUTPUT
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = (BASE_DIR / 'web').resolve()
 MODEL_TASK = 'binary'
-_E3_MODEL_PATH = BASE_DIR.parent / 'experiments' / 'E3' / 'model.joblib'
+_E3_MODEL_PATH = BASE_DIR.parent / '01_TRAIN_MODEL' / 'experiments' / 'E3' / 'model.joblib'
 MODEL_PATH = _E3_MODEL_PATH if _E3_MODEL_PATH.is_file() else (OUTPUT / f'{MODEL_TASK}_linear_svm.joblib')
 METRICS_PATH = OUTPUT / f'{MODEL_TASK}_metrics.json'
 DEFAULT_PORT = int(os.environ.get('TEXTSENSE_PORT', '8502'))

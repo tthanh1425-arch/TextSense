@@ -15,7 +15,7 @@ except ImportError:
     pytest = _MockPytest()
 from openpyxl import Workbook
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / '03_GIAO_DIEN'))
 import serve_textsense as web
 
